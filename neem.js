@@ -35,15 +35,19 @@ function Neem(stdout) {
 					var sliceparams = varname.split(":~");
 					var start = 0;
 					var end = undefined;
+					var varvalue = classobj.vars[sliceparams[0]];
 					if(sliceparams.length == 2) {
 						sliceparams[1] = sliceparams[1].split(',');
-						start = parseInt(sliceparams[1][0]);
+						start = (function(s, len) {
+							if(s < 0) return len + s;
+							return s;
+						})(parseInt(sliceparams[1][0]), varvalue.length); //Get the proper start point
 						if(sliceparams[1].length == 2) {
 							end = parseInt(sliceparams[1][1]) + start;
 						}
 					}
 					
-					newstr = newstr.replace('%' + varname + '%', ((classobj.vars[sliceparams[0]]) ? classobj.vars[sliceparams[0]].slice(start, end) : "" ));
+					newstr = newstr.replace('%' + varname + '%', ((varvalue) ? varvalue.slice(start, end) : "" ));
 				} else {
 					addto = true;
 					varbuffer = [];
@@ -130,7 +134,7 @@ function Neem(stdout) {
 				dict.func = function(){}; //Just to make it consistent
 				break;
 			case "if":
-				var possible = ["==", "!=", ">=", "<=", ">", "<"];
+				var possible = ["==", "!=", ">=", "<=", ">", "<", "!", "="];
 				var temp = line.slice(3);
 				for(var i in possible) {
 					var z = temp.split(possible[i]);
@@ -139,8 +143,14 @@ function Neem(stdout) {
 							case "==":
 								dict.check = function(classobj) {return classobj.evalvars(this.value.left, classobj) == classobj.evalvars(this.value.right, classobj)};
 								break;
+							case "=":
+								dict.check = function(classobj) {return classobj.evalvars(this.value.left, classobj).toLowerCase() == classobj.evalvars(this.value.right, classobj).toLowerCase()};
+								break;
 							case "!=":
 								dict.check = function(classobj) {return classobj.evalvars(this.value.left, classobj) != classobj.evalvars(this.value.right, classobj)};
+								break;
+							case "!":
+								dict.check = function(classobj) {return classobj.evalvars(this.value.left, classobj).toLowerCase() != classobj.evalvars(this.value.right, classobj).toLowerCase()};
 								break;
 							case ">=":
 								dict.check = function(classobj) {return parseFloat(classobj.evalvars(this.value.left, classobj)) >= parseFloat(classobj.evalvars(this.value.right, classobj))};
