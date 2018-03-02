@@ -139,30 +139,31 @@ function Neem(stdout) {
 				for(var i in possible) {
 					var z = temp.split(possible[i]);
 					if(z.length == 2) {
+						var side = (function(c) {return classobj.evalvars(dict.value[c], classobj)}); //The sides of the if are stored in the dict "value"
 						switch(possible[i]) {
 							case "==":
-								dict.check = function(classobj) {return classobj.evalvars(this.value.left, classobj) == classobj.evalvars(this.value.right, classobj)};
+								dict.check = function(classobj) {return side("left") == side("right")};
 								break;
 							case "=":
-								dict.check = function(classobj) {return classobj.evalvars(this.value.left, classobj).toLowerCase() == classobj.evalvars(this.value.right, classobj).toLowerCase()};
+								dict.check = function(classobj) {return side("left").toLowerCase() == side("right").toLowerCase()};
 								break;
 							case "!=":
-								dict.check = function(classobj) {return classobj.evalvars(this.value.left, classobj) != classobj.evalvars(this.value.right, classobj)};
+								dict.check = function(classobj) {return side("left") != side("right")};
 								break;
 							case "!":
-								dict.check = function(classobj) {return classobj.evalvars(this.value.left, classobj).toLowerCase() != classobj.evalvars(this.value.right, classobj).toLowerCase()};
+								dict.check = function(classobj) {return side("left").toLowerCase() != side("right").toLowerCase()};
 								break;
 							case ">=":
-								dict.check = function(classobj) {return parseFloat(classobj.evalvars(this.value.left, classobj)) >= parseFloat(classobj.evalvars(this.value.right, classobj))};
+								dict.check = function(classobj) {return parseFloat(side("left")) >= parseFloat(side("right"))};
 								break;
 							case "<=":
-								dict.check = function(classobj) {return parseFloat(classobj.evalvars(this.value.left, classobj)) <= parseFloat(classobj.evalvars(this.value.right, classobj))};
+								dict.check = function(classobj) {return parseFloat(side("left")) <= parseFloat(side("right"))};
 								break;
 							case ">":
-								dict.check = function(classobj) {return parseFloat(classobj.evalvars(this.value.left, classobj)) > parseFloat(classobj.evalvars(this.value.right, classobj))};
+								dict.check = function(classobj) {return parseFloat(side("left")) > parseFloat(side("right"))};
 								break;
 							case "<":
-								dict.check = function(classobj) {return parseFloat(classobj.evalvars(this.value.left, classobj)) < parseFloat(classobj.evalvars(this.value.right, classobj))};
+								dict.check = function(classobj) {return parseFloat(side("left")) < parseFloat(side("right"))};
 								break;
 						}
 						temp = z;
