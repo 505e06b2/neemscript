@@ -1,0 +1,32 @@
+<html>
+<head>
+<meta charset="utf8">
+<script src="neem.js"></script>
+<script>
+	var out = null;
+	window.onload = function() {
+		out = document.getElementById('out');
+		out.value = "";
+	}
+</script>
+<style>
+
+textarea {width:800;height:200;}
+
+</style>
+</head>
+<body>
+<textarea onkeyup="out.value = ''; new Neem(out).interpret(this.value); out.scrollTop = out.scrollHeight;"></textarea><br>
+<textarea id="out"></textarea><br>
+What works:<br>
+ifs: only in the format of: if test>=%other%<br>
+and they need to be ended with "fi"<br>
+the if check can be: <, >, <=, >=, ==, !=
+echo and %vars%<br>
+set vars=%var_too%<br>
+inc var: increment by one<br>
+call :label<br>
+goto :label<br>
+echo %substr:~0,2%
+</body>
+</html>
