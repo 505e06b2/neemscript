@@ -18,6 +18,7 @@ void Neem::parseline(char *line) {
 	switch(i.type = gettype(line)) {
 		case echo_:
 			i.value = (char*)malloc(strlen(params)+1); strcpy(i.value, params); //Put it on one line because it's doing a single thing
+			i.func = [=](uint16_t index){printf("%s\n", i.value); return -1;};
 			break;
 	};
 	instructions.push_back(i);
@@ -45,6 +46,12 @@ void Neem::interpret(char *fname) {
 	}
 	
 	fclose(file);
+	
+	int ret = 0;
+	for(uint16_t i = 0, e = instructions.size(); i < e; i++) {
+		if((ret = instructions[i].func(i)) < -1) return; //Error
+		else if(ret != -1) i = ret; // -1 is the good value here
+	}
 }
 
 Neem::~Neem() {

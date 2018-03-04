@@ -7,6 +7,7 @@
 #include <string.h>
 #include <strings.h>
 #include <vector>
+#include <functional>
 
 class Neem {
 	public:
@@ -18,14 +19,14 @@ class Neem {
 			types type = none_;
 			char *value = NULL;
 			char *extravalue = NULL;
-			int8_t (*func)();
+			std::function<int(uint16_t)> func = NULL;
 		} instruction;
 		FILE *outstream;
 		std::vector<instruction> instructions;
 		
 		void init();
-		void parseline(char *line);
-		types gettype(char *command);
+		void parseline(char *);
+		types gettype(char *);
 };
 
 #endif
