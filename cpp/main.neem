@@ -1,3 +1,5 @@
-echo onea
-echo two
-echo fuck
+echo one
+
+		echo two
+
+	set var=valueofvar

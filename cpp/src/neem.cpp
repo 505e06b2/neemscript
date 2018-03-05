@@ -2,19 +2,17 @@
 
 #define MAX_LINE_LEN 255
 
-void Neem::init() {
-	instructions.clear();
-	instructions.shrink_to_fit();
-}
-
 Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "echo") == 0) return echo_;
+	if(strcasecmp(command, "set") == 0) return set_;
 	return none_;
 }
 
 void Neem::parseline(char *line) {
+	while(isspace((unsigned char) *line)) line++; //Remove leading spaces
+	if(*line == '\0') return;
 	char *params = line + strlen(strtok(line, " "))+1; //strtok splits, then strlen gets where the \0 is, then add that "index" to the pointer
-	{ //Scope this since instruction is in the 
+	{ //Scope this since instruction will just be put into the vector
 		instruction i;
 		i.type = gettype(line);
 		if(i.type == none_) return; //This is so we can /this/ properly
@@ -25,13 +23,18 @@ void Neem::parseline(char *line) {
 	switch(last->type) {
 		case echo_:
 			last->value = (char*)malloc(strlen(params)+1); strcpy(last->value, params); //Put it on one line because it's doing a single thing
-			last->func = [](instruction *i, uint16_t index){printf("%s\n", i->value); return -1;};
+			last->func = [](instruction *i, uint16_t index){ printf("%s\n", i->value); return -1; };
+			break;
+		case set_:
+			last->value = (char*)malloc(strlen(params)+1); strcpy(last->value, params);
+			last->extravalue = last->value + strlen(strtok(last->value, "="))+1; //So the strtok returns a pointer to the variable; strlen gets where the \0 is, then +1 for the start of the next, then add this "index" to the char pointer
+			last->func = [this](instruction *i, uint16_t index){ variables[i->value] = i->extravalue; return -1; };
 			break;
 	};
 }
 
 void Neem::interpret(char *fname) {
-	init();
+	cleanup(); //Make sure everything is clean
 	
 	FILE *file;
 	char linebuffer[MAX_LINE_LEN];
@@ -61,10 +64,17 @@ void Neem::interpret(char *fname) {
 	}
 }
 
-Neem::~Neem() {
+void Neem::cleanup() {
 	//Clean the mallocs
 	for(std::vector<instruction>::iterator it = instructions.begin(); it != instructions.end(); ++it) {
 		free(it->value);
 		free(it->extravalue);
 	}
+	variables.clear();
+	instructions.clear();
+	instructions.shrink_to_fit();
+}
+
+Neem::~Neem() {
+	cleanup();
 }
