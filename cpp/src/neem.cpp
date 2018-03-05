@@ -14,14 +14,20 @@ Neem::types Neem::gettype(char *command) {
 
 void Neem::parseline(char *line) {
 	char *params = line + strlen(strtok(line, " "))+1; //strtok splits, then strlen gets where the \0 is, then add that "index" to the pointer
-	instruction i;
-	switch(i.type = gettype(line)) {
+	{ //Scope this since instruction is in the 
+		instruction i;
+		i.type = gettype(line);
+		if(i.type == none_) return; //This is so we can /this/ properly
+		instructions.push_back(i);
+	}
+
+	instruction *last = &instructions.back();
+	switch(last->type) {
 		case echo_:
-			i.value = (char*)malloc(strlen(params)+1); strcpy(i.value, params); //Put it on one line because it's doing a single thing
-			i.func = [=](uint16_t index){printf("%s\n", i.value); return -1;};
+			last->value = (char*)malloc(strlen(params)+1); strcpy(last->value, params); //Put it on one line because it's doing a single thing
+			last->func = [](instruction *i, uint16_t index){printf("%s\n", i->value); return -1;};
 			break;
 	};
-	instructions.push_back(i);
 }
 
 void Neem::interpret(char *fname) {
@@ -49,7 +55,8 @@ void Neem::interpret(char *fname) {
 	
 	int ret = 0;
 	for(uint16_t i = 0, e = instructions.size(); i < e; i++) {
-		if((ret = instructions[i].func(i)) < -1) return; //Error
+		instruction *current = &instructions.front() +i; //get the pointer to the element
+		if((ret = current->func(current, i)) < -1) return; //Error
 		else if(ret != -1) i = ret; // -1 is the good value here
 	}
 }

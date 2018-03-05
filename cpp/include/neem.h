@@ -7,7 +7,6 @@
 #include <string.h>
 #include <strings.h>
 #include <vector>
-#include <functional>
 
 class Neem {
 	public:
@@ -15,11 +14,11 @@ class Neem {
 		~Neem();
 	private:
 		enum types {none_, echo_, set_, goto_, call_, inc_, fi_, if_};
-		typedef struct {
+		typedef struct instruction {
 			types type = none_;
 			char *value = NULL;
 			char *extravalue = NULL;
-			std::function<int(uint16_t)> func = NULL;
+			int (*func)(struct instruction *i, uint16_t) = NULL;
 		} instruction;
 		FILE *outstream;
 		std::vector<instruction> instructions;
