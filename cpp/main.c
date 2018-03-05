@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
 	}
 	
 	struct Neem* c = neem_new();
-	neem_interpret(c, argv[1]);
+	neem_interpretFile(c, argv[1]);
 	neem_del(c);
 	
 	return 0;

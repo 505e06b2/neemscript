@@ -12,7 +12,7 @@
 
 class Neem {
 	public:
-		void interpret(char *text);
+		void interpretFile(char *text);
 		~Neem();
 	private:
 		struct cmp_str { bool operator()(char const *a, char const *b) { return strcmp(a, b) < 0; } }; // Need this for map it won't work right

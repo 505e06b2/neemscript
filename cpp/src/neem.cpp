@@ -33,7 +33,7 @@ void Neem::parseline(char *line) {
 	};
 }
 
-void Neem::interpret(char *fname) {
+void Neem::interpretFile(char *fname) {
 	cleanup(); //Make sure everything is clean
 	
 	FILE *file;

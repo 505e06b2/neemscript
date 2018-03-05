@@ -6,8 +6,8 @@ extern "C" {
                 return new Neem();
         }
 
-        void neem_interpret(Neem* v, char *text) {
-                v->interpret(text);
+        void neem_interpretFile(Neem* v, char *text) {
+                v->interpretFile(text);
         }
 
         void neem_del(Neem* v) {
