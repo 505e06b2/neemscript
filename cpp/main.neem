@@ -1,4 +1,4 @@
 echo one
 echo two
 set var=valueofvar
-echo var: %var%
+echo var: a%var%z

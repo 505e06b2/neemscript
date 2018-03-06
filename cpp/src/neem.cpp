@@ -6,6 +6,35 @@ Neem::types Neem::gettype(char *command) {
 	return none_;
 }
 
+char* Neem::parsecommands(char *buffer, char *value, uint16_t len) {
+	char varnamebuffer[MAX_VARNAME_LEN];
+	uint8_t varnameindex;
+	bool writevarname = false;
+	
+	uint16_t outindex = 0; //Needs to be outside the for scope for the \0
+	char *variable;
+	std::map<const char*, char*>::iterator variableinter;
+	
+	for(uint16_t i = 0; i < len; i++) {
+		if(value[i] == '%') {
+			if(writevarname) { //becoming false
+				varnamebuffer[varnameindex] = '\0'; //make sure this is a proper string
+				if((variableinter = variables.find(varnamebuffer)) != variables.end()) { //Variable exists, so we put it in the buffer
+					variable = variableinter->second;
+					while(*(variable)) buffer[outindex++] = *(variable++); //could use strcpy but I want the output index to roll over; will continue until \0
+				}
+			} else varnameindex = 0; //reset index
+			writevarname = !writevarname;
+		} else if(writevarname) { 
+			varnamebuffer[varnameindex++] = value[i];
+		} else {
+			buffer[outindex++] = value[i];
+		}
+	}
+	buffer[outindex] = '\0';
+	return buffer;
+}
+
 void Neem::parseline(char *line) {
 	while(isspace((unsigned char) *line)) line++; //Remove leading spaces
 	if(*line == '\0') return; //if, after spaces, it's blank, just return
@@ -21,12 +50,15 @@ void Neem::parseline(char *line) {
 	instruction *last = &instructions.back();
 	switch(last->type) {
 		case echo_:
-			last->value = (char*)malloc(strlen(params)+1); strcpy(last->value, params); //Put it on one line because it's doing a single thing
-			last->func = [](instruction *i, uint16_t index){ printf("%s\n", i->value); return -1; };
+			last->valuelen = strlen(params);
+			last->value = (char*)malloc(last->valuelen+1); strcpy(last->value, params); //Put it on one line because it's doing a single thing
+			last->func = [this](instruction *i, uint16_t index){ printf("%s\n", parsecommands(parsebuffer, i->value, i->valuelen)); return -1; }; //-1 is the 0 of this function; anything positive becomes the new line index
 			break;
 		case set_:
 			last->value = (char*)malloc(strlen(params)+1); strcpy(last->value, params);
-			last->extravalue = last->value + strlen(strtok(last->value, "="))+1; //So the strtok returns a pointer to the variable; strlen gets where the \0 is, then +1 for the start of the next, then add this "index" to the char pointer
+			last->valuelen = strlen(strtok(last->value, "=")); //So the strtok returns a pointer to the variable; strlen gets where the \0 is, 
+			last->extravalue = last->value + last->valuelen+1; //then +1 for the start of the next, then add this "index" to the char pointer
+			last->extravaluelen = strlen(last->extravalue);
 			last->func = [this](instruction *i, uint16_t index){ variables[i->value] = i->extravalue; return -1; };
 			break;
 	};
