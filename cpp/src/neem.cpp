@@ -1,7 +1,5 @@
 #include "neem.h"
 
-#define MAX_LINE_LEN 255
-
 Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "echo") == 0) return echo_;
 	if(strcasecmp(command, "set") == 0) return set_;
@@ -10,7 +8,8 @@ Neem::types Neem::gettype(char *command) {
 
 void Neem::parseline(char *line) {
 	while(isspace((unsigned char) *line)) line++; //Remove leading spaces
-	if(*line == '\0') return;
+	if(*line == '\0') return; //if, after spaces, it's blank, just return
+	
 	char *params = line + strlen(strtok(line, " "))+1; //strtok splits, then strlen gets where the \0 is, then add that "index" to the pointer
 	{ //Scope this since instruction will just be put into the vector
 		instruction i;
@@ -38,7 +37,7 @@ void Neem::interpretFile(char *fname) {
 	
 	FILE *file;
 	char linebuffer[MAX_LINE_LEN];
-	uint8_t length; //tied to MAX_LINE_LEN
+	uint16_t length; //tied to MAX_LINE_LEN
 	
 	if( (file = fopen(fname, "r")) == NULL) {
 		printf("[!] Can't open '%s'\n", fname);

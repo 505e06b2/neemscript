@@ -1,6 +1,8 @@
 #!/bin/sh
 # I just used a sh file since makefiles have a weird syntax and it's just faster to write a sh file...
 
+set -e #exit on error
+
 OUTNAME=neem
 INCLUDEDIR=include
 BINDIR=binfiles

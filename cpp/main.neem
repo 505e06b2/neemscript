@@ -1,5 +1,4 @@
 echo one
-
-		echo two
-
-	set var=valueofvar
+echo two
+set var=valueofvar
+echo var: %var%

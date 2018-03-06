@@ -1,6 +1,9 @@
 #ifndef __NEEM_H
 #define __NEEM_H
 
+#define MAX_LINE_LEN 512
+#define PARSE_BUFFER_LEN 256
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -26,10 +29,13 @@ class Neem {
 		FILE *outstream;
 		std::vector<instruction> instructions;
 		std::map<const char*, char*, cmp_str> variables;
+		uint16_t eof;
+		char *parsebuffer[PARSE_BUFFER_LEN];
 		
 		void parseline(char *);
 		types gettype(char *);
 		void cleanup();
+		char *parsecommands(char *);
 };
 
 #endif
