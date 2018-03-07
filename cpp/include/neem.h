@@ -13,25 +13,29 @@
 #include <vector>
 #include <map>
 #include <functional>
+#include <string>
+
+/*
+//
+//			 REALLY NEED TO MAKE A MORE CONVENIENT STRTOK / FIND ONE IF IT EXISTS
+//
+*/
 
 class Neem {
 	public:
 		void interpretFile(char *text);
 		~Neem();
 	private:
-		struct cmp_str { bool operator()(char const *a, char const *b) { return strcmp(a, b) < 0; } }; // Need this for map it won't work right
 		enum types {none_, echo_, set_, goto_, call_, inc_, fi_, if_};
 		typedef struct instruction {
 			types type = none_;
-			char *value = NULL;
-			uint16_t valuelen = 0; //store it since it'll be used a lot but never change
-			char *extravalue = NULL;
-			uint16_t extravaluelen = 0;
+			std::string value;
+			std::string extravalue;
 			std::function<int(struct instruction *i, uint16_t)> func = NULL;
 		} instruction;
 		FILE *outstream;
 		std::vector<instruction> instructions;
-		std::map<const char*, char*, cmp_str> variables; //cmpstr for the c string because c++ is annoying...
+		std::map<const std::string, std::string> variables;
 		uint16_t eof;
 		//These next 2 are for when I start ifs; I need 2 buffers simultaneously
 		char parsebuffer[PARSE_BUFFER_LEN]; //for ->value
@@ -40,7 +44,8 @@ class Neem {
 		void parseline(char *);
 		types gettype(char *);
 		void cleanup();
-		char *parsecommands(char *, char *, uint16_t);
+		std::string parsevariables(char *, const char *);
+		std::string parsevariablevalue(std::string *); //wrapper for parsevariables
 };
 
 #endif

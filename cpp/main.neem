@@ -1,4 +1,5 @@
-echo one
-echo two
-set var=valueofvar
-echo var: a%var%z
+set variablename=var
+set vval=valuu
+
+set %variablename%=%vval%
+echo %variablename% => a%vval%z
