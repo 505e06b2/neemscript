@@ -26,12 +26,12 @@ class Neem {
 		void interpretFile(char *text);
 		~Neem();
 	private:
-		enum types {none_, echo_, set_, goto_, call_, inc_, fi_, if_};
+		enum types {none_, echo_, set_, goto_, call_, inc_, fi_, if_, label_};
 		typedef struct instruction {
 			types type = none_;
 			std::string value;
 			std::string extravalue;
-			std::function<int(struct instruction *i, uint16_t)> func = [](instruction *i, uint16_t index){return -1;};
+			std::function<int(struct instruction *i, uint16_t)> func = [](instruction *i, uint16_t index){return -1;}; //Needs to be this or it'll kill the program
 			std::function<bool(std::string, std::string)> check = NULL;
 		} instruction;
 		FILE *outstream;

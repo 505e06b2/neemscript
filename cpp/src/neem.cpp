@@ -5,6 +5,7 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "set") == 0) return set_;
 	if(strcasecmp(command, "if") == 0) return if_;
 	if(strcasecmp(command, "fi") == 0) return fi_;
+	if(command[0] == ':' && command[1] != ':') return label_;
 	return none_;
 }
 
@@ -85,6 +86,7 @@ char *Neem::setifcheck(instruction *i, char *string) {
 					i->check = [](std::string left, std::string right) { if(stof(left) > stof(right)) return true; return false; };
 					return (string+1);
 				}
+				
 			case '!':
 				*string = '\0';
 				if(*(string+1) == '=') {
@@ -94,6 +96,7 @@ char *Neem::setifcheck(instruction *i, char *string) {
 					i->check = [](std::string left, std::string right) { if(strcasecmp(left.c_str(), right.c_str()) != 0) return true; return false; };
 					return (string+1);
 				}
+				
 			case '=':
 				*string = '\0';
 				if(*(string+1) == '=') {
@@ -106,6 +109,7 @@ char *Neem::setifcheck(instruction *i, char *string) {
 		}
 		string++;
 	}
+	printf("[!] If string not correct: %s\n", string);
 }
 
 void Neem::parseline(char *line) {
@@ -114,7 +118,7 @@ void Neem::parseline(char *line) {
 	
 	strtok(line, " ");
 	char *params = strtok(NULL, "");
-	{ //Scope this since instruction will just be put into the vector
+	{ //Scope this since instruction will just be put into the vector and we can minimise the memory used
 		instruction i;
 		i.type = gettype(line);
 		if(i.type == none_) return; //This is so we can /this/ properly
@@ -139,8 +143,8 @@ void Neem::parseline(char *line) {
 			};
 			break;
 		case if_:
-			last->extravalue = setifcheck(last, params);
-			last->value = params;
+			last->extravalue = setifcheck(last, params); //extra needs to be first since it's the right side
+			last->value = params; //setif \0s the left part
 			last->func = [this](instruction *i, uint16_t index) {
 				if(!i->check( parsevarval(&i->value), parsevarval(&i->extravalue) )) {
 					for(uint16_t e = instructions.size(); index < e; index++)
@@ -148,6 +152,9 @@ void Neem::parseline(char *line) {
 				}
 				return -1;
 			};
+			break;
+		case label_:
+			last->value = line+1;
 			break;
 		case fi_:
 			break;

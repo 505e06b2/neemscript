@@ -1,5 +1,4 @@
 set var=string
-if %var%=STRING
-echo Yes
-fi
-echo end
+echo gg
+:laybel
+echo done
