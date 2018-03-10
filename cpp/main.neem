@@ -1,5 +1,2 @@
-set variablename=var
-set vval=valuu
-
-set %variablename%=%vval%
-echo %variablename% => a%vval%z
+set vval=123456789abcdef0
+echo %vval:~-7,-5%

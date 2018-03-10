@@ -11,26 +11,46 @@ std::string Neem::parsevariablevalue(std::string *value) {
 }
 
 std::string Neem::parsevariables(char *buffer, const char *value) { //the index is a return index
-	char varnamebuffer[MAX_VARNAME_LEN];
+	char varnamebuffer[MAX_VARNAME_LEN] = {0};
 	uint8_t varnameindex;
 	bool writevarname = false;
 	
 	uint16_t outindex = 0; //Needs to be outside the for scope for the \0
-	std::map<const std::string, std::string>::iterator variableinter;
 	
 	for(uint16_t i = 0; value[i]; i++) {
 		if(value[i] == '%') {
 			if(writevarname) { //becoming false
-				varnamebuffer[varnameindex] = '\0';
-				if((variableinter = variables.find(varnamebuffer)) != variables.end()) { //Variable exists, so we put it in the buffer
+				std::map<const std::string, std::string>::iterator variableinter;
+				strtok(varnamebuffer, ":"); //for the substring
+				if((variableinter = variables.find(varnamebuffer)) != variables.end()) { //Variable exists, so we get it from the map
+					uint8_t variablelen = variableinter->second.length();
 					const char *variable = variableinter->second.c_str();
-					while(*(variable)) {
-						buffer[outindex++] = *(variable++); //could use strcpy but I want the output index to roll over; will continue until \0
+					
+					//Substring
+					int16_t start = 0;
+					uint8_t len = -1; //max
+					
+					char *substring;
+					if(substring = strtok(NULL, ",")) { //This substring is the start index
+						start = atoi(substring+1);
+						if(start < 0) start = variablelen + start;
+						if(start < 0) start = 0; //make sure start is 0
+						if(substring = strtok(NULL, "")) { //End index
+							int16_t l = atoi(substring);
+							len = (l < 0) ? variablelen + l : start + l;
+						}
+					}
+					
+					for(uint8_t i = 0 + start; (i < variablelen) && (i < len); i++) {
+						buffer[outindex++] = variable[i]; //could use strcpy but I want the output index to roll over; will continue until \0
 					}
 				}
-			} else varnameindex = 0; //reset index
+			} else {
+				varnameindex = 0; //reset index
+				memset(varnamebuffer, 0, sizeof(varnamebuffer)); // set all to 0 so we don't need to \0 at the end
+			}
 			writevarname = !writevarname;
-		} else if(writevarname) { 
+		} else if(writevarname) {
 			varnamebuffer[varnameindex++] = value[i];
 		} else {
 			buffer[outindex++] = value[i];
@@ -44,7 +64,8 @@ void Neem::parseline(char *line) {
 	while(isspace((unsigned char) *line)) line++; //Remove leading spaces
 	if(*line == '\0') return; //if, after spaces, it's blank, just return
 	
-	char *params = line + strlen(strtok(line, " "))+1; //strtok splits, then strlen gets where the \0 is, then add that "index" to the pointer
+	strtok(line, " ");
+	char *params = strtok(NULL, "");
 	{ //Scope this since instruction will just be put into the vector
 		instruction i;
 		i.type = gettype(line);
@@ -62,8 +83,8 @@ void Neem::parseline(char *line) {
 			};
 			break;
 		case set_:
-			last->value = std::string(strtok(params, "="));
-			last->extravalue = std::string(params + strlen(params)+1); //So the strtok returns a pointer to the variable; strlen gets where the \0 is, then +1 for the start of the next, then add this "index" to the char pointer
+			last->value = std::string(strtok(params, "=")); //So the strtok returns a pointer to the variable; 
+			last->extravalue = std::string(strtok(NULL, ""));
 			last->func = [this](instruction *i, uint16_t index) {
 				variables[parsevariablevalue(&i->value)] = parsevariablevalue(&i->extravalue);
 				return -1; //parsevariablevalue(i)
@@ -86,7 +107,13 @@ void Neem::interpretFile(char *fname) {
 	
 	while (fgets(linebuffer, sizeof(linebuffer), file)) {
 		length = strlen(linebuffer);
-		for(uint16_t i = 0; i < length; i++) if(linebuffer[i] == '\r' || linebuffer[i] == '\n') linebuffer[i] = '\0'; // 'remove' chars we really don't want
+		for(uint16_t i = 0; i < length; i++) {
+			switch(linebuffer[i]) { // 'remove' chars we really don't want
+				case '\r':
+				case '\n':
+					linebuffer[i] = '\0';
+			}
+		}
 		
 		parseline(linebuffer);
 	}
