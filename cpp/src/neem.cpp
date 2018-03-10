@@ -6,6 +6,7 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "if") == 0) return if_;
 	if(strcasecmp(command, "fi") == 0) return fi_;
 	if(strcasecmp(command, "goto") == 0) return goto_;
+	if(strcasecmp(command, "call") == 0) return call_;
 	if(strcasecmp(command, "inc") == 0) return inc_;
 	if(command[0] == ':' && command[1] != ':') return label_;
 	return none_;
@@ -158,9 +159,26 @@ void Neem::parseline(char *line) {
 		case goto_:
 			last->value = (params[0] == ':') ? params+1 : params; //Remove : from label -> goto :label
 			last->func = [this](instruction *i, uint16_t index) {
+				if(i->value == "eof") {
+					uint16_t tempeof = eof;
+					eof = -2; //-2 or it overflows
+					return (int)tempeof;
+				}
 				for(uint16_t index = 0, e = instructions.size(); index < e; index++) {
 					if(instructions[index].type == label_ && instructions[index].value == i->value) return (int)index;
 				}
+				printf("[!] %d:Can't goto %s", index+1, i->value.c_str());
+				return -1;
+			};
+			break;
+		case call_:
+			last->value = (params[0] == ':') ? params+1 : params; //Remove : from label -> goto :label
+			last->func = [this](instruction *i, uint16_t index) {
+				eof = index;
+				for(uint16_t index = 0, e = instructions.size(); index < e; index++) {
+					if(instructions[index].type == label_ && instructions[index].value == i->value) return (int)index;
+				}
+				printf("[!] %d:Can't call %s", index+1, i->value.c_str());
 				return -1;
 			};
 			break;
@@ -171,7 +189,10 @@ void Neem::parseline(char *line) {
 				std::string var = parsevarval(&i->value);
 				if((variableinter = variables.find(var)) != variables.end()) { //Variable exists, so we get it from the map
 					variables[var] = std::to_string(stoi(variables[var]) + 1);
-				} else printf("[!] Can't inc %s\n", var);
+				} else {
+					printf("[!] %d:Can't inc %s\n", index+1, var.c_str());
+					return -2;
+				}
 				return -1;
 			};
 			break;

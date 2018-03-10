@@ -1,8 +1,8 @@
-set var=0
-:start
-	inc var
-	echo Loop: %var%
-	if %var%<100
-		goto start
-	fi
+echo yoyo
+call test
 echo done
+goto eof
+
+:test
+echo working
+goto eof

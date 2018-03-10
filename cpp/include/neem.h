@@ -37,7 +37,7 @@ class Neem {
 		FILE *outstream;
 		std::vector<instruction> instructions;
 		std::map<const std::string, std::string> variables;
-		uint16_t eof;
+		uint16_t eof = -2; //overflow
 		//These next 2 are for when I start ifs; I need 2 buffers simultaneously
 		char parsebuffer[PARSE_BUFFER_LEN]; //for ->value
 		char parseextrabuffer[PARSE_BUFFER_LEN]; //for ->extravalue
