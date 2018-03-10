@@ -5,6 +5,7 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "set") == 0) return set_;
 	if(strcasecmp(command, "if") == 0) return if_;
 	if(strcasecmp(command, "fi") == 0) return fi_;
+	if(strcasecmp(command, "goto") == 0) return goto_;
 	if(command[0] == ':' && command[1] != ':') return label_;
 	return none_;
 }
@@ -149,6 +150,17 @@ void Neem::parseline(char *line) {
 				if(!i->check( parsevarval(&i->value), parsevarval(&i->extravalue) )) {
 					for(uint16_t e = instructions.size(); index < e; index++)
 						if(instructions[index].type == fi_) return (int)index;
+				}
+				return -1;
+			};
+			break;
+		case goto_:
+			last->value = params;
+			last->func = [this](instruction *i, uint16_t index) {
+				for(uint16_t index = 0, e = instructions.size(); index < e; index++) {
+					if(instructions[index].type == label_) {
+						if(instructions[index].value == i->value) return (int)index;
+					}
 				}
 				return -1;
 			};
