@@ -1,6 +1,8 @@
-set var=string
-echo gg
-:laybel
-echo infinite loop
-goto :laybel
+set var=0
+:start
+	inc var
+	echo Loop: %var%
+	if %var%<100
+		goto start
+	fi
 echo done

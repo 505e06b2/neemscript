@@ -6,6 +6,7 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "if") == 0) return if_;
 	if(strcasecmp(command, "fi") == 0) return fi_;
 	if(strcasecmp(command, "goto") == 0) return goto_;
+	if(strcasecmp(command, "inc") == 0) return inc_;
 	if(command[0] == ':' && command[1] != ':') return label_;
 	return none_;
 }
@@ -160,6 +161,17 @@ void Neem::parseline(char *line) {
 				for(uint16_t index = 0, e = instructions.size(); index < e; index++) {
 					if(instructions[index].type == label_ && instructions[index].value == i->value) return (int)index;
 				}
+				return -1;
+			};
+			break;
+		case inc_:
+			last->value = params;
+			last->func = [this](instruction *i, uint16_t index) {
+				std::map<const std::string, std::string>::iterator variableinter;
+				std::string var = parsevarval(&i->value);
+				if((variableinter = variables.find(var)) != variables.end()) { //Variable exists, so we get it from the map
+					variables[var] = std::to_string(stoi(variables[var]) + 1);
+				} else printf("[!] Can't inc %s\n", var);
 				return -1;
 			};
 			break;
