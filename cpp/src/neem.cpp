@@ -155,12 +155,10 @@ void Neem::parseline(char *line) {
 			};
 			break;
 		case goto_:
-			last->value = params;
+			last->value = (params[0] == ':') ? params+1 : params; //Remove : from label -> goto :label
 			last->func = [this](instruction *i, uint16_t index) {
 				for(uint16_t index = 0, e = instructions.size(); index < e; index++) {
-					if(instructions[index].type == label_) {
-						if(instructions[index].value == i->value) return (int)index;
-					}
+					if(instructions[index].type == label_ && instructions[index].value == i->value) return (int)index;
 				}
 				return -1;
 			};

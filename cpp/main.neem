@@ -1,6 +1,6 @@
 set var=string
 echo gg
 :laybel
-echo looped fuck
-goto laybel
+echo infinite loop
+goto :laybel
 echo done
