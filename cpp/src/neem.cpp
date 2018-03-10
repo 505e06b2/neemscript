@@ -3,10 +3,12 @@
 Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "echo") == 0) return echo_;
 	if(strcasecmp(command, "set") == 0) return set_;
+	if(strcasecmp(command, "if") == 0) return if_;
+	if(strcasecmp(command, "fi") == 0) return fi_;
 	return none_;
 }
 
-std::string Neem::parsevariablevalue(std::string *value) {
+std::string Neem::parsevarval(std::string *value) {
 	return parsevariables(parsebuffer, value->c_str());
 }
 
@@ -60,6 +62,52 @@ std::string Neem::parsevariables(char *buffer, const char *value) { //the index 
 	return buffer;
 }
 
+char *Neem::setifcheck(instruction *i, char *string) {
+	while(*string) {
+		switch(*string) {
+			
+			case '<':
+				*string = '\0';
+				if(*(string+1) == '=') {
+					i->check = [](std::string left, std::string right) { if(stof(left) <= stof(right)) return true; return false; };
+					return (string+2);
+				} else {
+					i->check = [](std::string left, std::string right) { if(stof(left) < stof(right)) return true; return false; };
+					return (string+1);
+				}
+				
+			case '>':
+				*string = '\0';
+				if(*(string+1) == '=') {
+					i->check = [](std::string left, std::string right) { if(stof(left) >= stof(right)) return true; return false; };
+					return (string+2);
+				} else {
+					i->check = [](std::string left, std::string right) { if(stof(left) > stof(right)) return true; return false; };
+					return (string+1);
+				}
+			case '!':
+				*string = '\0';
+				if(*(string+1) == '=') {
+					i->check = [](std::string left, std::string right) { if(left != right) return true; return false; };
+					return (string+2);
+				} else { //Case insensitive !equals
+					i->check = [](std::string left, std::string right) { if(strcasecmp(left.c_str(), right.c_str()) != 0) return true; return false; };
+					return (string+1);
+				}
+			case '=':
+				*string = '\0';
+				if(*(string+1) == '=') {
+					i->check = [](std::string left, std::string right) { if(left == right) return true; return false; };
+					return (string+2);
+				} else { //Case insensitive !equals
+					i->check = [](std::string left, std::string right) { if(strcasecmp(left.c_str(), right.c_str()) == 0) return true; return false; };
+					return (string+1);
+				}
+		}
+		string++;
+	}
+}
+
 void Neem::parseline(char *line) {
 	while(isspace((unsigned char) *line)) line++; //Remove leading spaces
 	if(*line == '\0') return; //if, after spaces, it's blank, just return
@@ -76,19 +124,32 @@ void Neem::parseline(char *line) {
 	instruction *last = &instructions.back();
 	switch(last->type) {
 		case echo_:
-			last->value = std::string(params); //Create string and populate it
+			last->value = params;
 			last->func = [this](instruction *i, uint16_t index) { 
-				printf("%s\n", parsevariablevalue(&i->value).c_str());
+				printf("%s\n", parsevarval(&i->value).c_str());
 				return -1; //-1 is the 0 of this function; anything positive becomes the new line index
 			};
 			break;
 		case set_:
-			last->value = std::string(strtok(params, "=")); //So the strtok returns a pointer to the variable; 
+			last->value = strtok(params, "="); //So the strtok returns a pointer to the variable; 
 			last->extravalue = std::string(strtok(NULL, ""));
 			last->func = [this](instruction *i, uint16_t index) {
-				variables[parsevariablevalue(&i->value)] = parsevariablevalue(&i->extravalue);
-				return -1; //parsevariablevalue(i)
+				variables[parsevarval(&i->value)] = parsevarval(&i->extravalue);
+				return -1;
 			};
+			break;
+		case if_:
+			last->extravalue = setifcheck(last, params);
+			last->value = params;
+			last->func = [this](instruction *i, uint16_t index) {
+				if(!i->check( parsevarval(&i->value), parsevarval(&i->extravalue) )) {
+					for(uint16_t e = instructions.size(); index < e; index++)
+						if(instructions[index].type == fi_) return (int)index;
+				}
+				return -1;
+			};
+			break;
+		case fi_:
 			break;
 	};
 }

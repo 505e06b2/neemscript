@@ -31,7 +31,8 @@ class Neem {
 			types type = none_;
 			std::string value;
 			std::string extravalue;
-			std::function<int(struct instruction *i, uint16_t)> func = NULL;
+			std::function<int(struct instruction *i, uint16_t)> func = [](instruction *i, uint16_t index){return -1;};
+			std::function<bool(std::string, std::string)> check = NULL;
 		} instruction;
 		FILE *outstream;
 		std::vector<instruction> instructions;
@@ -45,7 +46,8 @@ class Neem {
 		types gettype(char *);
 		void cleanup();
 		std::string parsevariables(char *, const char *);
-		std::string parsevariablevalue(std::string *); //wrapper for parsevariables
+		std::string parsevarval(std::string *); //wrapper for parsevariables
+		char *setifcheck(instruction *, char *);
 };
 
 #endif

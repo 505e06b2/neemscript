@@ -1,2 +1,5 @@
-set vval=123456789abcdef0
-echo %vval:~-7,-5%
+set var=string
+if %var%=STRING
+echo Yes
+fi
+echo end
