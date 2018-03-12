@@ -142,7 +142,7 @@ void Neem::interpretFile(char *fname) {
 	
 	while (fgets(linebuffer, sizeof(linebuffer), file)) {
 		length = strlen(linebuffer);
-		for(uint16_t i = 0; i < length; i++) {
+		for(uint16_t i = length, e = length-2; i > e; i--) {
 			switch(linebuffer[i]) { // 'remove' chars we really don't want
 				case '\r':
 				case '\n':
