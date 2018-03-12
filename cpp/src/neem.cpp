@@ -20,6 +20,7 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "inc") == 0) return inc_;
 	if(strcasecmp(command, "sleep") == 0) return sleep_;
 	if(strcasecmp(command, "strftime") == 0) return strftime_;
+	if(strcasecmp(command, "start") == 0) return start_;
 	if(command[0] == ':' && command[1] != ':') return label_;
 	return none_;
 }
@@ -125,6 +126,13 @@ void Neem::parseline(char *line) {
 				return -1;
 			};
 			break;
+		case start_:
+			last->value = params;
+			last->func = [this](instruction *i, uint16_t index) {
+				system(i->value.c_str());
+				return -1;
+			};
+			break;
 	};
 }
 
@@ -142,7 +150,7 @@ void Neem::interpretFile(char *fname) {
 	
 	while (fgets(linebuffer, sizeof(linebuffer), file)) {
 		length = strlen(linebuffer);
-		for(uint16_t i = length, e = length-2; i > e; i--) {
+		for(uint16_t i = length, e = length-3; i > e; i--) {
 			switch(linebuffer[i]) { // 'remove' chars we really don't want
 				case '\r':
 				case '\n':

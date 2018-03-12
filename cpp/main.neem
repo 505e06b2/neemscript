@@ -1,10 +1,2 @@
-set var=wow
-echo %var%
-echo %time%
-echo %date:~0,2%
-strftime currenttime=%S
-strftime based=%H
-echo %currenttime%
-echo Start sleep
-sleep 2000
-echo End sleep
+start cmd.exe
+echo ended
