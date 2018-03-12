@@ -1,23 +1,22 @@
 #include "neem.h"
 
 Neem::Neem() { //Set up globals
-	globalvariables["time"] = []() {
-		struct tm *tm;
-		char str_time[9];
-		time_t t = time(NULL);
-		tm = localtime(&t);
-		strftime(str_time, sizeof(str_time), "%H:%M:%S", tm);
-		return std::string(str_time);
+	globalvariables["time"] = [this]() {
+		return getstrftime(9, "%H:%M:%S");
 	};
 	
-	globalvariables["date"] = []() {
-		struct tm *tm;
-		char str_date[9];
-		time_t t = time(NULL);
-		tm = localtime(&t);
-		strftime(str_date, sizeof(str_date), "%d/%m/%y", tm);
-		return std::string(str_date);
+	globalvariables["date"] = [this]() {
+		return getstrftime(9, "%d/%m/%y");
 	};
+}
+
+std::string Neem::getstrftime(size_t size, const char *format) {
+	struct tm *tm;
+	char str_date[size];
+	time_t t = time(NULL);
+	tm = localtime(&t);
+	strftime(str_date, sizeof(str_date), format, tm);
+	return str_date;
 }
 
 Neem::types Neem::gettype(char *command) {
@@ -229,12 +228,7 @@ void Neem::parseline(char *line) {
 			last->value = strtok(params, "="); //So the strtok returns a pointer to the variable; 
 			last->extravalue = std::string(strtok(NULL, ""));
 			last->func = [this](instruction *i, uint16_t index) {
-				struct tm *tm;
-				char str_date[64];
-				time_t t = time(NULL);
-				tm = localtime(&t);
-				strftime(str_date, sizeof(str_date), i->extravalue.c_str(), tm);
-				variables[parsevarval(&i->value)] = str_date;
+				variables[parsevarval(&i->value)] = getstrftime(64, i->extravalue.c_str());
 				return -1;
 			};
 			break;

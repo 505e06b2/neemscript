@@ -51,6 +51,7 @@ class Neem {
 		std::string parsevariables(char *, const char *);
 		std::string parsevarval(std::string *); //wrapper for parsevariables
 		char *setifcheck(instruction *, char *);
+		std::string getstrftime(size_t, const char*);
 };
 
 #endif
