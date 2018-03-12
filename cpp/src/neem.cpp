@@ -9,6 +9,15 @@ Neem::Neem() { //Set up globals
 		strftime(str_time, sizeof(str_time), "%H:%M:%S", tm);
 		return std::string(str_time);
 	};
+	
+	globalvariables["date"] = []() {
+		struct tm *tm;
+		char str_date[9];
+		time_t t = time(NULL);
+		tm = localtime(&t);
+		strftime(str_date, sizeof(str_date), "%d/%m/%y", tm);
+		return std::string(str_date);
+	};
 }
 
 Neem::types Neem::gettype(char *command) {
