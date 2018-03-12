@@ -11,11 +11,12 @@
 #include <string.h>
 #include <strings.h>
 #include <time.h>
+
 #include <vector>
 #include <map>
-#include <functional>
+#include <functional> //function as vars
 #include <string>
-#include <chrono>
+#include <chrono>//Time stuff
 #include <thread>
 
 class Neem {
