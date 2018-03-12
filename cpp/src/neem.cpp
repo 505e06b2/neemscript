@@ -27,6 +27,7 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "goto") == 0) return goto_;
 	if(strcasecmp(command, "call") == 0) return call_;
 	if(strcasecmp(command, "inc") == 0) return inc_;
+	if(strcasecmp(command, "sleep") == 0) return sleep_;
 	if(strcasecmp(command, "strftime") == 0) return strftime_;
 	if(command[0] == ':' && command[1] != ':') return label_;
 	return none_;
@@ -229,6 +230,17 @@ void Neem::parseline(char *line) {
 			last->extravalue = std::string(strtok(NULL, ""));
 			last->func = [this](instruction *i, uint16_t index) {
 				variables[parsevarval(&i->value)] = getstrftime(64, i->extravalue.c_str());
+				return -1;
+			};
+			break;
+		case sleep_:
+			last->value = params;
+			last->func = [this](instruction *i, uint16_t index) {
+				uint32_t ms = stoi(parsevarval(&i->value));
+				struct timespec ts;
+				ts.tv_sec = ms / 1000;
+				ts.tv_nsec = (ms % 1000) * 1000000;
+				nanosleep(&ts, NULL);
 				return -1;
 			};
 			break;
