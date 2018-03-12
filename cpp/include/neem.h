@@ -18,12 +18,6 @@
 #include <chrono>
 #include <thread>
 
-/*
-//
-//			 REALLY NEED TO MAKE A MORE CONVENIENT STRTOK / FIND ONE IF IT EXISTS
-//
-*/
-
 class Neem {
 	public:
 		void interpretFile(char *text);
