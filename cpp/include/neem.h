@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#include <time.h>
 #include <vector>
 #include <map>
 #include <functional>
@@ -25,6 +26,7 @@ class Neem {
 	public:
 		void interpretFile(char *text);
 		~Neem();
+		Neem();
 	private:
 		enum types {none_, echo_, set_, goto_, call_, inc_, fi_, if_, label_};
 		typedef struct instruction {
@@ -37,6 +39,7 @@ class Neem {
 		FILE *outstream;
 		std::vector<instruction> instructions;
 		std::map<const std::string, std::string> variables;
+		std::map<const std::string, std::function<std::string()>> globalvariables;
 		uint16_t eof = -2; //to stop overflow
 		//These next 2 are for when I start ifs; I need 2 buffers simultaneously
 		char parsebuffer[PARSE_BUFFER_LEN]; //for ->value

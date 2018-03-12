@@ -1,5 +1,16 @@
 #include "neem.h"
 
+Neem::Neem() { //Set up globals
+	globalvariables["time"] = []() {
+		struct tm *tm;
+		char str_time[9];
+		time_t t = time(NULL);
+		tm = localtime(&t);
+		strftime(str_time, sizeof(str_time), "%H:%M:%S", tm);
+		return std::string(str_time);
+	};
+}
+
 Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "echo") == 0) return echo_;
 	if(strcasecmp(command, "set") == 0) return set_;
@@ -27,10 +38,13 @@ std::string Neem::parsevariables(char *buffer, const char *value) { //the index 
 		if(value[i] == '%') {
 			if(writevarname) { //becoming false
 				std::map<const std::string, std::string>::iterator variableinter;
+				std::map<const std::string, std::function<std::string()>>::iterator globalvariableinter;
 				strtok(varnamebuffer, ":"); //for the substring
-				if((variableinter = variables.find(varnamebuffer)) != variables.end()) { //Variable exists, so we get it from the map
-					uint8_t variablelen = variableinter->second.length();
-					const char *variable = variableinter->second.c_str();
+				if( (globalvariableinter = globalvariables.find(varnamebuffer)) != globalvariables.end() || //Global first
+						(variableinter = variables.find(varnamebuffer)) != variables.end() ) { //Variable exists, so we get it from the map
+					std::string tempvar = (globalvariableinter != globalvariables.end()) ? globalvariableinter->second() : variableinter->second; //It is a global
+					uint8_t variablelen = tempvar.length();
+					const char *variable = tempvar.c_str();
 					
 					//Substring
 					int16_t start = 0;
