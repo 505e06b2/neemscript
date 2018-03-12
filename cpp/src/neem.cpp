@@ -236,11 +236,7 @@ void Neem::parseline(char *line) {
 		case sleep_:
 			last->value = params;
 			last->func = [this](instruction *i, uint16_t index) {
-				uint32_t ms = stoi(parsevarval(&i->value));
-				struct timespec ts;
-				ts.tv_sec = ms / 1000;
-				ts.tv_nsec = (ms % 1000) * 1000000;
-				nanosleep(&ts, NULL);
+				std::this_thread::sleep_for(std::chrono::milliseconds( stoi(parsevarval(&i->value)) ));
 				return -1;
 			};
 			break;
