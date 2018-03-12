@@ -12,3 +12,9 @@ std::string Neem::getstrftime(size_t size, const char *format) {
 std::string Neem::parsevarval(std::string *value) {
 	return parsevariables(parsebuffer, value->c_str());
 }
+
+std::string Neem::getcurrentdir() {
+	char currentdir[256];
+	getcwd(currentdir, sizeof(currentdir));
+	return currentdir;
+}

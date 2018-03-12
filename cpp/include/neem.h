@@ -11,6 +11,8 @@
 #include <string.h>
 #include <strings.h>
 #include <time.h>
+#include <unistd.h>
+#include <dirent.h>
 
 #include <vector>
 #include <map>
@@ -25,7 +27,7 @@ class Neem {
 		~Neem();
 		Neem();
 	private:
-		enum types {none_, echo_, set_, goto_, call_, inc_, fi_, if_, label_, strftime_, sleep_, start_};
+		enum types {none_, echo_, set_, goto_, call_, inc_, fi_, if_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_};
 		typedef struct instruction {
 			types type = none_;
 			std::string value;
@@ -46,9 +48,12 @@ class Neem {
 		types gettype(char *);
 		void cleanup();
 		std::string parsevariables(char *, const char *);
-		std::string parsevarval(std::string *); //wrapper for parsevariables
 		char *setifcheck(instruction *, char *);
+		
+		//Utils
 		std::string getstrftime(size_t, const char*);
+		std::string parsevarval(std::string *); //wrapper for parsevariables
+		std::string getcurrentdir();
 };
 
 #endif

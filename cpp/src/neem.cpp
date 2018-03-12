@@ -8,6 +8,10 @@ Neem::Neem() { //Set up globals
 	globalvariables["date"] = [this]() {
 		return getstrftime(9, "%d/%m/%y");
 	};
+	
+	globalvariables["cd"] = [this]() {
+		return getcurrentdir();
+	};
 }
 
 Neem::types Neem::gettype(char *command) {
@@ -21,6 +25,9 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "sleep") == 0) return sleep_;
 	if(strcasecmp(command, "strftime") == 0) return strftime_;
 	if(strcasecmp(command, "start") == 0) return start_;
+	if(strcasecmp(command, "pwd") == 0) return pwd_;
+	if(strcasecmp(command, "cd") == 0) return cd_;
+	if(strcasecmp(command, "ls") == 0) return ls_;
 	if(command[0] == ':' && command[1] != ':') return label_;
 	return none_;
 }
@@ -130,6 +137,31 @@ void Neem::parseline(char *line) {
 			last->value = params;
 			last->func = [this](instruction *i, uint16_t index) {
 				system(i->value.c_str());
+				return -1;
+			};
+			break;
+		case pwd_:
+			last->func = [this](instruction *i, uint16_t index) {
+				printf("%s\n", getcurrentdir().c_str());
+				return -1;
+			};
+			break;
+		case cd_:
+			if(params == NULL) last->extravalue = "#";
+				else last->value = params;
+			last->func = [this](instruction *i, uint16_t index) {
+				if(i->extravalue != "") printf("%s\n", getcurrentdir().c_str());
+					else chdir(parsevarval(&i->value).c_str());
+				return -1;
+			};
+			break;
+		case ls_:
+			last->func = [this](instruction *i, uint16_t index) {
+				struct dirent *d;
+				DIR *dir = opendir(".");
+				while((d = readdir(dir)) != NULL)
+					if(d->d_name[0] != '.') printf("%s\n", d->d_name);
+				closedir(dir);
 				return -1;
 			};
 			break;
