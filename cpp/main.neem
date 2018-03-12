@@ -1,2 +1,2 @@
-::Comment
-echo %cd%
+get var=Enter var: 
+echo %var%

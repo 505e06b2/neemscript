@@ -17,6 +17,7 @@ Neem::Neem() { //Set up globals
 Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "echo") == 0) return echo_;
 	if(strcasecmp(command, "set") == 0) return set_;
+	if(strcasecmp(command, "get") == 0) return get_;
 	if(strcasecmp(command, "if") == 0) return if_;
 	if(strcasecmp(command, "fi") == 0) return fi_;
 	if(strcasecmp(command, "goto") == 0) return goto_;
@@ -63,6 +64,19 @@ bool Neem::parseline(char *line) {
 			last->extravalue = std::string(strtok(NULL, ""));
 			last->func = [this](instruction *i, uint16_t index) {
 				variables[parsevarval(&i->value)] = parsevarval(&i->extravalue);
+				return -1;
+			};
+			break;
+		case get_:
+			last->value = strtok(params, "="); //So the strtok returns a pointer to the variable; 
+			last->extravalue = std::string(strtok(NULL, ""));
+			last->func = [this](instruction *i, uint16_t index) {
+				char *buff;
+				size_t s;
+				printf("%s", parsevarval(&i->extravalue).c_str());
+				getline(&buff, &s, stdin);
+				buff[strlen(buff)-1] = '\0'; //remove \n
+				variables[parsevarval(&i->value)] = buff;
 				return -1;
 			};
 			break;
