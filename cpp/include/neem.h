@@ -27,7 +27,7 @@ class Neem {
 		~Neem();
 		Neem();
 	private:
-		enum types {none_, echo_, set_, goto_, call_, inc_, fi_, if_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_};
+		enum types {none_, comment_, echo_, set_, goto_, call_, inc_, fi_, if_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_};
 		typedef struct instruction {
 			types type = none_;
 			std::string value;
@@ -44,7 +44,7 @@ class Neem {
 		char parsebuffer[PARSE_BUFFER_LEN]; //for ->value
 		char parseextrabuffer[PARSE_BUFFER_LEN]; //for ->extravalue
 		
-		void parseline(char *);
+		bool parseline(char *);
 		types gettype(char *);
 		void cleanup();
 		std::string parsevariables(char *, const char *);

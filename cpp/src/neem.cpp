@@ -28,20 +28,24 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "pwd") == 0) return pwd_;
 	if(strcasecmp(command, "cd") == 0) return cd_;
 	if(strcasecmp(command, "ls") == 0) return ls_;
+	if(strcasecmp(command, "pause") == 0) return pause_;
 	if(command[0] == ':' && command[1] != ':') return label_;
+	if(command[0] == ':' && command[1] == ':') return comment_;
 	return none_;
 }
 
-void Neem::parseline(char *line) {
+bool Neem::parseline(char *line) {
 	while(isspace((unsigned char) *line)) line++; //Remove leading spaces
-	if(*line == '\0') return; //if, after spaces, it's blank, just return
+	if(*line == '\0') return true; //if, after spaces, it's blank, just return
 	
 	strtok(line, " ");
 	char *params = strtok(NULL, "");
 	{ //Scope this since instruction will just be put into the vector and we can minimise the memory used
+		types currenttype = gettype(line);
+		if(currenttype == comment_) return true; //This is so we can /this/ properly
+		else if(currenttype == none_) {printf("[!] '%s' is not a command\n", line); return false;}
 		instruction i;
-		i.type = gettype(line);
-		if(i.type == none_) return; //This is so we can /this/ properly
+		i.type = currenttype;
 		instructions.push_back(i);
 	}
 
@@ -165,7 +169,15 @@ void Neem::parseline(char *line) {
 				return -1;
 			};
 			break;
+		case pause_:
+			last->func = [this](instruction *i, uint16_t index) {
+				printf("Press ENTER to continue...");
+				getchar();
+				return -1;
+			};
+			break;
 	};
+	return true;
 }
 
 void Neem::interpretFile(char *fname) {
@@ -190,7 +202,7 @@ void Neem::interpretFile(char *fname) {
 			}
 		}
 		
-		parseline(linebuffer);
+		if(!parseline(linebuffer)) return;
 	}
 	
 	fclose(file);
