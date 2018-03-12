@@ -2,3 +2,5 @@ set var=wow
 echo %var%
 echo %time%
 echo %date:~0,2%
+strftime currenttime=%S
+echo %currenttime%
