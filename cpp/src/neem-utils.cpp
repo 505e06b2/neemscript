@@ -10,7 +10,7 @@ std::string Neem::getstrftime(size_t size, const char *format) {
 }
 
 std::string Neem::parsevarval(std::string *value) {
-	return parsevariables(parsebuffer, value->c_str());
+	return parsevariables(value->c_str());
 }
 
 std::string Neem::getcurrentdir() {

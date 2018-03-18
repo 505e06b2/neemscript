@@ -30,6 +30,7 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "cd") == 0) return cd_;
 	if(strcasecmp(command, "ls") == 0) return ls_;
 	if(strcasecmp(command, "pause") == 0) return pause_;
+	if(strcasecmp(command, "output") == 0) return output_;
 	if(command[0] == ':' && command[1] != ':') return label_;
 	if(command[0] == ':' && command[1] == ':') return comment_;
 	return none_;
@@ -44,7 +45,7 @@ bool Neem::parseline(char *line) {
 	{ //Scope this since instruction will just be put into the vector and we can minimise the memory used
 		types currenttype = gettype(line);
 		if(currenttype == comment_) return true; //This is so we can /this/ properly
-		else if(currenttype == none_) {printf("[!] '%s' is not a command\n", line); return false;}
+		else if(currenttype == none_) {fprintf(outputhandle, "[!] '%s' is not a command\n", line); return false;}
 		instruction i;
 		i.type = currenttype;
 		instructions.push_back(i);
@@ -55,7 +56,7 @@ bool Neem::parseline(char *line) {
 		case echo_:
 			last->value = params;
 			last->func = [this](instruction *i, uint16_t index) { 
-				printf("%s\n", parsevarval(&i->value).c_str());
+				fprintf(outputhandle, "%s\n", parsevarval(&i->value).c_str());
 				return -1; //-1 is the 0 of this function; anything positive becomes the new line index
 			};
 			break;
@@ -71,10 +72,9 @@ bool Neem::parseline(char *line) {
 			last->value = strtok(params, "="); //So the strtok returns a pointer to the variable; 
 			last->extravalue = std::string(strtok(NULL, ""));
 			last->func = [this](instruction *i, uint16_t index) {
-				char *buff;
-				size_t s;
-				printf("%s", parsevarval(&i->extravalue).c_str());
-				getline(&buff, &s, stdin);
+				char buff[128];
+				fprintf(outputhandle, "%s", parsevarval(&i->extravalue).c_str());
+				fgets(buff, sizeof(buff), stdin);
 				buff[strlen(buff)-1] = '\0'; //remove \n
 				variables[parsevarval(&i->value)] = buff;
 				return -1;
@@ -102,7 +102,7 @@ bool Neem::parseline(char *line) {
 				for(uint16_t index = 0, e = instructions.size(); index < e; index++) {
 					if(instructions[index].type == label_ && instructions[index].value == i->value) return (int)index;
 				}
-				printf("[!] %d:Can't goto %s", index+1, i->value.c_str());
+				fprintf(outputhandle, "[!] %d:Can't goto %s", index+1, i->value.c_str());
 				return -1;
 			};
 			break;
@@ -113,7 +113,7 @@ bool Neem::parseline(char *line) {
 				for(uint16_t index = 0, e = instructions.size(); index < e; index++) {
 					if(instructions[index].type == label_ && instructions[index].value == i->value) return (int)index;
 				}
-				printf("[!] %d:Can't call %s", index+1, i->value.c_str());
+				fprintf(outputhandle, "[!] %d:Can't call %s", index+1, i->value.c_str());
 				return -1;
 			};
 			break;
@@ -125,7 +125,7 @@ bool Neem::parseline(char *line) {
 				if((variableinter = variables.find(var)) != variables.end()) { //Variable exists, so we get it from the map
 					variables[var] = std::to_string(stoi(variables[var]) + 1);
 				} else {
-					printf("[!] %d:Can't inc %s\n", index+1, var.c_str());
+					fprintf(outputhandle, "[!] %d:Can't inc %s\n", index+1, var.c_str());
 					return -2;
 				}
 				return -1;
@@ -160,7 +160,7 @@ bool Neem::parseline(char *line) {
 			break;
 		case pwd_:
 			last->func = [this](instruction *i, uint16_t index) {
-				printf("%s\n", getcurrentdir().c_str());
+				fprintf(outputhandle, "%s\n", getcurrentdir().c_str());
 				return -1;
 			};
 			break;
@@ -168,7 +168,7 @@ bool Neem::parseline(char *line) {
 			if(params == NULL) last->extravalue = "#";
 				else last->value = params;
 			last->func = [this](instruction *i, uint16_t index) {
-				if(i->extravalue != "") printf("%s\n", getcurrentdir().c_str());
+				if(i->extravalue != "") fprintf(outputhandle, "%s\n", getcurrentdir().c_str()); //Print if no args
 					else chdir(parsevarval(&i->value).c_str());
 				return -1;
 			};
@@ -178,7 +178,7 @@ bool Neem::parseline(char *line) {
 				struct dirent *d;
 				DIR *dir = opendir(".");
 				while((d = readdir(dir)) != NULL)
-					if(d->d_name[0] != '.') printf("%s\n", d->d_name);
+					if(d->d_name[0] != '.') fprintf(outputhandle, "%s\n", d->d_name);
 				closedir(dir);
 				return -1;
 			};
@@ -187,6 +187,22 @@ bool Neem::parseline(char *line) {
 			last->func = [this](instruction *i, uint16_t index) {
 				printf("Press ENTER to continue...");
 				getchar();
+				return -1;
+			};
+			break;
+		case output_:
+			last->value = strtok(params, " "); //filename
+			char *temp = strtok(NULL, "");
+			if(temp != NULL) last->extravalue = temp; //file attributes
+			else last->extravalue = "a"; //default to append
+			last->func = [this](instruction *i, uint16_t index) {
+				if(outputhandle != stdout) fclose(outputhandle);
+				if(i->value == "reset") outputhandle = stdout;
+				else outputhandle = fopen(i->value.c_str(), i->extravalue.c_str());
+				if(outputhandle == NULL) {
+					fprintf(outputhandle, "[!] Could not open file: %s\n", i->value.c_str());
+					return -2;
+				}
 				return -1;
 			};
 			break;
@@ -202,7 +218,7 @@ void Neem::interpretFile(char *fname) {
 	uint16_t length; //tied to MAX_LINE_LEN
 	
 	if( (file = fopen(fname, "r")) == NULL) {
-		printf("[!] Can't open '%s'\n", fname);
+		fprintf(outputhandle, "[!] Can't open '%s'\n", fname);
 		return;
 	}
 	
@@ -227,6 +243,8 @@ void Neem::interpretFile(char *fname) {
 		if((ret = current->func(current, i)) < -1) return; //Error
 		else if(ret != -1) i = ret; // -1 is the good value here
 	}
+	
+	fclose(outputhandle); //Should be fine even if it's stdout
 }
 
 void Neem::cleanup() {

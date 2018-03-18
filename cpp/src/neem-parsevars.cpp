@@ -1,6 +1,7 @@
 #include "neem.h"
 
-std::string Neem::parsevariables(char *buffer, const char *value) { //the index is a return index
+std::string Neem::parsevariables(const char *value) { //the index is a return index
+	char buffer[PARSE_BUFFER_LEN];
 	char varnamebuffer[MAX_VARNAME_LEN] = {0};
 	uint8_t varnameindex;
 	bool writevarname = false;

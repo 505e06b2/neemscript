@@ -27,7 +27,7 @@ class Neem {
 		~Neem();
 		Neem();
 	private:
-		enum types {none_, comment_, echo_, set_, get_, goto_, call_, inc_, fi_, if_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_};
+		enum types {none_, comment_, echo_, set_, get_, goto_, call_, inc_, fi_, if_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_, output_};
 		typedef struct instruction {
 			types type = none_;
 			std::string value;
@@ -35,19 +35,17 @@ class Neem {
 			std::function<int(struct instruction *i, uint16_t)> func = [](instruction *i, uint16_t index){return -1;}; //Needs to be this or it'll kill the program
 			std::function<bool(std::string, std::string)> check = NULL;
 		} instruction;
-		FILE *outstream;
+		
 		std::vector<instruction> instructions;
 		std::map<const std::string, std::string> variables;
 		std::map<const std::string, std::function<std::string()>> globalvariables;
 		uint16_t eof = -2; //to stop overflow
-		//These next 2 are for when I start ifs; I need 2 buffers simultaneously
-		char parsebuffer[PARSE_BUFFER_LEN]; //for ->value
-		char parseextrabuffer[PARSE_BUFFER_LEN]; //for ->extravalue
+		FILE *outputhandle = stdout;
 		
 		bool parseline(char *);
 		types gettype(char *);
 		void cleanup();
-		std::string parsevariables(char *, const char *);
+		std::string parsevariables(const char *);
 		char *setifcheck(instruction *, char *);
 		
 		//Utils
