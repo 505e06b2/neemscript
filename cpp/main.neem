@@ -1,4 +1,2 @@
-output file
-echo yoyo
-output reset
-echo here
+output log.txt w
+start ./test.bat

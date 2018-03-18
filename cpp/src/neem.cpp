@@ -45,7 +45,7 @@ bool Neem::parseline(char *line) {
 	{ //Scope this since instruction will just be put into the vector and we can minimise the memory used
 		types currenttype = gettype(line);
 		if(currenttype == comment_) return true; //This is so we can /this/ properly
-		else if(currenttype == none_) {fprintf(outputhandle, "[!] '%s' is not a command\n", line); return false;}
+		else if(currenttype == none_) {fprintf(stderr, "[!] '%s' is not a command\n", line); return false;}
 		instruction i;
 		i.type = currenttype;
 		instructions.push_back(i);
@@ -102,7 +102,7 @@ bool Neem::parseline(char *line) {
 				for(uint16_t index = 0, e = instructions.size(); index < e; index++) {
 					if(instructions[index].type == label_ && instructions[index].value == i->value) return (int)index;
 				}
-				fprintf(outputhandle, "[!] %d:Can't goto %s", index+1, i->value.c_str());
+				fprintf(stderr, "[!] %d:Can't goto %s", index+1, i->value.c_str());
 				return -1;
 			};
 			break;
@@ -113,7 +113,7 @@ bool Neem::parseline(char *line) {
 				for(uint16_t index = 0, e = instructions.size(); index < e; index++) {
 					if(instructions[index].type == label_ && instructions[index].value == i->value) return (int)index;
 				}
-				fprintf(outputhandle, "[!] %d:Can't call %s", index+1, i->value.c_str());
+				fprintf(stderr, "[!] %d:Can't call %s", index+1, i->value.c_str());
 				return -1;
 			};
 			break;
@@ -125,7 +125,7 @@ bool Neem::parseline(char *line) {
 				if((variableinter = variables.find(var)) != variables.end()) { //Variable exists, so we get it from the map
 					variables[var] = std::to_string(stoi(variables[var]) + 1);
 				} else {
-					fprintf(outputhandle, "[!] %d:Can't inc %s\n", index+1, var.c_str());
+					fprintf(stderr, "[!] %d:Can't inc %s\n", index+1, var.c_str());
 					return -2;
 				}
 				return -1;
@@ -154,7 +154,15 @@ bool Neem::parseline(char *line) {
 		case start_:
 			last->value = params;
 			last->func = [this](instruction *i, uint16_t index) {
-				system(i->value.c_str());
+				FILE *f = popen(i->value.c_str(), "r");
+				FILE *stderrbackup = stderr;
+				if(f == NULL) {
+					fprintf(stderr, "[!] %d:Could not open program: %s\n", index+1, i->value.c_str());
+					return -2;
+				}
+				
+				char buffer[MAX_LINE_LEN];
+				while(fgets(buffer, MAX_LINE_LEN, f) != NULL) fprintf(outputhandle, "%s", buffer);
 				return -1;
 			};
 			break;
@@ -200,7 +208,7 @@ bool Neem::parseline(char *line) {
 				if(i->value == "reset") outputhandle = stdout;
 				else outputhandle = fopen(i->value.c_str(), i->extravalue.c_str());
 				if(outputhandle == NULL) {
-					fprintf(outputhandle, "[!] Could not open file: %s\n", i->value.c_str());
+					fprintf(stderr, "[!] %d:Could not open file: %s\n", index+1, i->value.c_str());
 					return -2;
 				}
 				return -1;
