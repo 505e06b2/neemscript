@@ -32,7 +32,7 @@ class Neem {
 			types type = none_;
 			std::string value;
 			std::string extravalue;
-			std::function<int(struct instruction *i, uint16_t)> func = [](instruction *i, uint16_t index){return -1;}; //Needs to be this or it'll kill the program
+			std::function<int(struct instruction *i, uint32_t)> func = [](instruction *i, uint32_t index){return -1;}; //Needs to be this or it'll kill the program
 			std::function<bool(std::string, std::string)> check = NULL;
 		} instruction;
 		
@@ -42,11 +42,12 @@ class Neem {
 		uint16_t eof = -2; //to stop overflow
 		FILE *outputhandle = stdout;
 		
-		bool parseline(char *);
+		bool parseline(char *, uint32_t);
 		types gettype(char *);
 		void cleanup();
 		std::string parsevariables(const char *);
 		char *setifcheck(instruction *, char *);
+		char *splitstring(char *, const char); //strtok replacement
 		
 		//Utils
 		std::string getstrftime(size_t, const char*);

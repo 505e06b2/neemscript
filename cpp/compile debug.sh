@@ -10,12 +10,9 @@ SRCDIR=src
 
 #Compile lib
 for filename in ./${SRCDIR}/*.cpp; do
-	g++ -O2 -c "$filename" -I$INCLUDEDIR -o ${BINDIR}/`basename ${filename%.*}`.o
+	g++ -g -c "$filename" -I$INCLUDEDIR -o ${BINDIR}/`basename ${filename%.*}`.o
 done
-gcc -O2 -c `find ./*.c` -I$INCLUDEDIR -o ${BINDIR}/main.o
-g++ -O2 `find ${BINDIR}/*` $FLAGS -o $OUTNAME
-strip $OUTNAME
+gcc -g -c `find ./*.c` -I$INCLUDEDIR -o ${BINDIR}/main.o
+g++ -g `find ${BINDIR}/*` $FLAGS -o $OUTNAME
 
-if [ "$1" == "run" ]; then
-	./$OUTNAME main.neem
-fi
+gdb --args ./neem.exe main.neem

@@ -18,3 +18,13 @@ std::string Neem::getcurrentdir() {
 	getcwd(currentdir, sizeof(currentdir));
 	return currentdir;
 }
+
+char *Neem::splitstring(char *str, const char token) {
+	for(; *str; str++) {
+		if(*str == token) {
+			*str = '\0';
+			return str+1;
+		}
+	}
+	return NULL;
+}
