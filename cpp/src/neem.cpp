@@ -37,8 +37,8 @@ Neem::types Neem::gettype(char *command) {
 }
 
 bool Neem::parseline(char *line, uint32_t index) {
-	while(isspace((unsigned char) *line)) line++; //Remove leading spaces
-	if(*line == '\0') return true; //if, after spaces, it's blank, just return
+	while(isspace((uint8_t) *line)) line++; //Remove leading spaces
+	if(*line == '\0') return 1; //if, after spaces, it's blank, just return
 	
 	char *params = splitstring(line, ' ');
 	{ //Scope this since instruction will just be put into the vector and we can minimise the memory used
@@ -232,8 +232,8 @@ void Neem::interpretFile(char *fname) {
 		return;
 	}
 	
-	uint32_t index = 0;
-	for(; fgets(linebuffer, sizeof(linebuffer), file); index++) {
+
+	for(uint32_t index = 0; fgets(linebuffer, sizeof(linebuffer), file); index++) {
 		length = strlen(linebuffer);
 		for(uint16_t i = length, e = length-3; i > e; i--) {
 			switch(linebuffer[i]) { // 'remove' chars we really don't want
