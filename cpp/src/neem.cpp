@@ -32,6 +32,7 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "pause") == 0) return pause_;
 	if(strcasecmp(command, "output") == 0) return output_;
 	if(strcasecmp(command, "loadlib") == 0) return loadlib_;
+	if(strcasecmp(command, "runlibfunc") == 0) return runlibfunc_;
 	if(command[0] == ':' && command[1] != ':') return label_;
 	if(command[0] == ':' && command[1] == ':') return comment_;
 	return none_;
@@ -207,6 +208,14 @@ bool Neem::parseline(char *line, uint32_t index) {
 					fprintf(stderr, "[!] %d:Could not load library: %s\n", index+1, i->value.c_str());
 				}
 				return -1;
+			};
+			break;
+		case runlibfunc_:
+			last->extravalue = splitstring(params, ' ');
+			last->value = params;
+			last->func = [this](instruction *i, uint32_t index) {
+				std::string REMOVETHIS = "test.dll";
+				return runlibraryfunction(&REMOVETHIS, i->value.c_str(), i->extravalue.c_str());
 			};
 			break;
 		case output_:

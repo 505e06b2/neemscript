@@ -1,5 +1,6 @@
 #include <stdio.h>
 
 int testfunc(void *arg) {
-	printf("%s\n", arg);
+	printf("TESTFUNC: %s\n", arg);
+	return 0;
 }

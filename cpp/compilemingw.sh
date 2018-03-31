@@ -13,7 +13,7 @@ PREFIX=/cygdrive/c/PortableMinGW/MinGW/bin
 for filename in ./${SRCDIR}/*.cpp; do
 	${PREFIX}/g++ -O2 -c "$filename" -I$INCLUDEDIR -o ${BINDIR}/`basename ${filename%.*}`.o
 done
-${PREFIX}/gcc -O2 -c `find ./*.c` -I$INCLUDEDIR -o ${BINDIR}/main.o
+${PREFIX}/gcc -O2 -c main.c -I$INCLUDEDIR -o ${BINDIR}/main.o
 ${PREFIX}/g++ -O2 `find ${BINDIR}/*` -o $OUTNAME
 strip $OUTNAME
 
