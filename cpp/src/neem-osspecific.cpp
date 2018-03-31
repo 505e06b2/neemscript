@@ -12,8 +12,10 @@
 	}
 	
 	int Neem::runlibraryfunction(std::string *libname, const char *name, const char *args) {
+		auto it = loadedlibs.find(*libname);
+		if(it == loadedlibs.end()) return -27201;
 		int(*funcpointer)(const void *) = (int(*)(const void *))GetProcAddress((HMODULE)loadedlibs[*libname], name);
-		if(funcpointer == NULL) return -72; //it's just obscure
+		if(funcpointer == NULL) return -27202; //it's just obscure
 		return funcpointer(args);
 	}
 	

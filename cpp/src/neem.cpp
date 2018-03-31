@@ -213,13 +213,14 @@ bool Neem::parseline(char *line, uint32_t index) {
 		case runlibfunc_:
 			{ //scope this bit
 				char *temp = splitstring(params, ' ');
-				last->xxxtravalue = splitstring(temp, ' ');
-				last->extravalue = temp;
-				last->value = params;
+				last->xxxtravalue = splitstring(temp, ' '); //args
+				last->extravalue = temp; //function
+				last->value = params; //library
 			}
 			last->func = [this](instruction *i, uint32_t index) {
 				int ret = runlibraryfunction(&i->value, i->extravalue.c_str(), i->xxxtravalue.c_str());
-				if(ret == -72) fprintf(stderr, "[!] %d:Could not load '%s' in: %s\n", index+1, i->extravalue.c_str(), i->value.c_str());
+				if(ret == -27201) fprintf(stderr, "[!] %d:Library '%s' not loaded\n", index+1, i->value.c_str());
+				else if(ret == -27202) fprintf(stderr, "[!] %d:Could not load '%s' in: %s\n", index+1, i->extravalue.c_str(), i->value.c_str());
 				else if(ret != 0) fprintf(stderr, "[!] %d:Error in function: %s\n", index+1, i->extravalue.c_str());
 				return -1;
 			};
