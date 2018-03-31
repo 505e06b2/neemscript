@@ -13,7 +13,12 @@
 	
 	int Neem::runlibraryfunction(std::string *libname, const char *name, const char *args) {
 		int(*funcpointer)(const void *) = (int(*)(const void *))GetProcAddress((HMODULE)loadedlibs[*libname], name);
+		if(funcpointer == NULL) return -72; //it's just obscure
 		return funcpointer(args);
+	}
+	
+	void Neem::freelibrary(void *lib) {
+		FreeLibrary((HMODULE)lib);
 	}
 	
 //#elif __linux__
@@ -25,6 +30,10 @@
 	
 	int Neem::runlibraryfunction(std::string *libname, const char *name, const char *args) {
 		return -2;
+	}
+	
+	void Neem::freelibrary(void *lib) {
+		return;
 	}
 	
 #endif

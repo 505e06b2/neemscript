@@ -211,18 +211,26 @@ bool Neem::parseline(char *line, uint32_t index) {
 			};
 			break;
 		case runlibfunc_:
-			last->extravalue = splitstring(params, ' ');
-			last->value = params;
+			{ //scope this bit
+				char *temp = splitstring(params, ' ');
+				last->xxxtravalue = splitstring(temp, ' ');
+				last->extravalue = temp;
+				last->value = params;
+			}
 			last->func = [this](instruction *i, uint32_t index) {
-				std::string REMOVETHIS = "test.dll";
-				return runlibraryfunction(&REMOVETHIS, i->value.c_str(), i->extravalue.c_str());
+				int ret = runlibraryfunction(&i->value, i->extravalue.c_str(), i->xxxtravalue.c_str());
+				if(ret == -72) fprintf(stderr, "[!] %d:Could not load '%s' in: %s\n", index+1, i->extravalue.c_str(), i->value.c_str());
+				else if(ret != 0) fprintf(stderr, "[!] %d:Error in function: %s\n", index+1, i->extravalue.c_str());
+				return -1;
 			};
 			break;
 		case output_:
-			char *temp = splitstring(params, ' ');
-			last->value = params; //filename
-			if(temp != NULL) last->extravalue = temp; //file attributes
-			else last->extravalue = "a"; //default to append
+			{
+				char *temp = splitstring(params, ' ');
+				last->value = params; //filename
+				if(temp != NULL) last->extravalue = temp; //file attributes
+				else last->extravalue = "a"; //default to append
+			}
 			last->func = [this](instruction *i, uint32_t index) {
 				std::string val = parsevarval(&i->value);
 				if(outputhandle != stdout) fclose(outputhandle);
@@ -240,8 +248,6 @@ bool Neem::parseline(char *line, uint32_t index) {
 }
 
 void Neem::interpretFile(char *fname) {
-	cleanup(); //Make sure everything is clean
-	
 	FILE *file;
 	char linebuffer[MAX_LINE_LEN];
 	uint16_t length; //tied to MAX_LINE_LEN
@@ -275,12 +281,18 @@ void Neem::interpretFile(char *fname) {
 	}
 	
 	fclose(outputhandle); //Should be fine even if it's stdout
+	cleanup(); //make sure we're clean
 }
 
 void Neem::cleanup() {
 	variables.clear();
 	instructions.clear();
 	instructions.shrink_to_fit();
+	
+	for (auto it = loadedlibs.begin(); it != loadedlibs.end(); it++) {
+		freelibrary(it->second);
+	}
+	
 }
 
 Neem::~Neem() {

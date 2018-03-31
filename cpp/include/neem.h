@@ -32,6 +32,7 @@ class Neem {
 			types type = none_;
 			std::string value;
 			std::string extravalue;
+			std::string xxxtravalue;
 			std::function<int(struct instruction *i, uint32_t)> func = [](instruction *i, uint32_t index){return -1;}; //Needs to be this or it'll kill the program
 			std::function<bool(std::string, std::string)> check = NULL;
 		} instruction;
@@ -53,6 +54,7 @@ class Neem {
 		std::map<const std::string, void*> loadedlibs;
 		bool loadlibrary(const char *);
 		int runlibraryfunction(std::string *, const char *, const char *);
+		void freelibrary(void *);
 		
 		//Utils
 		std::string getstrftime(size_t, const char*);

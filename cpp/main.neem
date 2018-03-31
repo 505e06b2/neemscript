@@ -1,2 +1,2 @@
 loadlib test.dll
-runlibfunc testfunc sup
+runlibfunc test.dll testfunc sup
