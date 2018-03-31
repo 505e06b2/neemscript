@@ -31,6 +31,7 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "ls") == 0) return ls_;
 	if(strcasecmp(command, "pause") == 0) return pause_;
 	if(strcasecmp(command, "output") == 0) return output_;
+	if(strcasecmp(command, "loadlib") == 0) return loadlib_;
 	if(command[0] == ':' && command[1] != ':') return label_;
 	if(command[0] == ':' && command[1] == ':') return comment_;
 	return none_;
@@ -196,6 +197,15 @@ bool Neem::parseline(char *line, uint32_t index) {
 			last->func = [this](instruction *i, uint32_t index) {
 				printf("Press ENTER to continue...");
 				getchar();
+				return -1;
+			};
+			break;
+		case loadlib_:
+			last->value = params;
+			last->func = [this](instruction *i, uint32_t index) {
+				if(!loadlibrary(i->value.c_str())) {
+					fprintf(stderr, "[!] %d:Could not load library: %s\n", index+1, i->value.c_str());
+				}
 				return -1;
 			};
 			break;

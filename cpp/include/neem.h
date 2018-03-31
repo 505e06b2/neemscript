@@ -27,7 +27,7 @@ class Neem {
 		~Neem();
 		Neem();
 	private:
-		enum types {none_, comment_, echo_, set_, get_, goto_, call_, inc_, fi_, if_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_, output_};
+		enum types {none_, comment_, echo_, set_, get_, goto_, call_, inc_, fi_, if_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_, output_, loadlib_};
 		typedef struct instruction {
 			types type = none_;
 			std::string value;
@@ -48,6 +48,10 @@ class Neem {
 		std::string parsevariables(const char *);
 		char *setifcheck(instruction *, char *);
 		char *splitstring(char *, const char); //strtok replacement
+		
+
+		std::map<const std::string, void*> loadedlibs;
+		bool loadlibrary(const char *);
 		
 		//Utils
 		std::string getstrftime(size_t, const char*);
