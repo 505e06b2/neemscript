@@ -20,6 +20,7 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "get") == 0) return get_;
 	if(strcasecmp(command, "if") == 0) return if_;
 	if(strcasecmp(command, "fi") == 0) return fi_;
+	if(strcasecmp(command, "sum") == 0) return sum_;
 	if(strcasecmp(command, "goto") == 0) return goto_;
 	if(strcasecmp(command, "call") == 0) return call_;
 	if(strcasecmp(command, "inc") == 0) return inc_;
@@ -82,6 +83,26 @@ bool Neem::parseline(char *line, uint32_t index) {
 				fgets(buff, sizeof(buff), stdin);
 				buff[strlen(buff)-1] = '\0'; //remove \n
 				variables[parsevarval(&i->value)] = buff;
+				return -1;
+			};
+			break;
+		case sum_:
+			last->extravalue = splitstring(params, '='); //Calculation
+			last->value = params; //variable
+			last->func = [this](instruction *i, uint32_t index) {
+				char numberbuffer[25];
+				char *currentchar = (char *)i->extravalue.c_str(); //cast to char since we know we can't modify it
+				for(uint16_t i = 0; *currentchar; currentchar++, i++) {
+					if(isspace((uint8_t) *currentchar)) i--;
+					else if(*currentchar >= 45 && *currentchar <= 57 && *currentchar != '/') numberbuffer[i] = *currentchar;
+					else {
+						numberbuffer[i] = '\0';
+						printf(">> %s\n", numberbuffer);
+						i = 0;
+					}
+				}
+				float value = 0;
+				variables[parsevarval(&i->value)] = std::to_string(value);
 				return -1;
 			};
 			break;

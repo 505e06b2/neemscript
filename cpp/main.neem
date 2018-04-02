@@ -1,9 +1,2 @@
-#!/usr/bin/neem
-::Don't add extension to dll name; so when someone distrobutes a script, it will work anywhere
-set libname=test
-set libfunc=testfunc
-loadlib %libname%
-runlibfunc %libname% %libfunc% testen
-
-epoch now
-echo %now%
+sum d= 2 1
+echo %d%

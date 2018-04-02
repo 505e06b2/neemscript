@@ -27,7 +27,7 @@ class Neem {
 		~Neem();
 		Neem();
 	private:
-		enum types {none_, comment_, echo_, set_, get_, goto_, call_, inc_, dec_, epoch_, fi_, if_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_, output_, loadlib_, runlibfunc_, unloadlib_};
+		enum types {none_, comment_, echo_, set_, get_, goto_, call_, inc_, dec_, epoch_, fi_, if_, sum_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_, output_, loadlib_, runlibfunc_, unloadlib_};
 		typedef struct instruction {
 			types type = none_;
 			std::string value;
