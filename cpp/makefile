@@ -13,7 +13,7 @@ TARGET = $(OUTNAME).exe
 RMCMD = cmd \/c "del $(BINDIR)\\*.o && del $(TARGET)"
 endif
 
-ifeq (,$(findstring mingw,$(MAKECMDGOALS)))
+ifneq (,$(findstring mingw,$(MAKECMDGOALS)))
 PREFIX=/cygdrive/c/PortableMinGW/MinGW/bin/
 endif
 
@@ -21,13 +21,17 @@ $(TARGET): $(patsubst $(SRCDIR)%,$(BINDIR)%,$(patsubst %.cpp,%.o,$(wildcard $(SR
 	$(PREFIX)g++ -O2 $^ -o $@
 	strip $@
 
-$(BINDIR)/main.o: main.c $(INCLUDEDIR)/neemWrapper.h
+$(BINDIR)/main.o: $(SRCDIR)/main.c $(INCLUDEDIR)/neemWrapper.h
 	$(PREFIX)gcc -O2 -c $< -I$(INCLUDEDIR) -o $@
 	
 $(BINDIR)/%.o: $(SRCDIR)/%.cpp $(INCLUDEDIR)/neem.h
 	$(PREFIX)gcc -O2 -c $< -I$(INCLUDEDIR) -o $@
 
 .PHONY: mingw run clean
+
+ifneq (,$(findstring clean,$(MAKECMDGOALS)))
+.NOTPARALLEL:
+endif
 clean:
 	$(RMCMD)
 
