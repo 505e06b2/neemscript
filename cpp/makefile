@@ -28,14 +28,11 @@ $(BINDIR)/%.o: $(SRCDIR)/%.cpp $(INCLUDEDIR)/neem.h
 	$(PREFIX)gcc -O2 -c $< -I$(INCLUDEDIR) -o $@
 
 .PHONY: mingw run clean
-
-ifneq (,$(findstring clean,$(MAKECMDGOALS)))
-.NOTPARALLEL:
-endif
-clean:
-	$(RMCMD)
-
 mingw: $(TARGET)
 
+.NOTPARALLEL:
+clean:
+	$(RMCMD)
+	
 run: $(TARGET)
 	./$^ $(SCRIPTNAME)
