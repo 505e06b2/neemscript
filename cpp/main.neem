@@ -1,3 +1,4 @@
+#!/usr/bin/neem
 set libname=test.dll
 set libfunc=testfunc
 loadlib %libname%
