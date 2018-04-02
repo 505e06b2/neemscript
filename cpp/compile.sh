@@ -12,7 +12,7 @@ SRCDIR=src
 for filename in ./${SRCDIR}/*.cpp; do
 	g++ -O2 -c "$filename" -I$INCLUDEDIR -o ${BINDIR}/`basename ${filename%.*}`.o
 done
-gcc -O2 -c `find ./*.c` -I$INCLUDEDIR -o ${BINDIR}/main.o
+gcc -O2 -c main.c -I$INCLUDEDIR -o ${BINDIR}/main.o
 g++ -O2 `find ${BINDIR}/*` $FLAGS -o $OUTNAME
 strip $OUTNAME
 

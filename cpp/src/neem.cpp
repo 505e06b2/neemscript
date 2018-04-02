@@ -231,6 +231,7 @@ bool Neem::parseline(char *line, uint32_t index) {
 				const char *parsed = parsevarval(&i->value).c_str();
 				if(!loadlibrary(parsed)) {
 					fprintf(stderr, "[!] %d:Could not load library: %s\n", index+1, parsed);
+					return -2;
 				}
 				return -1;
 			};
@@ -246,9 +247,9 @@ bool Neem::parseline(char *line, uint32_t index) {
 				std::string parsedval = parsevarval(&i->value);
 				std::string extraparsedval = parsevarval(&i->extravalue);
 				int ret = runlibraryfunction(&parsedval, extraparsedval.c_str(), parsevarval(&i->xxxtravalue).c_str());
-				if(ret == -27201) fprintf(stderr, "[!] %d:Library '%s' not loaded\n", index+1, parsedval.c_str());
-				else if(ret == -27202) fprintf(stderr, "[!] %d:Could not load '%s' in: %s\n", index+1, extraparsedval.c_str(), parsedval.c_str());
-				else if(ret != 0) fprintf(stderr, "[!] %d:Error in function: %s\n", index+1, extraparsedval.c_str());
+				if(ret == -27201) {fprintf(stderr, "[!] %d:Library '%s' not loaded\n", index+1, parsedval.c_str()); return -2;}
+				else if(ret == -27202) {fprintf(stderr, "[!] %d:Could not load '%s' in: %s\n", index+1, extraparsedval.c_str(), parsedval.c_str()); return -2;}
+				else if(ret != 0) {fprintf(stderr, "[!] %d:Error in function: %s\n", index+1, extraparsedval.c_str()); return -2;}
 				return -1;
 			};
 			break;

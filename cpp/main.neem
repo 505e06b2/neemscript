@@ -1,5 +1,5 @@
 #!/usr/bin/neem
-set libname=test.dll
+set libname=test.so
 set libfunc=testfunc
 loadlib %libname%
 runlibfunc %libname% %libfunc% testen

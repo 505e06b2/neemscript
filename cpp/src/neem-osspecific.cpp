@@ -23,7 +23,29 @@
 		FreeLibrary((HMODULE)lib);
 	}
 	
-//#elif __linux__
+#elif __unix__
+	
+	#include <dlfcn.h>
+	
+	bool Neem::loadlibrary(const char *fname) {
+		void *lib = dlopen(fname, RTLD_LAZY);
+		if(lib == NULL) return false;
+		loadedlibs[fname] = lib;
+		return true;
+	}
+	
+	int Neem::runlibraryfunction(std::string *libname, const char *name, const char *args) {
+		auto it = loadedlibs.find(*libname);
+		if(it == loadedlibs.end()) return -27201;
+		int(*funcpointer)(const void *) = (int(*)(const void *))dlsym(loadedlibs[*libname], name);
+		if(funcpointer == NULL) return -27202; //it's just obscure
+		return funcpointer(args);
+	}
+	
+	void Neem::freelibrary(void *lib) {
+		dlclose(lib);
+	}
+	
 #else
 	
 	bool Neem::loadlibrary(const char *fname) {
