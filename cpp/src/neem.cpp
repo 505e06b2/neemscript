@@ -34,6 +34,7 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "pause") == 0) return pause_;
 	if(strcasecmp(command, "output") == 0) return output_;
 	if(strcasecmp(command, "loadlib") == 0) return loadlib_;
+	if(strcasecmp(command, "unloadlib") == 0) return unloadlib_;
 	if(strcasecmp(command, "runlibfunc") == 0) return runlibfunc_;
 	if(command[0] == '#') return comment_;
 	if(command[0] == ':' && command[1] != ':') return label_;
@@ -228,11 +229,21 @@ bool Neem::parseline(char *line, uint32_t index) {
 		case loadlib_:
 			last->value = params;
 			last->func = [this](instruction *i, uint32_t index) {
-				const char *parsed = parsevarval(&i->value).c_str();
-				if(!loadlibrary(parsed)) {
-					fprintf(stderr, "[!] %d:Could not load library: %s\n", index+1, parsed);
+				std::string parsed = parsevarval(&i->value);
+				if(!loadlibrary(parsed.c_str(), parsed.size())) {
+					fprintf(stderr, "[!] %d:Could not load library: %s\n", index+1, parsed.c_str());
 					return -2;
 				}
+				return -1;
+			};
+			break;
+		case unloadlib_:
+			last->value = params;
+			last->func = [this](instruction *i, uint32_t index) {
+				std::string parsed = parsevarval(&i->value).c_str();
+				auto it = loadedlibs.find(parsed);
+				if(it == loadedlibs.end()) {fprintf(stderr, "[#] %d:Library not loaded: %s\n", index+1, parsed); return -1;}
+				freelibrary(it->second);
 				return -1;
 			};
 			break;
@@ -246,10 +257,10 @@ bool Neem::parseline(char *line, uint32_t index) {
 			last->func = [this](instruction *i, uint32_t index) {
 				std::string parsedval = parsevarval(&i->value);
 				std::string extraparsedval = parsevarval(&i->extravalue);
+				if(loadedlibs.find(parsedval) == loadedlibs.end()) {fprintf(stderr, "[!] %d:Library '%s' not loaded\n", index+1, parsedval.c_str()); return -2;}
 				int ret = runlibraryfunction(&parsedval, extraparsedval.c_str(), parsevarval(&i->xxxtravalue).c_str());
-				if(ret == -27201) {fprintf(stderr, "[!] %d:Library '%s' not loaded\n", index+1, parsedval.c_str()); return -2;}
-				else if(ret == -27202) {fprintf(stderr, "[!] %d:Could not load '%s' in: %s\n", index+1, extraparsedval.c_str(), parsedval.c_str()); return -2;}
-				else if(ret != 0) {fprintf(stderr, "[!] %d:Error in function: %s\n", index+1, extraparsedval.c_str()); return -2;}
+				if(ret == -27202) {fprintf(stderr, "[!] %d:Could not load '%s' in: %s\n", index+1, extraparsedval.c_str(), parsedval.c_str()); return -2;}
+				else if(ret != 0) {fprintf(stderr, "[#] %d:Error in function: %s\n", index+1, extraparsedval.c_str()); return -1;}
 				return -1;
 			};
 			break;

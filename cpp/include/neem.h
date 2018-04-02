@@ -27,7 +27,7 @@ class Neem {
 		~Neem();
 		Neem();
 	private:
-		enum types {none_, comment_, echo_, set_, get_, goto_, call_, inc_, dec_, epoch_, fi_, if_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_, output_, loadlib_, runlibfunc_};
+		enum types {none_, comment_, echo_, set_, get_, goto_, call_, inc_, dec_, epoch_, fi_, if_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_, output_, loadlib_, runlibfunc_, unloadlib_};
 		typedef struct instruction {
 			types type = none_;
 			std::string value;
@@ -52,7 +52,7 @@ class Neem {
 		
 
 		std::map<const std::string, void*> loadedlibs;
-		bool loadlibrary(const char *);
+		bool loadlibrary(const char *, size_t);
 		int runlibraryfunction(std::string *, const char *, const char *);
 		void freelibrary(void *);
 		
