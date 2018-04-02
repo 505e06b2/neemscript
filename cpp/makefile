@@ -6,21 +6,22 @@ SRCDIR=src
 PREFIX=
 
 ifeq ($(UNAME),Linux)
-TARGET = neem
-RMCMD = rm $(BINDIR)/*.o
+TARGET = $(OUTNAME)
+RMCMD = rm $(BINDIR)/*.o && rm $(TARGET)
 else
-TARGET = neem.exe
+TARGET = $(OUTNAME).exe
+RMCMD = cmd \/c "del $(BINDIR)\\*.o && del $(TARGET)"
 endif
 
-ifeq ($(MAKECMDGOALS),mingw)
+ifeq (,$(findstring mingw,$(MAKECMDGOALS)))
 PREFIX=/cygdrive/c/PortableMinGW/MinGW/bin/
 endif
 
-$(TARGET): $(patsubst $(SRCDIR)%,$(BINDIR)%,$(patsubst %.cpp,%.o,$(wildcard $(SRCDIR)/*.cpp))) main.o
+$(TARGET): $(patsubst $(SRCDIR)%,$(BINDIR)%,$(patsubst %.cpp,%.o,$(wildcard $(SRCDIR)/*.cpp))) $(BINDIR)/main.o
 	$(PREFIX)g++ -O2 $^ -o $@
 	strip $@
 
-main.o: main.c $(INCLUDEDIR)/neemWrapper.h
+$(BINDIR)/main.o: main.c $(INCLUDEDIR)/neemWrapper.h
 	$(PREFIX)gcc -O2 -c $< -I$(INCLUDEDIR) -o $@
 	
 $(BINDIR)/%.o: $(SRCDIR)/%.cpp $(INCLUDEDIR)/neem.h
@@ -28,7 +29,7 @@ $(BINDIR)/%.o: $(SRCDIR)/%.cpp $(INCLUDEDIR)/neem.h
 
 .PHONY: mingw run clean
 clean:
-	rm $(BINDIR)/*.o
+	$(RMCMD)
 
 mingw: $(TARGET)
 
