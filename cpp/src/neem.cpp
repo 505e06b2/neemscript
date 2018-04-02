@@ -23,7 +23,9 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "goto") == 0) return goto_;
 	if(strcasecmp(command, "call") == 0) return call_;
 	if(strcasecmp(command, "inc") == 0) return inc_;
+	if(strcasecmp(command, "dec") == 0) return dec_;
 	if(strcasecmp(command, "sleep") == 0) return sleep_;
+	if(strcasecmp(command, "epoch") == 0) return epoch_;
 	if(strcasecmp(command, "strftime") == 0) return strftime_;
 	if(strcasecmp(command, "start") == 0) return start_;
 	if(strcasecmp(command, "pwd") == 0) return pwd_;
@@ -134,6 +136,27 @@ bool Neem::parseline(char *line, uint32_t index) {
 				return -1;
 			};
 			break;
+		case dec_:
+			last->value = params;
+			last->func = [this](instruction *i, uint32_t index) {
+				std::map<const std::string, std::string>::iterator variableinter;
+				std::string var = parsevarval(&i->value);
+				if((variableinter = variables.find(var)) != variables.end()) { //Variable exists, so we get it from the map
+					variables[var] = std::to_string(stoi(variables[var]) - 1);
+				} else {
+					fprintf(stderr, "[!] %d:Can't dec %s\n", index+1, var.c_str());
+					return -2;
+				}
+				return -1;
+			};
+			break;
+		case epoch_:
+			last->value = params;
+			last->func = [this](instruction *i, uint32_t index) {
+				variables[parsevarval(&i->value)] = std::to_string(time(NULL));
+				return -1;
+			};
+			break;
 		case label_:
 			last->value = line+1;
 			break;
@@ -204,8 +227,9 @@ bool Neem::parseline(char *line, uint32_t index) {
 		case loadlib_:
 			last->value = params;
 			last->func = [this](instruction *i, uint32_t index) {
-				if(!loadlibrary(i->value.c_str())) {
-					fprintf(stderr, "[!] %d:Could not load library: %s\n", index+1, i->value.c_str());
+				const char *parsed = parsevarval(&i->value).c_str();
+				if(!loadlibrary(parsed)) {
+					fprintf(stderr, "[!] %d:Could not load library: %s\n", index+1, parsed);
 				}
 				return -1;
 			};
@@ -218,10 +242,12 @@ bool Neem::parseline(char *line, uint32_t index) {
 				last->value = params; //library
 			}
 			last->func = [this](instruction *i, uint32_t index) {
-				int ret = runlibraryfunction(&i->value, i->extravalue.c_str(), i->xxxtravalue.c_str());
-				if(ret == -27201) fprintf(stderr, "[!] %d:Library '%s' not loaded\n", index+1, i->value.c_str());
-				else if(ret == -27202) fprintf(stderr, "[!] %d:Could not load '%s' in: %s\n", index+1, i->extravalue.c_str(), i->value.c_str());
-				else if(ret != 0) fprintf(stderr, "[!] %d:Error in function: %s\n", index+1, i->extravalue.c_str());
+				std::string parsedval = parsevarval(&i->value);
+				std::string extraparsedval = parsevarval(&i->extravalue);
+				int ret = runlibraryfunction(&parsedval, extraparsedval.c_str(), parsevarval(&i->xxxtravalue).c_str());
+				if(ret == -27201) fprintf(stderr, "[!] %d:Library '%s' not loaded\n", index+1, parsedval.c_str());
+				else if(ret == -27202) fprintf(stderr, "[!] %d:Could not load '%s' in: %s\n", index+1, extraparsedval.c_str(), parsedval.c_str());
+				else if(ret != 0) fprintf(stderr, "[!] %d:Error in function: %s\n", index+1, extraparsedval.c_str());
 				return -1;
 			};
 			break;

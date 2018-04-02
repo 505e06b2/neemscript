@@ -1,2 +1,7 @@
-loadlib test.dll
-runlibfunc test.dll testfunc sup
+set libname=test.dll
+set libfunc=testfunc
+loadlib %libname%
+runlibfunc %libname% %libfunc% testen
+
+epoch now
+echo %now%
