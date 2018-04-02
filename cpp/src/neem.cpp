@@ -90,19 +90,7 @@ bool Neem::parseline(char *line, uint32_t index) {
 			last->extravalue = splitstring(params, '='); //Calculation
 			last->value = params; //variable
 			last->func = [this](instruction *i, uint32_t index) {
-				char numberbuffer[25];
-				char *currentchar = (char *)i->extravalue.c_str(); //cast to char since we know we can't modify it
-				for(uint16_t i = 0; *currentchar; currentchar++, i++) {
-					if(isspace((uint8_t) *currentchar)) i--;
-					else if(*currentchar >= 45 && *currentchar <= 57 && *currentchar != '/') numberbuffer[i] = *currentchar;
-					else {
-						numberbuffer[i] = '\0';
-						printf(">> %s\n", numberbuffer);
-						i = 0;
-					}
-				}
-				float value = 0;
-				variables[parsevarval(&i->value)] = std::to_string(value);
+				variables[parsevarval(&i->value)] = std::to_string(dosum(parsevarval(&i->extravalue).c_str()));
 				return -1;
 			};
 			break;

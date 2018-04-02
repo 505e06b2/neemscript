@@ -49,7 +49,7 @@ class Neem {
 		std::string parsevariables(const char *);
 		char *setifcheck(instruction *, char *);
 		char *splitstring(char *, const char); //strtok replacement
-		
+		float dosum(const char *);
 
 		std::map<const std::string, void*> loadedlibs;
 		bool loadlibrary(const char *, size_t);
