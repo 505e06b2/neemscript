@@ -136,14 +136,24 @@ bool Neem::parseline(char *line, uint32_t index) {
 		case inc_:
 			{
 				char *temp = splitstring(params, '=');
-				if(temp) last->extravalue = temp;
+				if(temp != NULL) last->extravalue = temp;
+				else last->extravalue = "#";
 				last->value = params;
 			}
 			last->func = [this](instruction *i, uint32_t index) {
 				std::map<const std::string, std::string>::iterator variableinter;
 				std::string var = parsevarval(&i->value);
 				if((variableinter = variables.find(var)) != variables.end()) { //Variable exists, so we get it from the map
-					variables[var] = std::to_string(stoi(variables[var]) + 1);
+					int increaseby = 1;
+					if(i->extravalue != "#") {
+						std::string parsed = parsevarval(&i->extravalue);
+						if(parsed != "") increaseby = stoi(parsed);
+						else {
+							increaseby = 0;
+							fprintf(stderr, "[#] %d:%s isn't defined\n", index+1, i->extravalue.c_str());
+						}
+					}
+					variables[var] = std::to_string(stoi(variables[var]) + increaseby);
 				} else {
 					fprintf(stderr, "[!] %d:Can't inc %s\n", index+1, var.c_str());
 					return -2;
