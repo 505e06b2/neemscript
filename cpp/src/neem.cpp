@@ -24,7 +24,6 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "goto") == 0) return goto_;
 	if(strcasecmp(command, "call") == 0) return call_;
 	if(strcasecmp(command, "inc") == 0) return inc_;
-	if(strcasecmp(command, "dec") == 0) return dec_;
 	if(strcasecmp(command, "sleep") == 0) return sleep_;
 	if(strcasecmp(command, "epoch") == 0) return epoch_;
 	if(strcasecmp(command, "strftime") == 0) return strftime_;
@@ -156,20 +155,6 @@ bool Neem::parseline(char *line, uint32_t index) {
 					variables[var] = std::to_string(stoi(variables[var]) + increaseby);
 				} else {
 					fprintf(stderr, "[!] %d:Can't inc %s\n", index+1, var.c_str());
-					return -2;
-				}
-				return -1;
-			};
-			break;
-		case dec_:
-			last->value = params;
-			last->func = [this](instruction *i, uint32_t index) {
-				std::map<const std::string, std::string>::iterator variableinter;
-				std::string var = parsevarval(&i->value);
-				if((variableinter = variables.find(var)) != variables.end()) { //Variable exists, so we get it from the map
-					variables[var] = std::to_string(stoi(variables[var]) - 1);
-				} else {
-					fprintf(stderr, "[!] %d:Can't dec %s\n", index+1, var.c_str());
 					return -2;
 				}
 				return -1;
