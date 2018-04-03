@@ -1,4 +1,5 @@
-set index=1
-set increes=100
-inc index=%increes%
-echo %index%
+input backup.sh
+readline
+readline
+readline aaa
+echo %aaa%

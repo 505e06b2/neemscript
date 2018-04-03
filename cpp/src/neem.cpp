@@ -33,6 +33,9 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "ls") == 0) return ls_;
 	if(strcasecmp(command, "pause") == 0) return pause_;
 	if(strcasecmp(command, "output") == 0) return output_;
+	if(strcasecmp(command, "input") == 0) return input_;
+	if(strcasecmp(command, "readall") == 0) return readall_;
+	if(strcasecmp(command, "readline") == 0) return readline_;
 	if(strcasecmp(command, "loadlib") == 0) return loadlib_;
 	if(strcasecmp(command, "unloadlib") == 0) return unloadlib_;
 	if(strcasecmp(command, "runlibfunc") == 0) return runlibfunc_;
@@ -291,6 +294,57 @@ bool Neem::parseline(char *line, uint32_t index) {
 				return -1;
 			};
 			break;
+		case input_:
+			last->value = params; //filename
+			last->func = [this](instruction *i, uint32_t index) {
+				std::string val = parsevarval(&i->value);
+				if(val == "reset") inputhandle = NULL;
+				else inputhandle = fopen(val.c_str(), "r");
+				if(inputhandle == NULL) {
+					fprintf(stderr, "[!] %d:Could not open file: %s\n", index+1, val.c_str());
+					return -2;
+				}
+				return -1;
+			};
+			break;
+		case readall_:
+			last->value = params;
+			last->func = [this](instruction *i, uint32_t index) {
+				if(inputhandle == NULL) {
+					fprintf(stderr, "[!] %d:No input file loaded; use the input command\n", index+1);
+					return -2;
+				}
+				char buffer[1024];
+				variables[parsevarval(&i->value)] = "";
+				while(fread(buffer, sizeof(char), sizeof(buffer), inputhandle)) variables[parsevarval(&i->value)] += buffer;
+				return -1;
+			};
+			break;
+		case readline_:
+			last->value = (params) ? params : "#";
+			last->func = [this](instruction *i, uint32_t index) {
+				if(inputhandle == NULL) {
+					fprintf(stderr, "[!] %d:No input file loaded; use the input command\n", index+1);
+					return -2;
+				}
+				char buffer[1024];
+				std::string parsed = parsevarval(&i->value);
+				if(fgets(buffer, sizeof(buffer), inputhandle) == NULL) {
+					variables[parsed] = "";
+				} else {
+					if(i->value == "#") return -1;
+					variables[parsed] = "";
+					uint16_t len = strlen(buffer);
+					for(int index = len; index > len-3 && index >= 0; index--) {
+						if(buffer[index] == '\r' || buffer[index] == '\n') {
+							buffer[index] = '\0';
+						}
+					}
+					variables[parsed] = (buffer[0] == '\0') ? " " : buffer;
+				}
+				return -1;
+			};
+			break;
 	};
 	return true;
 }
@@ -308,7 +362,7 @@ void Neem::interpretFile(char *fname) {
 
 	for(uint32_t index = 0; fgets(linebuffer, sizeof(linebuffer), file); index++) {
 		length = strlen(linebuffer);
-		for(uint16_t i = length, e = length-3; i > e; i--) {
+		for(int i = length, e = length-3; i > e && i >= 0; i--) {
 			switch(linebuffer[i]) { // 'remove' chars we really don't want
 				case '\r':
 				case '\n':
