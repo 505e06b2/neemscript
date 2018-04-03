@@ -5,3 +5,5 @@ I also want it to be easily embedded in other programs as a scripting language a
 
 You can have a look in your browser with the javascript version (first prototype) or you can compile your own interpreter
 There's a makefile that should `just work` by default; it just uses your system gcc but if you modify the `mingw` lines, you can specify an absolute path to another compiler  
+
+Make sure to check out [the wiki](wiki) for the documentation!
