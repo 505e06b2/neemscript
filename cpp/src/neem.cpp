@@ -134,7 +134,11 @@ bool Neem::parseline(char *line, uint32_t index) {
 			};
 			break;
 		case inc_:
-			last->value = params;
+			{
+				char *temp = splitstring(params, '=');
+				if(temp) last->extravalue = temp;
+				last->value = params;
+			}
 			last->func = [this](instruction *i, uint32_t index) {
 				std::map<const std::string, std::string>::iterator variableinter;
 				std::string var = parsevarval(&i->value);

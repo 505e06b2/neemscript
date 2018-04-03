@@ -1,6 +1,6 @@
 #include "neem.h"
 
-std::string Neem::parsevariables(const char *value) { //the index is a return index
+std::string Neem::parsevariables(const char *value, const char searchfor, uint8_t *amount) { //the index is a return index
 	char buffer[PARSE_BUFFER_LEN];
 	char varnamebuffer[MAX_VARNAME_LEN] = {0};
 	uint8_t varnameindex;
@@ -9,7 +9,7 @@ std::string Neem::parsevariables(const char *value) { //the index is a return in
 	uint16_t outindex = 0; //Needs to be outside the for scope for the \0
 	
 	for(uint16_t i = 0; value[i]; i++) {
-		if(value[i] == '%') {
+		if(value[i] == searchfor) {
 			if(writevarname) { //becoming false
 				std::map<const std::string, std::string>::iterator variableinter;
 				std::map<const std::string, std::function<std::string()>>::iterator globalvariableinter;
@@ -48,6 +48,7 @@ std::string Neem::parsevariables(const char *value) { //the index is a return in
 			varnamebuffer[varnameindex++] = value[i];
 		} else {
 			buffer[outindex++] = value[i];
+			if(amount != NULL && value[i] == '!') (*amount)++;
 		}
 	}
 	buffer[outindex] = '\0';

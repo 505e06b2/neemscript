@@ -1,2 +1,3 @@
-sum d= 300 - 200 /10
-echo %d%
+set index=0
+set var%index%=gg
+echo !var%index%!

@@ -46,7 +46,7 @@ class Neem {
 		bool parseline(char *, uint32_t);
 		types gettype(char *);
 		void cleanup();
-		std::string parsevariables(const char *);
+		std::string parsevariables(const char *, const char, uint8_t *);
 		char *setifcheck(instruction *, char *);
 		char *splitstring(char *, const char); //strtok replacement
 		float dosum(const char *);
