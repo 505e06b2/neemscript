@@ -19,7 +19,6 @@ std::string Neem::parsevariables(const char *value, const char searchfor, uint8_
 		if(*value == searchfor) {
 			if(!writevarname && *(value+1) == searchfor) {
 				buffer.push_back(searchfor);
-				buffer.push_back(searchfor);
 				value++;
 				continue;
 			}

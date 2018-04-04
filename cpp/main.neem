@@ -1,5 +1,2 @@
-echo %PATH%
-echo %CD%
-echo %DATE%
-echo %TIME%
-echo %CD%
+strftime now=%%d
+echo %now%

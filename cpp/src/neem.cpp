@@ -214,7 +214,7 @@ bool Neem::parseline(char *line, uint32_t index) {
 			last->extravalue = splitstring(params, '='); //strftime
 			last->value = params; //varname
 			last->func = [this](instruction *i, uint32_t index) {
-				variables[parsevarval(&i->value)] = getstrftime(64, i->extravalue.c_str());
+				variables[parsevarval(&i->value)] = getstrftime(256, parsevarval(&i->extravalue).c_str());
 				return -1;
 			};
 			break;
