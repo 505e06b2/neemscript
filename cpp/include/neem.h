@@ -25,7 +25,7 @@ class Neem {
 		~Neem();
 		Neem();
 	private:
-		enum types {none_, comment_, echo_, set_, get_, getsystem_, goto_, call_, inc_, epoch_, fi_, if_, sum_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_, output_, input_, readall_, readline_, loadlib_, runlibfunc_, unloadlib_};
+		enum types {none_, comment_, echo_, set_, get_, getsystem_, setsystem_, goto_, call_, inc_, epoch_, fi_, if_, sum_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_, output_, input_, readall_, readline_, loadlib_, runlibfunc_, unloadlib_};
 		typedef struct instruction {
 			types type = none_;
 			std::string value;
@@ -54,6 +54,7 @@ class Neem {
 		bool loadlibrary(const char *, size_t);
 		int runlibraryfunction(std::string *, const char *, const char *);
 		void freelibrary(void *);
+		int setenvvar(std::string *, std::string *);
 		
 		//Utils
 		std::string getstrftime(size_t, const char*);

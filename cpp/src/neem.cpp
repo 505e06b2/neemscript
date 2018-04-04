@@ -1,21 +1,22 @@
 #include "neem.h"
 
 Neem::Neem() { //Set up globals
-	globalvariables["time"] = [this]() {
+	globalvariables["TIME"] = [this]() {
 		return getstrftime(9, "%H:%M:%S");
 	};
 	
-	globalvariables["date"] = [this]() {
+	globalvariables["DATE"] = [this]() {
 		return getstrftime(9, "%d/%m/%y");
 	};
 	
-	globalvariables["cd"] = [this]() {
+	globalvariables["CD"] = [this]() {
 		return getcurrentdir();
 	};
 }
 
 Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "echo") == 0) return echo_;
+	if(strcasecmp(command, "setsystem") == 0) return setsystem_;
 	if(strcasecmp(command, "set") == 0) return set_;
 	if(strcasecmp(command, "getsystem") == 0) return getsystem_;
 	if(strcasecmp(command, "get") == 0) return get_;
@@ -67,6 +68,19 @@ bool Neem::parseline(char *line, uint32_t index) {
 			last->func = [this](instruction *i, uint32_t index) {
 				fprintf(outputhandle, "%s\n", parsevarval(&i->value).c_str());
 				return -1; //-1 is the 0 of this function; anything positive becomes the new line index
+			};
+			break;
+		case setsystem_:
+			last->extravalue = splitstring(params, '=');
+			last->value = params; //varname
+			last->func = [this](instruction *i, uint32_t index) {
+				std::string name = parsevarval(&i->value);
+				std::string value = parsevarval(&i->extravalue);
+				if(!setenvvar(&name, &value)) {
+					fprintf(stderr, "[!] %d:Can't put '%s' into an environment variable\n", index+1, value.c_str());
+					return -2;
+				}
+				return -1;
 			};
 			break;
 		case set_:

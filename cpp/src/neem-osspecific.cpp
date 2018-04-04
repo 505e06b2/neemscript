@@ -21,6 +21,12 @@
 		FreeLibrary((HMODULE)lib);
 	}
 	
+	int Neem::setenvvar(std::string *name, std::string *value) {
+		std::string format = *name + '=' + *value;
+		if(_putenv(format.c_str()) != 0) return -2;
+		return -1;
+	}
+	
 #elif __unix__
 	
 	#include <dlfcn.h>
@@ -46,6 +52,11 @@
 		dlclose(lib);
 	}
 	
+	int Neem::setenvvar(std::string *name, std::string *value) {
+		if(setenv(name->c_str(), value->c_str(), 1) != 0) return -2;
+		return -1;
+	}
+	
 #else
 	
 	bool Neem::loadlibrary(const char *fname, size_t fnamelen) {
@@ -58,6 +69,10 @@
 	
 	void Neem::freelibrary(void *lib) {
 		return;
+	}
+	
+	int Neem::setenvvar(const char *name, const char *value) {
+		return -2;
 	}
 	
 #endif
