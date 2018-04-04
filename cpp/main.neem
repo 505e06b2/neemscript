@@ -1,2 +1,3 @@
 getsystem v=path
-echo %v:~0,22%
+set c=ll
+echo a%%b%%%v:~0,1%%%d

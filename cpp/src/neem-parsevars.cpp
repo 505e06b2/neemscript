@@ -15,8 +15,14 @@ std::string Neem::parsevariables(const char *value, const char searchfor, uint8_
 	std::vector<char> varnamebuffer;
 	bool writevarname = false;
 	
-	for(uint16_t i = 0; value[i]; i++) {
-		if(value[i] == searchfor) {
+	for(; *value; value++) {
+		if(*value == searchfor) {
+			if(!writevarname && *(value+1) == searchfor) {
+				buffer.push_back(searchfor);
+				buffer.push_back(searchfor);
+				value++;
+				continue;
+			}
 			if(writevarname) { //becoming false
 				
 				varnamebuffer.push_back('\0');
@@ -46,8 +52,6 @@ std::string Neem::parsevariables(const char *value, const char searchfor, uint8_
 							int32_t tempend = atoi(lenindex);
 							len = (tempend < 0) ? variablelen + tempend : start + tempend;
 						}
-						
-						
 					}
 					
 					for(uint32_t i = 0 + start; (i < variablelen) && (i < len); i++) {
@@ -58,10 +62,10 @@ std::string Neem::parsevariables(const char *value, const char searchfor, uint8_
 			}
 			writevarname = !writevarname;
 		} else if(writevarname) {
-			varnamebuffer.push_back(value[i]);
+			varnamebuffer.push_back(*value);
 		} else {
-			buffer.push_back(value[i]);
-			if(amount != NULL && value[i] == '!') (*amount)++;
+			buffer.push_back(*value);
+			if(amount != NULL && *value == '!') (*amount)++;
 		}
 	}
 	buffer.push_back('\0');
