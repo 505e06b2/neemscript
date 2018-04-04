@@ -1,2 +1,2 @@
-strftime now=%%d
+strftime now=%%x
 echo %now%
