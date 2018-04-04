@@ -1,5 +1,2 @@
-input backup.sh
-readline
-readline
-readline aaa
-echo %aaa%
+getsystem v=path
+echo %v:~0,22%

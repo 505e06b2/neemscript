@@ -17,6 +17,7 @@ Neem::Neem() { //Set up globals
 Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "echo") == 0) return echo_;
 	if(strcasecmp(command, "set") == 0) return set_;
+	if(strcasecmp(command, "getsystem") == 0) return getsystem_;
 	if(strcasecmp(command, "get") == 0) return get_;
 	if(strcasecmp(command, "if") == 0) return if_;
 	if(strcasecmp(command, "fi") == 0) return fi_;
@@ -63,7 +64,7 @@ bool Neem::parseline(char *line, uint32_t index) {
 	switch(last->type) {
 		case echo_:
 			last->value = params;
-			last->func = [this](instruction *i, uint32_t index) { 
+			last->func = [this](instruction *i, uint32_t index) {
 				fprintf(outputhandle, "%s\n", parsevarval(&i->value).c_str());
 				return -1; //-1 is the 0 of this function; anything positive becomes the new line index
 			};
@@ -85,6 +86,22 @@ bool Neem::parseline(char *line, uint32_t index) {
 				fgets(buff, sizeof(buff), stdin);
 				buff[strlen(buff)-1] = '\0'; //remove \n
 				variables[parsevarval(&i->value)] = buff;
+				return -1;
+			};
+			break;
+		case getsystem_: //get system var
+			last->extravalue = splitstring(params, '='); //System var
+			last->value = params; //variable
+			last->func = [this](instruction *i, uint32_t index) {
+				const char *val = getenv(parsevarval(&i->extravalue).c_str());
+				std::string parsed = parsevarval(&i->value);
+				if(val == NULL) {
+					variables[parsed] = ""; //Blank is our NULL
+				} else if(val[0] == '\0') {
+					variables[parsed] = " "; //To show it exists but is just blank
+				} else {
+					variables[parsed] = val;
+				}
 				return -1;
 			};
 			break;

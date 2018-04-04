@@ -1,56 +1,69 @@
 #include "neem.h"
 
 std::string Neem::parsevariables(const char *value, const char searchfor, uint8_t *amount) { //the index is a return index
-	char buffer[PARSE_BUFFER_LEN];
-	char varnamebuffer[MAX_VARNAME_LEN] = {0};
-	uint8_t varnameindex;
+	const char *(*check)(std::map<const std::string, std::string> *,
+						 std::map<const std::string, std::function<std::string()>> *, char *) = 
+		[](std::map<const std::string, std::string> *variables,
+		   std::map<const std::string, std::function<std::string()>> *globalvariables, char *findtarget) {
+				std::map<const std::string, std::function<std::string()>>::iterator gvar;
+				if((gvar = globalvariables->find(findtarget)) != globalvariables->end()) return gvar->second().c_str();
+				std::map<const std::string, std::string>::iterator var;
+				if((var = variables->find(findtarget)) != variables->end()) return var->second.c_str();
+				return (const char *)NULL;
+	};
+	std::vector<char> buffer;
+	std::vector<char> varnamebuffer;
 	bool writevarname = false;
-	
-	uint16_t outindex = 0; //Needs to be outside the for scope for the \0
 	
 	for(uint16_t i = 0; value[i]; i++) {
 		if(value[i] == searchfor) {
 			if(writevarname) { //becoming false
-				std::map<const std::string, std::string>::iterator variableinter;
-				std::map<const std::string, std::function<std::string()>>::iterator globalvariableinter;
-				strtok(varnamebuffer, ":"); //for the substring
-				if( (globalvariableinter = globalvariables.find(varnamebuffer)) != globalvariables.end() || //Global first
-						(variableinter = variables.find(varnamebuffer)) != variables.end() ) { //Variable exists, so we get it from the map
-					std::string tempvar = (globalvariableinter != globalvariables.end()) ? globalvariableinter->second() : variableinter->second; //It is a global
-					uint8_t variablelen = tempvar.length();
-					const char *variable = tempvar.c_str();
-					
+				
+				varnamebuffer.push_back('\0');
+				size_t varnamelen = varnamebuffer.size();
+				char *varname = varnamebuffer.data();
+				
+				char *startindex = splitstring(varname, ':'); //for the substring
+				if(startindex == NULL || *(startindex) != '~') startindex = NULL;
+				const char *varvalue = check(&variables, &globalvariables, varname);
+				
+				if(varvalue != NULL) { //Variable exists, as a const char
+					std::string tempvar = varvalue;
+					uint32_t variablelen = tempvar.length();
 					//Substring
-					int16_t start = 0;
-					uint8_t len = -1; //max
+					int32_t start = 0;
+					uint32_t len = -1; //max
 					
-					char *substring;
-					if(substring = strtok(NULL, ",")) { //This substring is the start index
-						start = atoi(substring+1);
+					if(startindex != NULL) {
+						startindex++; //After the ~
+						char *lenindex = splitstring(startindex, ',');
+						
+						start = atoi(startindex);
 						if(start < 0) start = variablelen + start;
-						if(start < 0) start = 0; //make sure start is 0
-						if(substring = strtok(NULL, "")) { //End index
-							int16_t l = atoi(substring);
-							len = (l < 0) ? variablelen + l : start + l;
+						if(start < 0) start = 0; //make sure start not negative
+						
+						if(lenindex) {
+							int32_t tempend = atoi(lenindex);
+							len = (tempend < 0) ? variablelen + tempend : start + tempend;
 						}
+						
+						
 					}
 					
-					for(uint8_t i = 0 + start; (i < variablelen) && (i < len); i++) {
-						buffer[outindex++] = variable[i]; //could use strcpy but I want the output index to roll over; will continue until \0
+					for(uint32_t i = 0 + start; (i < variablelen) && (i < len); i++) {
+						buffer.push_back(varvalue[i]);
 					}
 				}
-			} else {
-				varnameindex = 0; //reset index
-				memset(varnamebuffer, 0, sizeof(varnamebuffer)); // set all to 0 so we don't need to \0 at the end
+				std::vector<char>().swap(varnamebuffer); //Clean the vector
 			}
 			writevarname = !writevarname;
 		} else if(writevarname) {
-			varnamebuffer[varnameindex++] = value[i];
+			varnamebuffer.push_back(value[i]);
 		} else {
-			buffer[outindex++] = value[i];
+			buffer.push_back(value[i]);
 			if(amount != NULL && value[i] == '!') (*amount)++;
 		}
 	}
-	buffer[outindex] = '\0';
-	return buffer;
+	buffer.push_back('\0');
+	return buffer.data();
 }

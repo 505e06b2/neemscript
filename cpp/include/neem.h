@@ -1,9 +1,7 @@
 #ifndef __NEEM_H
 #define __NEEM_H
 
-#define MAX_LINE_LEN 512
-#define PARSE_BUFFER_LEN 256
-#define MAX_VARNAME_LEN 64
+#define MAX_LINE_LEN 1024
 
 #include <stdio.h>
 #include <stdint.h>
@@ -27,7 +25,7 @@ class Neem {
 		~Neem();
 		Neem();
 	private:
-		enum types {none_, comment_, echo_, set_, get_, goto_, call_, inc_, epoch_, fi_, if_, sum_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_, output_, input_, readall_, readline_, loadlib_, runlibfunc_, unloadlib_};
+		enum types {none_, comment_, echo_, set_, get_, getsystem_, goto_, call_, inc_, epoch_, fi_, if_, sum_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_, output_, input_, readall_, readline_, loadlib_, runlibfunc_, unloadlib_};
 		typedef struct instruction {
 			types type = none_;
 			std::string value;

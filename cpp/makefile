@@ -30,7 +30,9 @@ $(BINDIR)/%.o: $(SRCDIR)/%.cpp $(INCLUDEDIR)/neem.h
 .PHONY: mingw run clean
 mingw: $(TARGET)
 
+ifneq (,$(findstring clean,$(MAKECMDGOALS)))
 .NOTPARALLEL:
+endif
 clean:
 	$(RMCMD)
 	
