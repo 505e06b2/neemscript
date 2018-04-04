@@ -12,6 +12,10 @@ Neem::Neem() { //Set up globals
 	globalvariables["CD"] = [this]() {
 		return getcurrentdir();
 	};
+	
+	globalvariables["PATH"] = [this]() {
+		return getenv("PATH");
+	};
 }
 
 Neem::types Neem::gettype(char *command) {

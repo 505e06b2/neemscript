@@ -1,3 +1,5 @@
-setsystem PATH=C:\
-getsystem v=PATH
-echo %v%
+echo %PATH%
+echo %CD%
+echo %DATE%
+echo %TIME%
+echo %CD%

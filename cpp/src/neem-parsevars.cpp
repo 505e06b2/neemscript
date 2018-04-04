@@ -1,15 +1,15 @@
 #include "neem.h"
 
 std::string Neem::parsevariables(const char *value, const char searchfor, uint8_t *amount) { //the index is a return index
-	const char *(*check)(std::map<const std::string, std::string> *,
+	std::string (*check)(std::map<const std::string, std::string> *,
 						 std::map<const std::string, std::function<std::string()>> *, char *) = 
 		[](std::map<const std::string, std::string> *variables,
 		   std::map<const std::string, std::function<std::string()>> *globalvariables, char *findtarget) {
 				std::map<const std::string, std::function<std::string()>>::iterator gvar;
-				if((gvar = globalvariables->find(findtarget)) != globalvariables->end()) return gvar->second().c_str();
+				if((gvar = globalvariables->find(findtarget)) != globalvariables->end()) return gvar->second();
 				std::map<const std::string, std::string>::iterator var;
-				if((var = variables->find(findtarget)) != variables->end()) return var->second.c_str();
-				return (const char *)NULL;
+				if((var = variables->find(findtarget)) != variables->end()) return var->second;
+				return (std::string)"";
 	};
 	std::vector<char> buffer;
 	std::vector<char> varnamebuffer;
@@ -31,9 +31,9 @@ std::string Neem::parsevariables(const char *value, const char searchfor, uint8_
 				
 				char *startindex = splitstring(varname, ':'); //for the substring
 				if(startindex == NULL || *(startindex) != '~') startindex = NULL;
-				const char *varvalue = check(&variables, &globalvariables, varname);
+				std::string varvalue = check(&variables, &globalvariables, varname);
 				
-				if(varvalue != NULL) { //Variable exists, as a const char
+				if(varvalue != "") { //Variable exists if not blank
 					std::string tempvar = varvalue;
 					uint32_t variablelen = tempvar.length();
 					//Substring
