@@ -34,7 +34,7 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "setsystem") == 0) return setsystem_;
 	if(strcasecmp(command, "set") == 0) return set_;
 	if(strcasecmp(command, "getsystem") == 0) return getsystem_;
-	if(strcasecmp(command, "get") == 0) return get_;
+	if(strcasecmp(command, "prompt") == 0) return prompt_;
 	if(strcasecmp(command, "if") == 0) return if_;
 	if(strcasecmp(command, "fi") == 0) return fi_;
 	if(strcasecmp(command, "sum") == 0) return sum_;
@@ -109,7 +109,7 @@ bool Neem::parseline(char *line, uint32_t index) {
 				return -1;
 			};
 			break;
-		case get_: //type input
+		case prompt_: //type input
 			last->extravalue = splitstring(params, '='); //Prompt
 			last->value = params; //variable
 			last->func = [this](instruction *i, uint32_t index) {
