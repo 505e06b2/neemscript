@@ -32,6 +32,13 @@ char *Neem::splitstring(char *str, const char token) {
 	return NULL;
 }
 
+Neem::parsedstrings *Neem::parseallstrings(parsedstrings *p, instruction *i) {
+	if(i->value != "") p->value = parsevarval(&i->value);
+	if(i->extravalue != "") p->extravalue = parsevarval(&i->extravalue);
+	if(i->xxxtravalue != "") p->xxxtravalue = parsevarval(&i->xxxtravalue);
+	return p;
+}
+
 int Neem::alert(const char type, const char *format, uint32_t *index, std::string *value, std::string *extravalue) {
 	//This was going to be all fancy by only having 1 fprintf function but why not just use the buffers given to you?
 	//It's an error, it's meant to alert you, not be efficient

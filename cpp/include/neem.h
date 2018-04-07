@@ -25,7 +25,7 @@ class Neem {
 		~Neem();
 		Neem();
 	private:
-		enum types {none_, comment_, echo_, set_, get_, getsystem_, setsystem_, goto_, call_, inc_, epoch_, fi_, if_, sum_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_, output_, input_, readall_, readline_, loadlib_, runlibfunc_, unloadlib_};
+		enum types {none_, comment_, echo_, set_, get_, getsystem_, setsystem_, goto_, call_, inc_, fi_, if_, sum_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_, output_, input_, readall_, readline_, loadlib_, runlibfunc_, unloadlib_};
 		typedef struct instruction {
 			types type = none_;
 			std::string value;
@@ -34,6 +34,13 @@ class Neem {
 			std::function<int(struct instruction *i, uint32_t)> func = [](instruction *i, uint32_t index){return -1;}; //Needs to be this or it'll kill the program
 			std::function<bool(std::string, std::string)> check = NULL;
 		} instruction;
+		
+		typedef struct parsedstrings {
+			std::string value;
+			std::string extravalue;
+			std::string xxxtravalue;
+		} parsedstrings;
+		parsedstrings *parseallstrings(parsedstrings *, instruction *);
 		
 		std::vector<instruction> instructions;
 		std::map<const std::string, std::string> variables;

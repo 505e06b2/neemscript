@@ -22,10 +22,15 @@ Neem::Neem() { //Set up globals
 	globalvariables["PATH"] = [this]() {
 		return getenv("PATH");
 	};
+	
+	globalvariables["EPOCH"] = [this]() {
+		return std::to_string(time(NULL));
+	};
 }
 
 Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "echo") == 0) return echo_;
+	if(strcasecmp(command, "print") == 0) return echo_;
 	if(strcasecmp(command, "setsystem") == 0) return setsystem_;
 	if(strcasecmp(command, "set") == 0) return set_;
 	if(strcasecmp(command, "getsystem") == 0) return getsystem_;
@@ -37,7 +42,6 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "call") == 0) return call_;
 	if(strcasecmp(command, "inc") == 0) return inc_;
 	if(strcasecmp(command, "sleep") == 0) return sleep_;
-	if(strcasecmp(command, "epoch") == 0) return epoch_;
 	if(strcasecmp(command, "strftime") == 0) return strftime_;
 	if(strcasecmp(command, "start") == 0) return start_;
 	if(strcasecmp(command, "pwd") == 0) return pwd_;
@@ -78,27 +82,27 @@ bool Neem::parseline(char *line, uint32_t index) {
 	instruction *last = &instructions.back();
 	switch(last->type) {
 		case echo_:
-			last->value = params;
+			last->value = params; //value to print
 			last->func = [this](instruction *i, uint32_t index) {
 				fprintf(outputhandle, "%s\n", parsevarval(&i->value).c_str());
 				return -1; //-1 is the 0 of this function; anything positive becomes the new line index
 			};
 			break;
 		case setsystem_:
-			last->extravalue = splitstring(params, '=');
+			last->extravalue = splitstring(params, '='); //value to set to
 			last->value = params; //varname
 			last->func = [this](instruction *i, uint32_t index) {
-				std::string name = parsevarval(&i->value);
-				std::string value = parsevarval(&i->extravalue);
-				if(!setenvvar(&name, &value)) {
-					alert('!', "Can't put '%s' into an environment variable", &index, &value);
+				parsedstrings parsed;
+				parseallstrings(&parsed, i);
+				if(!setenvvar(&parsed.value, &parsed.extravalue)) {
+					alert('!', "Can't put '%s' into an environment variable", &index, &parsed.extravalue);
 					return -2;
 				}
 				return -1;
 			};
 			break;
 		case set_:
-			last->extravalue = splitstring(params, '=');
+			last->extravalue = splitstring(params, '='); //value to set to
 			last->value = params; //varname
 			last->func = [this](instruction *i, uint32_t index) {
 				variables[parsevarval(&i->value)] = parsevarval(&i->extravalue);
@@ -121,14 +125,15 @@ bool Neem::parseline(char *line, uint32_t index) {
 			last->extravalue = splitstring(params, '='); //System var
 			last->value = params; //variable
 			last->func = [this](instruction *i, uint32_t index) {
-				const char *val = getenv(parsevarval(&i->extravalue).c_str());
-				std::string parsed = parsevarval(&i->value);
+				parsedstrings parsed;
+				parseallstrings(&parsed, i);
+				const char *val = getenv(parsed.extravalue.c_str());
 				if(val == NULL) {
-					variables[parsed] = ""; //Blank is our NULL
+					variables[parsed.value] = ""; //Blank is our NULL
 				} else if(val[0] == '\0') {
-					variables[parsed] = " "; //To show it exists but is just blank
+					variables[parsed.value] = " "; //To show it exists but is just blank
 				} else {
-					variables[parsed] = val;
+					variables[parsed.value] = val;
 				}
 				return -1;
 			};
@@ -142,7 +147,7 @@ bool Neem::parseline(char *line, uint32_t index) {
 			};
 			break;
 		case if_:
-			last->extravalue = setifcheck(last, params); //extra needs to be first since it's the right side
+			last->extravalue = setifcheck(last, params); //sets the if function and returns after the op
 			last->value = params; //setif \0s the left part
 			last->func = [this](instruction *i, uint32_t index) {
 				if(!i->check( parsevarval(&i->value), parsevarval(&i->extravalue) )) {
@@ -155,65 +160,58 @@ bool Neem::parseline(char *line, uint32_t index) {
 		case goto_:
 			last->value = (params[0] == ':') ? params+1 : params; //Remove : from label -> goto :label
 			last->func = [this](instruction *i, uint32_t index) {
-				std::string val = parsevarval(&i->value);
-				if(val == "eof") {
+				std::string parsed = parsevarval(&i->value);
+				if(parsed == "eof") {
 					uint32_t tempeof = eof;
 					eof = -2; //-2 or it overflows
 					return (int)tempeof;
 				}
 				for(uint32_t index = 0, e = instructions.size(); index < e; index++) {
-					if(instructions[index].type == label_ && instructions[index].value == val) return (int)index;
+					if(instructions[index].type == label_ && instructions[index].value == parsed) return (int)index;
 				}
-				return alert('!', "Can't goto '%s'", &index, &val);
+				return alert('!', "Can't goto '%s'", &index, &parsed);
 			};
 			break;
 		case call_:
 			last->value = (params[0] == ':') ? params+1 : params; //Remove : from label -> goto :label
 			last->func = [this](instruction *i, uint32_t index) {
-				std::string val = parsevarval(&i->value);
+				std::string parsed = parsevarval(&i->value);
 				eof = index;
 				for(uint32_t index = 0, e = instructions.size(); index < e; index++) {
-					if(instructions[index].type == label_ && instructions[index].value == val) return (int)index;
+					if(instructions[index].type == label_ && instructions[index].value == parsed) return (int)index;
 				}
-				return alert('!', "Can't call '%s'", &index, &val);
+				return alert('!', "Can't call '%s'", &index, &parsed);
 			};
 			break;
 		case inc_:
 			{
 				char *temp = splitstring(params, '=');
-				if(temp != NULL) last->extravalue = temp;
-				else last->extravalue = "#";
+				if(temp != NULL) last->extravalue = temp; //Number to add (optional)
+				else last->extravalue = "";
 				last->value = params;
 			}
 			last->func = [this](instruction *i, uint32_t index) {
 				std::map<const std::string, std::string>::iterator variableinter;
-				std::string var = parsevarval(&i->value);
-				if((variableinter = variables.find(var)) != variables.end()) { //Variable exists, so we get it from the map
+				parsedstrings parsed;
+				parseallstrings(&parsed, i);
+				if((variableinter = variables.find(parsed.value)) != variables.end()) { //Variable exists, so we get it from the map
 					int increaseby = 1;
-					if(i->extravalue != "#") {
-						std::string parsed = parsevarval(&i->extravalue);
-						if(parsed != "") increaseby = stoi(parsed);
+					if(i->extravalue != "") {
+						if(parsed.extravalue != "") increaseby = stoi(parsed.extravalue);
 						else {
 							increaseby = 0;
-							alert('#', "'%s' isn't defined", &index, &var);
+							alert('#', "'%s' isn't defined", &index, &parsed.value);
 						}
 					}
-					variables[var] = std::to_string(stoi(variables[var]) + increaseby);
+					variables[parsed.value] = std::to_string(stoi(variables[parsed.value]) + increaseby);
 				} else {
-					return alert('!', "Can't inc '%s'", &index, &var);
+					return alert('!', "Can't inc '%s'", &index, &parsed.value);
 				}
 				return -1;
 			};
 			break;
-		case epoch_:
-			last->value = params;
-			last->func = [this](instruction *i, uint32_t index) {
-				variables[parsevarval(&i->value)] = std::to_string(time(NULL));
-				return -1;
-			};
-			break;
 		case label_:
-			last->value = line+1;
+			last->value = line+1; //label name but with : removed
 			break;
 		case fi_:
 			break;
@@ -226,14 +224,14 @@ bool Neem::parseline(char *line, uint32_t index) {
 			};
 			break;
 		case sleep_:
-			last->value = params;
+			last->value = params; //Time to sleep
 			last->func = [this](instruction *i, uint32_t index) {
 				std::this_thread::sleep_for(std::chrono::milliseconds( stoi(parsevarval(&i->value)) ));
 				return -1;
 			};
 			break;
 		case start_:
-			last->value = params;
+			last->value = params; //Program name
 			last->func = [this](instruction *i, uint32_t index) {
 				std::string parsed = parsevarval(&i->value);
 				FILE *f = popen(parsed.c_str(), "r");
@@ -254,8 +252,8 @@ bool Neem::parseline(char *line, uint32_t index) {
 			};
 			break;
 		case cd_:
-			if(params == NULL) last->extravalue = "#";
-				else last->value = params;
+			if(params == NULL) last->extravalue = "";
+				else last->value = params; //Directory name
 			last->func = [this](instruction *i, uint32_t index) {
 				if(i->extravalue != "") fprintf(outputhandle, "%s\n", getcurrentdir().c_str()); //Print if no args
 					else chdir(parsevarval(&i->value).c_str());
@@ -280,7 +278,7 @@ bool Neem::parseline(char *line, uint32_t index) {
 			};
 			break;
 		case loadlib_:
-			last->value = params;
+			last->value = params; //libname
 			last->func = [this](instruction *i, uint32_t index) {
 				std::string parsed = parsevarval(&i->value);
 				if(!loadlibrary(parsed.c_str(), parsed.size())) return alert('!', "Could not load library: '%s'", &index, &parsed);
@@ -288,7 +286,7 @@ bool Neem::parseline(char *line, uint32_t index) {
 			};
 			break;
 		case unloadlib_:
-			last->value = params;
+			last->value = params; //lib
 			last->func = [this](instruction *i, uint32_t index) {
 				std::string parsed = parsevarval(&i->value).c_str();
 				auto it = loadedlibs.find(parsed);
@@ -306,12 +304,12 @@ bool Neem::parseline(char *line, uint32_t index) {
 				last->value = params; //library
 			}
 			last->func = [this](instruction *i, uint32_t index) {
-				std::string parsedval = parsevarval(&i->value);
-				std::string extraparsedval = parsevarval(&i->extravalue);
-				if(loadedlibs.find(parsedval) == loadedlibs.end()) return alert('!', "Library not loaded: '%s'", &index, &parsedval);
-				int ret = runlibraryfunction(&parsedval, extraparsedval.c_str(), parsevarval(&i->xxxtravalue).c_str());
-				if(ret == -27202) return alert('!', "Could not load '%s' in: %s", &index, &extraparsedval, &parsedval);
-				else if(ret != 0) return alert('#', "Error in function: '%s'", &index, &extraparsedval);
+				parsedstrings parsed;
+				parseallstrings(&parsed, i);
+				if(loadedlibs.find(parsed.value) == loadedlibs.end()) return alert('!', "Library not loaded: '%s'", &index, &parsed.value);
+				int ret = runlibraryfunction(&parsed.value, parsed.extravalue.c_str(), parsed.xxxtravalue.c_str());
+				if(ret == -27202) return alert('!', "Could not load '%s' in: %s", &index, &parsed.extravalue, &parsed.value);
+				else if(ret != 0) return alert('#', "Error in function: '%s'", &index, &parsed.extravalue);
 				return -1;
 			};
 			break;
@@ -319,40 +317,41 @@ bool Neem::parseline(char *line, uint32_t index) {
 			{
 				char *temp = splitstring(params, ' ');
 				last->value = params; //filename
-				if(temp != NULL) last->extravalue = temp; //file attributes
+				if(temp != NULL) last->extravalue = temp; //file attributes (optional)
 				else last->extravalue = "a"; //default to append
 			}
 			last->func = [this](instruction *i, uint32_t index) {
-				std::string val = parsevarval(&i->value);
+				std::string parsed = parsevarval(&i->value);
 				if(outputhandle != stdout) fclose(outputhandle);
-				if(val == "reset") outputhandle = stdout;
-				else outputhandle = fopen(val.c_str(), parsevarval(&i->extravalue).c_str());
-				if(outputhandle == NULL) return alert('!', "Could not open file: '%s'", &index, &val);
+				if(parsed == "reset") outputhandle = stdout;
+				else outputhandle = fopen(parsed.c_str(), parsevarval(&i->extravalue).c_str());
+				if(outputhandle == NULL) return alert('!', "Could not open file: '%s'", &index, &parsed);
 				return -1;
 			};
 			break;
 		case input_:
 			last->value = params; //filename
 			last->func = [this](instruction *i, uint32_t index) {
-				std::string val = parsevarval(&i->value);
-				if(val == "reset") inputhandle = NULL;
-				else inputhandle = fopen(val.c_str(), "r");
-				if(inputhandle == NULL) return alert('!', "Could not open file: '%s'", &index, &val);
+				std::string parsed = parsevarval(&i->value);
+				if(parsed == "reset") inputhandle = NULL;
+				else inputhandle = fopen(parsed.c_str(), "r");
+				if(inputhandle == NULL) return alert('!', "Could not open file: '%s'", &index, &parsed);
 				return -1;
 			};
 			break;
 		case readall_:
-			last->value = params;
+			last->value = params; //Variable name
 			last->func = [this](instruction *i, uint32_t index) {
 				if(inputhandle == NULL) return alert('!', "No input file loaded; use the input command", &index);
 				char buffer[MAX_LINE_LEN];
-				variables[parsevarval(&i->value)] = "";
-				while(fread(buffer, sizeof(char), sizeof(buffer), inputhandle)) variables[parsevarval(&i->value)] += buffer;
+				std::string parsed = parsevarval(&i->value);
+				variables[parsed] = "";
+				while(fread(buffer, sizeof(char), sizeof(buffer), inputhandle)) variables[parsed] += buffer;
 				return -1;
 			};
 			break;
 		case readline_:
-			last->value = (params) ? params : "#";
+			last->value = (params) ? params : ""; //Variable name (optional)
 			last->func = [this](instruction *i, uint32_t index) {
 				if(inputhandle == NULL) return alert('!', "No input file loaded; use the input command", &index);
 				char buffer[MAX_LINE_LEN];
@@ -360,7 +359,7 @@ bool Neem::parseline(char *line, uint32_t index) {
 				if(fgets(buffer, sizeof(buffer), inputhandle) == NULL) {
 					variables[parsed] = "";
 				} else {
-					if(i->value == "#") return -1;
+					if(i->value == "") return -1; //Put the line into a variable
 					variables[parsed] = "";
 					uint16_t len = strlen(buffer);
 					for(int index = len; index > len-3 && index >= 0; index--) {
@@ -398,7 +397,6 @@ void Neem::interpretFile(char *fname) {
 					linebuffer[i] = '\0';
 			}
 		}
-		
 		if(!parseline(linebuffer, index)) return;
 	}
 	
