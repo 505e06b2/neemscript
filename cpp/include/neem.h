@@ -44,7 +44,7 @@ class Neem {
 		
 		std::vector<instruction> instructions;
 		std::map<const std::string, std::string> variables;
-		std::map<const std::string, std::function<std::string()>> globalvariables;
+		std::map<const std::string, std::function<std::string(char *)>> globalvariables;
 		uint16_t eof = -2; //to stop overflow
 		FILE *outputhandle = stdout;
 		FILE *inputhandle = NULL;

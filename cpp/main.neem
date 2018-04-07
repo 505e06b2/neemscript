@@ -1,1 +1,1 @@
-prompt now=Right now:
+echo %STRFTIME $c%

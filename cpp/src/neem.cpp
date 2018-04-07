@@ -7,24 +7,30 @@ TODO: MAKE A STRUCT FOR PARSING ALL VALUES
 */
 
 Neem::Neem() { //Set up globals
-	globalvariables["TIME"] = [this]() {
+	globalvariables["TIME"] = [this](char *c = NULL) {
 		return getstrftime(9, "%H:%M:%S");
 	};
 	
-	globalvariables["DATE"] = [this]() {
+	globalvariables["DATE"] = [this](char *c = NULL) {
 		return getstrftime(9, "%d/%m/%y");
 	};
 	
-	globalvariables["CD"] = [this]() {
+	globalvariables["CD"] = [this](char *c = NULL) {
 		return getcurrentdir();
 	};
 	
-	globalvariables["PATH"] = [this]() {
+	globalvariables["PATH"] = [this](char *c = NULL) {
 		return getenv("PATH");
 	};
 	
-	globalvariables["EPOCH"] = [this]() {
+	globalvariables["EPOCH"] = [this](char *c = NULL) {
 		return std::to_string(time(NULL));
+	};
+	
+	globalvariables["STRFTIME"] = [this](char *c = NULL) {
+		char *temp = c;
+		for(; *temp; temp++) if(*temp == '$') *temp = '%';
+		return getstrftime(64, c);
 	};
 }
 

@@ -1,16 +1,17 @@
 #include "neem.h"
 
 std::string Neem::parsevariables(const char *value, const char searchfor, uint8_t *amount) { //the index is a return index
-	std::string (*check)(std::map<const std::string, std::string> *,
-						 std::map<const std::string, std::function<std::string()>> *, char *) = 
-		[](std::map<const std::string, std::string> *variables,
-		   std::map<const std::string, std::function<std::string()>> *globalvariables, char *findtarget) {
-				std::map<const std::string, std::function<std::string()>>::iterator gvar;
-				if((gvar = globalvariables->find(findtarget)) != globalvariables->end()) return gvar->second();
+	std::function<std::string(std::map<const std::string, std::string> *,
+						 std::map<const std::string, std::function<std::string(char *)>> *, char *)> check = 
+		[this](std::map<const std::string, std::string> *variables,
+		   std::map<const std::string, std::function<std::string(char *)>> *globalvariables, char *findtarget) {
+				std::map<const std::string, std::function<std::string(char *)>>::iterator gvar;
+				char *possibleparams = splitstring(findtarget, ' ');
+				if((gvar = globalvariables->find(findtarget)) != globalvariables->end()) return gvar->second(possibleparams);
 				std::map<const std::string, std::string>::iterator var;
 				if((var = variables->find(findtarget)) != variables->end()) return var->second;
 				return (std::string)"";
-	};
+		};
 	std::vector<char> buffer;
 	std::vector<char> varnamebuffer;
 	bool writevarname = false;
