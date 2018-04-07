@@ -31,3 +31,22 @@ char *Neem::splitstring(char *str, const char token) {
 	}
 	return NULL;
 }
+
+int Neem::alert(const char type, const char *format, uint32_t *index, std::string *value, std::string *extravalue) {
+	//This was going to be all fancy by only having 1 fprintf function but why not just use the buffers given to you?
+	//It's an error, it's meant to alert you, not be efficient
+	FILE *output = stderr;
+	fprintf(output, "[!] ");
+	if(index != NULL) {
+		fprintf(output, "%u:", (*index)+1);
+	}
+	if(extravalue != NULL) {
+		fprintf(output, format, value->c_str(), extravalue->c_str());
+	} else if(value != NULL) {
+		fprintf(output, format, value->c_str());
+	} else {
+		fprintf(output, format);
+	}
+	fprintf(output, "\n");
+	return (type == '!') ? -2 : -1;
+}

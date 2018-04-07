@@ -60,6 +60,7 @@ class Neem {
 		std::string getstrftime(size_t, const char*);
 		std::string parsevarval(std::string *); //wrapper for parsevariables
 		std::string getcurrentdir();
+		int alert(const char, const char *, uint32_t * = NULL, std::string * = NULL, std::string * = NULL);
 };
 
 #endif
