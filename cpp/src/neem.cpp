@@ -19,6 +19,10 @@ Neem::Neem() { //Set up globals
 		return getcurrentdir();
 	};
 	
+	globalvariables["LS"] = [this](char *c = NULL) {
+		return listdir(c, ':');
+	};
+	
 	globalvariables["PATH"] = [this](char *c = NULL) {
 		return getenv("PATH");
 	};
@@ -32,6 +36,18 @@ Neem::Neem() { //Set up globals
 		for(; *temp; temp++) if(*temp == '$') *temp = '%';
 		return getstrftime(64, c);
 	};
+	
+	globalvariables["SYSTEM"] = [this](char *c = NULL) {
+		std::string temp = c;
+		const char *val = getenv(parsevarval(&temp).c_str());
+		if(val == NULL) {
+			return ""; //Blank is our NULL
+		} else if(val[0] == '\0') {
+			return " "; //To show it exists but is just blank
+		} else {
+			return val;
+		}
+	};
 }
 
 Neem::types Neem::gettype(char *command) {
@@ -39,7 +55,6 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "print") == 0) return echo_;
 	if(strcasecmp(command, "setsystem") == 0) return setsystem_;
 	if(strcasecmp(command, "set") == 0) return set_;
-	if(strcasecmp(command, "getsystem") == 0) return getsystem_;
 	if(strcasecmp(command, "prompt") == 0) return prompt_;
 	if(strcasecmp(command, "if") == 0) return if_;
 	if(strcasecmp(command, "fi") == 0) return fi_;
@@ -124,23 +139,6 @@ bool Neem::parseline(char *line, uint32_t index) {
 				fgets(buff, sizeof(buff), stdin);
 				buff[strlen(buff)-1] = '\0'; //remove \n
 				variables[parsevarval(&i->value)] = buff;
-				return -1;
-			};
-			break;
-		case getsystem_: //get system var
-			last->extravalue = splitstring(params, '='); //System var
-			last->value = params; //variable
-			last->func = [this](instruction *i, uint32_t index) {
-				parsedstrings parsed;
-				parseallstrings(&parsed, i);
-				const char *val = getenv(parsed.extravalue.c_str());
-				if(val == NULL) {
-					variables[parsed.value] = ""; //Blank is our NULL
-				} else if(val[0] == '\0') {
-					variables[parsed.value] = " "; //To show it exists but is just blank
-				} else {
-					variables[parsed.value] = val;
-				}
 				return -1;
 			};
 			break;
@@ -267,12 +265,9 @@ bool Neem::parseline(char *line, uint32_t index) {
 			};
 			break;
 		case ls_:
+			last->value = (params != NULL) ? params : ".";
 			last->func = [this](instruction *i, uint32_t index) {
-				struct dirent *d;
-				DIR *dir = opendir(".");
-				while((d = readdir(dir)) != NULL)
-					if(d->d_name[0] != '.') fprintf(outputhandle, "%s\n", d->d_name);
-				closedir(dir);
+				fprintf(outputhandle, "%s\n", listdir(parsevarval(&i->value).c_str(), '\n').c_str());
 				return -1;
 			};
 			break;

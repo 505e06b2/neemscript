@@ -25,7 +25,7 @@ class Neem {
 		~Neem();
 		Neem();
 	private:
-		enum types {none_, comment_, echo_, set_, prompt_, getsystem_, setsystem_, goto_, call_, inc_, fi_, if_, sum_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_, output_, input_, readall_, readline_, loadlib_, runlibfunc_, unloadlib_};
+		enum types {none_, comment_, echo_, set_, prompt_, setsystem_, goto_, call_, inc_, fi_, if_, sum_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_, output_, input_, readall_, readline_, loadlib_, runlibfunc_, unloadlib_};
 		typedef struct instruction {
 			types type = none_;
 			std::string value;
@@ -67,6 +67,7 @@ class Neem {
 		std::string getstrftime(size_t, const char*);
 		std::string parsevarval(std::string *); //wrapper for parsevariables
 		std::string getcurrentdir();
+		std::string listdir(const char *, const char);
 		int alert(const char, const char *, uint32_t * = NULL, std::string * = NULL, std::string * = NULL);
 };
 

@@ -22,6 +22,22 @@ std::string Neem::getcurrentdir() {
 	return currentdir;
 }
 
+std::string Neem::listdir(const char *c, const char split) {
+	std::string temp = "";
+	struct dirent *d;
+	DIR *dir = opendir(((c != NULL) ? c : "."));
+	bool prepend = false;
+	while((d = readdir(dir)) != NULL) {
+		if(d->d_name[0] != '.') {
+			if(prepend) temp += split;
+			temp += d->d_name;
+			prepend = true;
+		}
+	}
+	closedir(dir);
+	return temp;
+}
+
 char *Neem::splitstring(char *str, const char token) {
 	for(; *str; str++) {
 		if(*str == token) {
