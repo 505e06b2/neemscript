@@ -1,1 +1,1 @@
-echo %STRFTIME $H:$M:~0,4%
+echo !STRFTIME;%%H:%%M:~0,4!

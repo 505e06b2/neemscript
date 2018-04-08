@@ -6,7 +6,7 @@ std::string Neem::parsevariables(const char *value, const char searchfor, uint8_
 		[this](std::map<const std::string, std::string> *variables,
 		   std::map<const std::string, std::function<std::string(char *)>> *globalvariables, char *findtarget) {
 				std::map<const std::string, std::function<std::string(char *)>>::iterator gvar;
-				char *possibleparams = splitstring(findtarget, ' ');
+				char *possibleparams = splitstring(findtarget, ';');
 				if((gvar = globalvariables->find(findtarget)) != globalvariables->end()) return gvar->second(possibleparams);
 				std::map<const std::string, std::string>::iterator var;
 				if((var = variables->find(findtarget)) != variables->end()) return var->second;
