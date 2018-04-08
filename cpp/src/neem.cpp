@@ -105,7 +105,6 @@ bool Neem::parseline(char *line, uint32_t index) {
 	instruction *last = &instructions.back();
 	switch(last->type) {
 		case fi_:
-		case rof_:
 			break;
 		case echo_:
 			last->value = params; //value to print
@@ -161,7 +160,7 @@ bool Neem::parseline(char *line, uint32_t index) {
 			last->func = [this](instruction *i, uint32_t index) {
 				if(!i->check( parsevarval(&i->value), parsevarval(&i->extravalue) )) {
 					uint8_t ifstatements = 1;
-					for(uint32_t e = instructions.size(), a = index; a < e; a++)
+					for(uint32_t e = instructions.size(), a = index+1; a < e; a++)
 						if(instructions[a].type == fi_) {
 							if(--ifstatements == 0) return (int)a;
 						} else if(instructions[a].type == if_) {
@@ -177,20 +176,6 @@ bool Neem::parseline(char *line, uint32_t index) {
 			last->func = [this](instruction *i, uint32_t index) {
 				parsedstrings parsed;
 				parseallstrings(&parsed, i);
-				std::map<const std::string, std::string>::iterator var;
-				
-				if((var = variables.find(parsed.value)) != variables.end() && var->second == " ") { //If it exists and loop finished
-					variables.erase(var);
-					uint8_t forloops = 1;
-					for(uint32_t e = instructions.size(), a = index; a < e; a++)
-						if(instructions[a].type == rof_) {
-							if(--forloops == 0) return (int)a;
-						} else if(instructions[a].type == for_) {
-							forloops++;
-						}
-					return alert('!', "No matching 'rof' for For loop", &index);
-				}
-				
 				const char *therest = variables[parsed.extravalue].c_str();
 				std::string currentvalue = "";
 				
@@ -203,10 +188,32 @@ bool Neem::parseline(char *line, uint32_t index) {
 					}
 				}
 				
-				if(therest != NULL) variables[parsed.extravalue] = therest;
-					else variables[parsed.extravalue] = " ";
+				if(currentvalue == "") { //Loop done
+					uint8_t forloops = 1;
+					for(int32_t e = instructions.size(), a = index+1; a < e; a++)
+						if(instructions[a].type == rof_) {
+							if(--forloops == 0) return a;
+						} else if(instructions[a].type == for_) {
+							forloops++;
+						}
+					return alert('!', "No matching 'rof' for For loop", &index);
+				}
+				
+				variables[parsed.extravalue] = therest;
 				variables[parsed.value] = currentvalue;
 				return -1;
+			};
+			break;
+		case rof_:
+			last->func = [this](instruction *i, uint32_t index) {
+				uint8_t forloops = 1;
+				for(int32_t a = index; a >= 0; a--)
+					if(instructions[a].type == for_) {
+						if(--forloops == 0) return (a-1); //-1 or it will go to the line after
+					} else if(instructions[a].type == for_) {
+						forloops++;
+					}
+				return alert('!', "No matching 'for' for rof", &index);
 			};
 			break;
 		case goto_:
