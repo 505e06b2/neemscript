@@ -58,6 +58,8 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "prompt") == 0) return prompt_;
 	if(strcasecmp(command, "if") == 0) return if_;
 	if(strcasecmp(command, "fi") == 0) return fi_;
+	if(strcasecmp(command, "for") == 0) return for_;
+	if(strcasecmp(command, "rof") == 0) return rof_;
 	if(strcasecmp(command, "sum") == 0) return sum_;
 	if(strcasecmp(command, "goto") == 0) return goto_;
 	if(strcasecmp(command, "call") == 0) return call_;
@@ -102,6 +104,9 @@ bool Neem::parseline(char *line, uint32_t index) {
 
 	instruction *last = &instructions.back();
 	switch(last->type) {
+		case fi_:
+		case rof_:
+			break;
 		case echo_:
 			last->value = params; //value to print
 			last->func = [this](instruction *i, uint32_t index) {
@@ -155,9 +160,52 @@ bool Neem::parseline(char *line, uint32_t index) {
 			last->value = params; //setif \0s the left part
 			last->func = [this](instruction *i, uint32_t index) {
 				if(!i->check( parsevarval(&i->value), parsevarval(&i->extravalue) )) {
-					for(uint32_t e = instructions.size(); index < e; index++)
-						if(instructions[index].type == fi_) return (int)index;
+					uint8_t ifstatements = 1;
+					for(uint32_t e = instructions.size(), a = index; a < e; a++)
+						if(instructions[a].type == fi_) {
+							if(--ifstatements == 0) return (int)a;
+						} else if(instructions[a].type == if_) {
+							ifstatements++;
+						}
 				}
+				return alert('!', "No matching 'fi' for if", &index);
+			};
+			break;
+		case for_:
+			last->extravalue = splitstring(params, ' '); //input/arr var
+			last->value = params; //index value var
+			last->func = [this](instruction *i, uint32_t index) {
+				parsedstrings parsed;
+				parseallstrings(&parsed, i);
+				std::map<const std::string, std::string>::iterator var;
+				
+				if((var = variables.find(parsed.value)) != variables.end() && var->second == " ") { //If it exists and loop finished
+					variables.erase(var);
+					uint8_t forloops = 1;
+					for(uint32_t e = instructions.size(), a = index; a < e; a++)
+						if(instructions[a].type == rof_) {
+							if(--forloops == 0) return (int)a;
+						} else if(instructions[a].type == for_) {
+							forloops++;
+						}
+					return alert('!', "No matching 'rof' for For loop", &index);
+				}
+				
+				const char *therest = variables[parsed.extravalue].c_str();
+				std::string currentvalue = "";
+				
+				for(; *therest; therest++) {
+					if(*therest == ':') {
+						therest++;
+						break;
+					} else {
+						currentvalue += *therest;
+					}
+				}
+				
+				if(therest != NULL) variables[parsed.extravalue] = therest;
+					else variables[parsed.extravalue] = " ";
+				variables[parsed.value] = currentvalue;
 				return -1;
 			};
 			break;
@@ -216,8 +264,6 @@ bool Neem::parseline(char *line, uint32_t index) {
 			break;
 		case label_:
 			last->value = line+1; //label name but with : removed
-			break;
-		case fi_:
 			break;
 		case strftime_:
 			last->extravalue = splitstring(params, '='); //strftime
