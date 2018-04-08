@@ -1,1 +1,1 @@
-echo %STRFTIME $c%
+echo %STRFTIME $H:$M:~0,4%

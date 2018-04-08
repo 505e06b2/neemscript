@@ -28,9 +28,15 @@ std::string Neem::parsevariables(const char *value, const char searchfor, uint8_
 				varnamebuffer.push_back('\0');
 				size_t varnamelen = varnamebuffer.size();
 				char *varname = varnamebuffer.data();
+				char *startindex = NULL;
 				
-				char *startindex = splitstring(varname, ':'); //for the substring
-				if(startindex == NULL || *(startindex) != '~') startindex = NULL;
+				for(char *temp = varname; *temp; temp++) {
+					if(*temp == ':' && *(temp+1) == '~') {
+						*temp = '\0';
+						startindex = temp+2;
+						break;
+					}
+				}
 				std::string varvalue = check(&variables, &globalvariables, varname);
 				
 				if(varvalue != "") { //Variable exists if not blank
@@ -41,7 +47,6 @@ std::string Neem::parsevariables(const char *value, const char searchfor, uint8_
 					uint32_t len = -1; //max
 					
 					if(startindex != NULL) {
-						startindex++; //After the ~
 						char *lenindex = splitstring(startindex, ',');
 						
 						start = atoi(startindex);
