@@ -37,4 +37,4 @@ run: $(TARGET)
 	./$^ $(SCRIPTNAME)
 	
 web:
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -O2 $(wildcard $(SRCDIR)/*.cpp) $(SRCDIR)/webmain.c -I$(INCLUDEDIR) -o ../doc/neemscript.js -s ASSERTIONS=1 -s EXPORTED_FUNCTIONS='["_webmain"]' -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]'
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -O2 $(wildcard $(SRCDIR)/*.cpp) $(SRCDIR)/webmain.c -I$(INCLUDEDIR) -o ../docs/neemscript.js -s ASSERTIONS=1 -s EXPORTED_FUNCTIONS='["_webmain"]' -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]'

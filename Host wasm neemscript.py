@@ -10,5 +10,5 @@ Handler.extensions_map[".wasm"] = "application/wasm"
 server = SocketServer.TCPServer(("", PORT), Handler)
 
 print("Serving Neemscript at port: %u" % PORT)
-os.chdir("doc")
+os.chdir("docs")
 server.serve_forever()
