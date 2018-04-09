@@ -22,6 +22,18 @@ std::string Neem::getcurrentdir() {
 	return currentdir;
 }
 
+int Neem::searchfortag(uint32_t *index, const types search, const types avoid) {
+	uint8_t avoids = 1;
+	for(int32_t e = instructions.size(), a = (*index)+1; a < e; a++) {
+		if(instructions[a].type == search) {
+			if(--avoids == 0) return a;
+		} else if(instructions[a].type == avoid) {
+			avoids++;
+		}
+	}
+	return -1;
+}
+
 std::string Neem::listdir(const char *c, const char split) {
 	std::string temp = "";
 	struct dirent *d;

@@ -69,6 +69,7 @@ class Neem {
 		std::string getcurrentdir();
 		std::string listdir(const char *, const char);
 		int alert(const char, const char *, uint32_t * = NULL, std::string * = NULL, std::string * = NULL);
+		int searchfortag(uint32_t *, const types, const types);
 };
 
 #endif

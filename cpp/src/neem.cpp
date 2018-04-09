@@ -159,15 +159,11 @@ bool Neem::parseline(char *line, uint32_t index) {
 			last->value = params; //setif \0s the left part
 			last->func = [this](instruction *i, uint32_t index) {
 				if(!i->check( parsevarval(&i->value), parsevarval(&i->extravalue) )) {
-					uint8_t ifstatements = 1;
-					for(uint32_t e = instructions.size(), a = index+1; a < e; a++)
-						if(instructions[a].type == fi_) {
-							if(--ifstatements == 0) return (int)a;
-						} else if(instructions[a].type == if_) {
-							ifstatements++;
-						}
+					int ret = searchfortag(&index, fi_, if_);
+					if(ret >= 0) return ret;
+					return alert('!', "No matching 'fi' for if", &index);
 				}
-				return alert('!', "No matching 'fi' for if", &index);
+				return -1;
 			};
 			break;
 		case for_:
@@ -189,13 +185,8 @@ bool Neem::parseline(char *line, uint32_t index) {
 				}
 				
 				if(currentvalue == "") { //Loop done
-					uint8_t forloops = 1;
-					for(int32_t e = instructions.size(), a = index+1; a < e; a++)
-						if(instructions[a].type == rof_) {
-							if(--forloops == 0) return a;
-						} else if(instructions[a].type == for_) {
-							forloops++;
-						}
+					int ret = searchfortag(&index, rof_, for_);
+					if(ret >= 0) return ret;
 					return alert('!', "No matching 'rof' for For loop", &index);
 				}
 				
