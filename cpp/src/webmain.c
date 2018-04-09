@@ -12,11 +12,10 @@ int main() {
 }
 */
 
-void webmain() {
+void webmain(const char *input) {
 	struct Neem* c = neem_new();
-	//neem_interpretFile(c, argv[1]);
+	neem_interpretBuffer(c, input);
 	neem_del(c);
-	puts("Yo");
 }
 
 #ifdef __cplusplus

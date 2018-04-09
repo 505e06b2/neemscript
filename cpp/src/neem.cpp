@@ -494,7 +494,7 @@ void Neem::runInstructions() {
 }
 
 void Neem::cleanup() {
-	fclose(outputhandle); //Should be fine even if it's stdout
+	if(outputhandle != stdout) fclose(outputhandle);
 	variables.clear();
 	instructions.clear();
 	instructions.shrink_to_fit();
