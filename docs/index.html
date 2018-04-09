@@ -6,6 +6,16 @@
 var outbox;
 var inbox;
 var interpret;
+
+function runcode() {
+	if(interpret === undefined) {
+		alert('Can\'t load Neemscript... Try refreshing');
+		return;
+	}
+	interpret(input.value);
+	inbox.focus();
+}
+
 window.onload = function() {
 	outbox = document.getElementById('output');
 	inbox = document.getElementById('input');
@@ -14,6 +24,9 @@ window.onload = function() {
 		if(e.keyCode == 9) { //Tab
 			e.preventDefault();
 			this.value += "\t";
+		} else if(e.ctrlKey && e.keyCode == 81) { //Ctrl + Q
+			e.preventDefault();
+			runcode();
 		}
 	}
 	
@@ -62,7 +75,7 @@ button {width:100%;}
 <table>
 	<tr><th>Input</th><th>Output</th></tr>
 	<tr><td><textarea id="input"></textarea></td><td rowspan="2"><textarea id="output" readonly style="right:0;"></textarea></td></tr>
-	<tr><td style="height:15px;"><button onclick="if(interpret === undefined) {alert('Can\'t load Neemscript... Try refreshing'); return;} interpret(input.value); inbox.focus()">Run</button></td></tr>
+	<tr><td style="height:15px;"><button onclick="runcode()">Run</button></td></tr>
 </table>
 </body>
 </html>
