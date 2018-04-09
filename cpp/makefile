@@ -35,15 +35,16 @@ $(JSBINDIR)/webmain.bc: $(SRCDIR)/webmain.c $(INCLUDEDIR)/neemWrapper.h
 $(JSBINDIR)/%.bc: $(SRCDIR)/%.cpp $(INCLUDEDIR)/neem.h
 	$(CXX) $(CXXFLAGS) -O2 -c $< -I$(INCLUDEDIR) -o $@
 
-.PHONY: run clean web
+.PHONY: run runwrapper clean web
 
 ifneq (,$(findstring clean,$(MAKECMDGOALS)))
 .NOTPARALLEL:
 endif
 clean:
 	$(RMCMD)
-	
-run: $(TARGET)
+
+run: | $(TARGET) runwrapper
+runwrapper: $(TARGET)
 	./$^ $(SCRIPTNAME)
-	
+
 web: ../docs/neemscript.js

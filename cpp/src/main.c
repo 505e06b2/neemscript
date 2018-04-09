@@ -13,6 +13,7 @@ int main(int argc, char** argv) {
 	
 	struct Neem* c = neem_new();
 	neem_interpretFile(c, argv[1]);
+	printf(">test: %s\n", neem_getVariable(c, "test"));
 	//neem_interpretBuffer(c, "echo line one\necho line 2\nset gg=geea \necho %gg%");
 	neem_del(c);
 	

@@ -17,6 +17,14 @@ void neem_interpretBuffer(Neem* v, const char *text) {
 	v->interpretBuffer(text);
 }
 
+void neem_setVariable(Neem* v, const char *name, const char *value) {
+	v->setVariable(name, value);
+}
+
+const char *neem_getVariable(Neem* v, const char *name) {
+	return v->getVariable(name);
+}
+
 void neem_del(Neem* v) {
 	delete v;
 }

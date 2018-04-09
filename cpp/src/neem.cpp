@@ -1,55 +1,5 @@
 #include "neem.h"
 
-/*
-
-TODO: MAKE A STRUCT FOR PARSING ALL VALUES
-
-*/
-
-Neem::Neem() { //Set up globals
-	globalvariables["TIME"] = [this](char *c = NULL) {
-		return getstrftime(9, "%H:%M:%S");
-	};
-	
-	globalvariables["DATE"] = [this](char *c = NULL) {
-		return getstrftime(9, "%d/%m/%y");
-	};
-	
-	globalvariables["CD"] = [this](char *c = NULL) {
-		return getcurrentdir();
-	};
-	
-	globalvariables["LS"] = [this](char *c = NULL) {
-		return listdir(c, ':');
-	};
-	
-	globalvariables["PATH"] = [this](char *c = NULL) {
-		return getenv("PATH");
-	};
-	
-	globalvariables["EPOCH"] = [this](char *c = NULL) {
-		return std::to_string(time(NULL));
-	};
-	
-	globalvariables["STRFTIME"] = [this](char *c = NULL) {
-		char *temp = c;
-		for(; *temp; temp++) if(*temp == '$') *temp = '%';
-		return getstrftime(64, c);
-	};
-	
-	globalvariables["SYSTEM"] = [this](char *c = NULL) {
-		std::string temp = c;
-		const char *val = getenv(parsevarval(&temp).c_str());
-		if(val == NULL) {
-			return ""; //Blank is our NULL
-		} else if(val[0] == '\0') {
-			return " "; //To show it exists but is just blank
-		} else {
-			return val;
-		}
-	};
-}
-
 Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "echo") == 0) return echo_;
 	if(strcasecmp(command, "print") == 0) return echo_;
@@ -431,59 +381,6 @@ bool Neem::parseline(char *line) {
 	return true;
 }
 
-void Neem::interpretFile(char *fname) {
-	{ //scope all this since we don't need it after
-		FILE *file;
-		char linebuffer[MAX_LINE_LEN];
-		uint16_t length; //tied to MAX_LINE_LEN
-	
-		if((file = fopen(fname, "r")) == NULL) {
-			std::string f = fname;
-			alert('!', "Can't open '%s'", NULL, &f);
-			return;
-		}
-	
-
-		for(uint32_t index = 0; fgets(linebuffer, sizeof(linebuffer), file); index++) {
-			length = strlen(linebuffer);
-			for(int i = length, e = length-3; i > e && i >= 0; i--) {
-				switch(linebuffer[i]) { // 'remove' chars we really don't want
-					case '\r':
-					case '\n':
-						linebuffer[i] = '\0';
-				}
-			}
-			if(!parseline(linebuffer)) return;
-		}
-	
-		fclose(file);
-	}
-	
-	runInstructions(); //The meat of the program
-	cleanup(); //make sure we're clean
-}
-
-void Neem::interpretBuffer(const char *buffer) {
-	{
-		std::vector<char> currentline;
-		for(; *buffer; buffer++) {
-			if(*buffer == '\n') {
-				currentline.push_back('\0');
-				if(!parseline(currentline.data())) return;
-				std::vector<char>().swap(currentline); //Clean the vector
-			} else {
-				currentline.push_back(*buffer);
-			}
-		}
-		//One more at the end
-		currentline.push_back('\0');
-		if(!parseline(currentline.data())) return;
-	} //scope removes vector
-	
-	runInstructions();
-	cleanup();
-}
-
 void Neem::runInstructions() {
 	int ret = 0;
 	for(uint16_t i = 0, e = instructions.size(); i < e; i++) {
@@ -502,9 +399,4 @@ void Neem::cleanup() {
 	for (auto it = loadedlibs.begin(); it != loadedlibs.end(); it++) {
 		freelibrary(it->second);
 	}
-	
-}
-
-Neem::~Neem() {
-	cleanup();
 }
