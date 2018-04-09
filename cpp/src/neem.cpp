@@ -85,7 +85,7 @@ Neem::types Neem::gettype(char *command) {
 	return none_;
 }
 
-bool Neem::parseline(char *line, uint32_t index) {
+bool Neem::parseline(char *line) {
 	while(isspace((uint8_t) *line)) line++; //Remove leading spaces
 	if(*line == '\0') return 1; //if, after spaces, it's blank, just return
 	
@@ -432,43 +432,69 @@ bool Neem::parseline(char *line, uint32_t index) {
 }
 
 void Neem::interpretFile(char *fname) {
-	FILE *file;
-	char linebuffer[MAX_LINE_LEN];
-	uint16_t length; //tied to MAX_LINE_LEN
+	{ //scope all this since we don't need it after
+		FILE *file;
+		char linebuffer[MAX_LINE_LEN];
+		uint16_t length; //tied to MAX_LINE_LEN
 	
-	if((file = fopen(fname, "r")) == NULL) {
-		std::string f = fname;
-		alert('!', "Can't open '%s'", NULL, &f);
-		return;
-	}
+		if((file = fopen(fname, "r")) == NULL) {
+			std::string f = fname;
+			alert('!', "Can't open '%s'", NULL, &f);
+			return;
+		}
 	
 
-	for(uint32_t index = 0; fgets(linebuffer, sizeof(linebuffer), file); index++) {
-		length = strlen(linebuffer);
-		for(int i = length, e = length-3; i > e && i >= 0; i--) {
-			switch(linebuffer[i]) { // 'remove' chars we really don't want
-				case '\r':
-				case '\n':
-					linebuffer[i] = '\0';
+		for(uint32_t index = 0; fgets(linebuffer, sizeof(linebuffer), file); index++) {
+			length = strlen(linebuffer);
+			for(int i = length, e = length-3; i > e && i >= 0; i--) {
+				switch(linebuffer[i]) { // 'remove' chars we really don't want
+					case '\r':
+					case '\n':
+						linebuffer[i] = '\0';
+				}
 			}
+			if(!parseline(linebuffer)) return;
 		}
-		if(!parseline(linebuffer, index)) return;
+	
+		fclose(file);
 	}
 	
-	fclose(file);
+	runInstructions(); //The meat of the program
+	cleanup(); //make sure we're clean
+}
+
+void Neem::interpretBuffer(const char *buffer) {
+	{
+		std::vector<char> currentline;
+		for(; *buffer; buffer++) {
+			if(*buffer == '\n') {
+				currentline.push_back('\0');
+				if(!parseline(currentline.data())) return;
+				std::vector<char>().swap(currentline); //Clean the vector
+			} else {
+				currentline.push_back(*buffer);
+			}
+		}
+		//One more at the end
+		currentline.push_back('\0');
+		if(!parseline(currentline.data())) return;
+	} //scope removes vector
 	
+	runInstructions();
+	cleanup();
+}
+
+void Neem::runInstructions() {
 	int ret = 0;
 	for(uint16_t i = 0, e = instructions.size(); i < e; i++) {
 		instruction *current = &instructions.front() +i; //get the pointer to the element
 		if((ret = current->func(current, i)) < -1) return; //Error
 		else if(ret != -1) i = ret; // -1 is the good value here
 	}
-	
-	fclose(outputhandle); //Should be fine even if it's stdout
-	cleanup(); //make sure we're clean
 }
 
 void Neem::cleanup() {
+	fclose(outputhandle); //Should be fine even if it's stdout
 	variables.clear();
 	instructions.clear();
 	instructions.shrink_to_fit();

@@ -1,0 +1,23 @@
+<html>
+<script src="neemscript.js"></script>
+<script>
+var outbox;
+window.onload = function() {
+	outbox = document.getElementById('output');
+	
+	Module.print = function(text) {
+		outbox.innerHTML += text;
+	};	
+	
+	Module.printErr = function(text) {
+		outbox.innerHTML += text;
+	};
+	
+	Module.onRuntimeInitialized = function() {
+		Module.ccall('webmain');
+	}
+};
+
+</script>
+<textarea class="emscripten" id="output" rows="20"></textarea>
+</html>

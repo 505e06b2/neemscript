@@ -21,10 +21,12 @@
 
 class Neem {
 	public:
-		void interpretFile(char *text);
+		void interpretFile(char *);
+		void interpretBuffer(const char *);
 		~Neem();
 		Neem();
 	private:
+		void runInstructions();
 		enum types {none_, comment_, echo_, set_, prompt_, setsystem_, goto_, call_, inc_, fi_, if_, else_, for_, rof_, sum_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_, output_, input_, readall_, readline_, loadlib_, runlibfunc_, unloadlib_};
 		typedef struct instruction {
 			types type = none_;
@@ -49,7 +51,7 @@ class Neem {
 		FILE *outputhandle = stdout;
 		FILE *inputhandle = NULL;
 		
-		bool parseline(char *, uint32_t);
+		bool parseline(char *);
 		types gettype(char *);
 		void cleanup();
 		std::string parsevariables(const char *, const char, uint8_t *);

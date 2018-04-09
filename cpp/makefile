@@ -3,8 +3,9 @@ OUTNAME=neem
 INCLUDEDIR=include
 BINDIR=binfiles
 SRCDIR=src
-CC=gcc
-CXX=g++
+CC ?= gcc
+CXX ?= g++
+CXXFLAGS ?= -std=c++11
 
 ifeq ($(UNAME),Linux)
 TARGET = $(OUTNAME)
@@ -15,16 +16,16 @@ RMCMD = cmd \/c "del $(BINDIR)\\*.o && del $(TARGET)"
 endif
 
 $(TARGET): $(patsubst $(SRCDIR)%,$(BINDIR)%,$(patsubst %.cpp,%.o,$(wildcard $(SRCDIR)/*.cpp))) $(BINDIR)/main.o
-	$(CXX) -O2 $^ -o $@
+	$(CXX) $(CXXFLAGS) -O2 $^ -o $@
 	strip $@
 
 $(BINDIR)/main.o: $(SRCDIR)/main.c $(INCLUDEDIR)/neemWrapper.h
 	$(CC) -O2 -c $< -I$(INCLUDEDIR) -o $@
 	
 $(BINDIR)/%.o: $(SRCDIR)/%.cpp $(INCLUDEDIR)/neem.h
-	$(CXX) -O2 -c $< -I$(INCLUDEDIR) -o $@
+	$(CXX) $(CXXFLAGS) -O2 -c $< -I$(INCLUDEDIR) -o $@
 
-.PHONY: run clean
+.PHONY: run clean web
 
 ifneq (,$(findstring clean,$(MAKECMDGOALS)))
 .NOTPARALLEL:
@@ -34,3 +35,6 @@ clean:
 	
 run: $(TARGET)
 	./$^ $(SCRIPTNAME)
+	
+web:
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -O2 $(wildcard $(SRCDIR)/*.cpp) $(SRCDIR)/webmain.c -I$(INCLUDEDIR) -o ../doc/neemscript.js -s ASSERTIONS=1 -s EXPORTED_FUNCTIONS='["_webmain"]' -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]'
