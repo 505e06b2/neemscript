@@ -57,6 +57,7 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "set") == 0) return set_;
 	if(strcasecmp(command, "prompt") == 0) return prompt_;
 	if(strcasecmp(command, "if") == 0) return if_;
+	if(strcasecmp(command, "else") == 0) return else_;
 	if(strcasecmp(command, "fi") == 0) return fi_;
 	if(strcasecmp(command, "for") == 0) return for_;
 	if(strcasecmp(command, "rof") == 0) return rof_;
@@ -159,11 +160,20 @@ bool Neem::parseline(char *line, uint32_t index) {
 			last->value = params; //setif \0s the left part
 			last->func = [this](instruction *i, uint32_t index) {
 				if(!i->check( parsevarval(&i->value), parsevarval(&i->extravalue) )) {
-					int ret = searchfortag(&index, fi_, if_);
+					int ret = searchfortag(&index, else_, if_);
+					if(ret >= 0) return ret;
+					ret = searchfortag(&index, fi_, if_);
 					if(ret >= 0) return ret;
 					return alert('!', "No matching 'fi' for if", &index);
 				}
 				return -1;
+			};
+			break;
+		case else_:
+			last->func = [this](instruction *i, uint32_t index) {
+				int ret = searchfortag(&index, fi_, if_);
+				if(ret >= 0) return ret;
+				return alert('!', "No matching 'fi' for else", &index);
 			};
 			break;
 		case for_:
