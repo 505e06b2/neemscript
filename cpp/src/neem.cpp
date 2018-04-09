@@ -136,7 +136,7 @@ bool Neem::parseline(char *line) {
 				std::string currentvalue = "";
 				
 				for(; *therest; therest++) {
-					if(*therest == ':') {
+					if(*therest == FORCHARCHECK) {
 						therest++;
 						break;
 					} else {

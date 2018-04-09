@@ -19,7 +19,7 @@ Neem::Neem() { //Set up globals
 	};
 	
 	globalvariables["LS"] = [this](char *c = NULL) {
-		return listdir(c, ':');
+		return listdir(c, FORCHARCHECK);
 	};
 	
 	globalvariables["PATH"] = [this](char *c = NULL) {
@@ -72,7 +72,6 @@ void Neem::interpretFile(char *fname) {
 			return;
 		}
 	
-
 		for(uint32_t index = 0; fgets(linebuffer, sizeof(linebuffer), file); index++) {
 			length = strlen(linebuffer);
 			for(int i = length, e = length-3; i > e && i >= 0; i--) {
@@ -92,7 +91,7 @@ void Neem::interpretFile(char *fname) {
 }
 
 void Neem::interpretBuffer(const char *buffer) {
-	{
+	{ //scope removes vector
 		std::vector<char> currentline;
 		for(; *buffer; buffer++) {
 			if(*buffer == '\n') {
@@ -106,7 +105,7 @@ void Neem::interpretBuffer(const char *buffer) {
 		//One more at the end
 		currentline.push_back('\0');
 		if(!parseline(currentline.data())) return;
-	} //scope removes vector
+	}
 	
 	runInstructions();
 }
