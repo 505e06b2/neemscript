@@ -4,7 +4,7 @@ The goal was to make it really fast and `easy to read` or at least `only a singl
 I also want it to be easily embedded in other programs as a scripting language and possibly also able to be on used baremetal systems if possible
 
 You can have a look in your browser with the javascript version (first prototype) or you can compile your own interpreter
-There's a makefile that should `just work` by default; it just uses your system gcc but if you modify the `mingw` lines, you can specify an absolute path to another compiler  
+There's a makefile that should `just work` by default; it just uses your system gcc... Well, it would be your "cc"
 
 Make sure to check out [the wiki](https://github.com/505e06b2/neemscript/wiki) for the documentation!  
 
