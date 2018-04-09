@@ -9,20 +9,26 @@ var interpret;
 window.onload = function() {
 	outbox = document.getElementById('output');
 	inbox = document.getElementById('input');
+	inbox.focus();
+	inbox.onkeydown = function(e) {
+		if(e.keyCode == 9) { //Tab
+			e.preventDefault();
+			this.value += "\t";
+		}
+	}
 	
 	Module.print = function(text) {
 		outbox.innerHTML += text + "\n";
+		outbox.scrollTop = outbox.scrollHeight;
 	};	
-	
-	Module.printErr = function(text) {
-		outbox.innerHTML += text + "\n";
-	};
+	Module.printErr = Module.print;
 	
 	Module.onRuntimeInitialized = function() {
 		interpret = Module.cwrap('webmain', null, ['string']);
 		console.log("Loaded Neemscript");
 	}
 };
+
 </script>
 <style>
 body, textarea {
@@ -56,7 +62,7 @@ button {width:100%;}
 <table>
 	<tr><th>Input</th><th>Output</th></tr>
 	<tr><td><textarea id="input"></textarea></td><td rowspan="2"><textarea id="output" readonly style="right:0;"></textarea></td></tr>
-	<tr><td style="height:15px;"><button onclick="if(interpret === undefined) {alert('Can\'t load Neemscript... Try refreshing'); return;} interpret(input.value)">Run</button></td></tr>
+	<tr><td style="height:15px;"><button onclick="if(interpret === undefined) {alert('Can\'t load Neemscript... Try refreshing'); return;} interpret(input.value); inbox.focus()">Run</button></td></tr>
 </table>
 </body>
 </html>
