@@ -30,11 +30,11 @@ window.onload = function() {
 				runcode();
 			} else if(e.keyCode == 83) { //Ctrl + S
 				e.preventDefault();
-				localStorage.setItem("script", inbox.value);
+				localStorage.setItem("script", this.value);
 				Module.print("[*] Saved script to localStorage");
 			} else if(e.keyCode == 79) { //Ctrl + O
 				e.preventDefault();
-				inbox.value = localStorage.getItem("script");
+				this.value = localStorage.getItem("script");
 				Module.print("[*] Loaded script from localStorage");
 			}
 		}
@@ -49,6 +49,11 @@ window.onload = function() {
 	Module.onRuntimeInitialized = function() {
 		interpret = Module.cwrap('webmain', null, ['string']);
 		console.log("Loaded Neemscript");
+		var temp = localStorage.getItem("script");
+		if(temp) {
+			this.value = temp;
+			Module.print("[*] Loaded script from localStorage");
+		}
 	}
 };
 
