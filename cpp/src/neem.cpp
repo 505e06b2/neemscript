@@ -127,8 +127,13 @@ bool Neem::parseline(char *line) {
 			};
 			break;
 		case for_:
-			last->extravalue = splitstring(params, ' '); //input/arr var
-			last->value = params; //index value var
+			{
+				char *arrstring = splitstring(params, ' ');
+				char *delim = splitstring(arrstring, ' ');
+				last->xxxtravalue = (delim != NULL) ? delim : std::string(1,FORCHARCHECK); //The delimiter
+				last->extravalue = arrstring; //input/arr var
+				last->value = params; //index value var
+			}
 			last->func = [this](instruction *i, uint32_t index) {
 				parsedstrings parsed;
 				parseallstrings(&parsed, i);
@@ -136,8 +141,8 @@ bool Neem::parseline(char *line) {
 				std::string currentvalue = "";
 				
 				for(; *therest; therest++) {
-					if(*therest == FORCHARCHECK) {
-						therest++;
+					if(strncmp(therest, parsed.xxxtravalue.c_str(), parsed.xxxtravalue.size()) == 0) {
+						therest += parsed.xxxtravalue.size();
 						break;
 					} else {
 						currentvalue += *therest;

@@ -2,7 +2,7 @@
 #define __NEEM_H
 
 #define MAX_LINE_LEN 1024
-#define FORCHARCHECK ';'
+#define FORCHARCHECK '|'
 
 #include <stdio.h>
 #include <stdint.h>
