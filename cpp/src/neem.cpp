@@ -393,7 +393,7 @@ void Neem::runInstructions() {
 		if((ret = current->func(current, i)) < -1) return; //Error
 		else if(ret != -1) i = ret; // -1 is the good value here
 	}
-	std::vector<instruction>().swap(instructions); //Remove all instructions
+	std::vector<instruction>().swap(instructions); //Remove all instructions that we just ran
 }
 
 void Neem::cleanup() {

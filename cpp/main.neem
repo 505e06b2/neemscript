@@ -1,5 +1,1 @@
-set a=0
-:a
-	inc a
-	echo %a%
-goto :a
+echo %EPOCH%

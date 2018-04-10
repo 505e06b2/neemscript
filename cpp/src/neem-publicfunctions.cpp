@@ -39,7 +39,10 @@ Neem::Neem() { //Set up globals
 	};
 	
 	globalvariables["EPOCH"] = [this](char *c = NULL) {
-		return std::to_string(time(NULL));
+		using namespace std::chrono;
+		auto now = system_clock::now();
+		auto casted = time_point_cast<microseconds>(now).time_since_epoch();
+		return std::to_string(casted.count());
 	};
 	
 	globalvariables["STRFTIME"] = [this](char *c = NULL) {
