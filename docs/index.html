@@ -38,8 +38,7 @@ window.onload = function() {
 				Module.print("[*] Loaded script from localStorage");
 			} else if(e.keyCode == 87) { //Ctrl + W
 				e.preventDefault();
-				outbox.value = "";
-				Module.print("[*] Cleared Output");
+				outbox.value = "[*] Cleared Output\n";
 			}
 		}
 	}
