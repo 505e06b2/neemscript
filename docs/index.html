@@ -44,7 +44,7 @@ window.onload = function() {
 	}
 	
 	Module.print = function(text) {
-		outbox.innerHTML += text + "\n";
+		outbox.value += text + '\n';
 		outbox.scrollTop = outbox.scrollHeight;
 	};	
 	Module.printErr = Module.print;
