@@ -59,6 +59,16 @@ Neem::Neem() { //Set up globals
 			return val;
 		}
 	};
+	
+	globalvariables["POINTER"] = [this](char *c = NULL) {
+		char *end;
+		const char *toint = (const char *)strtoull(c, &end, 0);
+		if(toint == 0) {
+			alert('#', "Pointer not valid");
+			return "";
+		}
+		return toint;
+	};
 }
 
 void Neem::setVariable(const char *name, const char *value) {

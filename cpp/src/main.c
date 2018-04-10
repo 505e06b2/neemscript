@@ -12,11 +12,20 @@ int main(int argc, char** argv) {
 	}
 	
 	struct Neem* c = neem_new();
+	
+	//testing pointers
+	const char testarray[] = "did it work??";
+	char pointerbuffer[(sizeof(long long)*2) +1 +2]; //2 values per byte +1 for \0 +2 for 0x
+	sprintf(pointerbuffer, "0x%llx", (unsigned long long)testarray);
+	neem_setVariable(c, "pointer", pointerbuffer);
+	
+	//Testing features
 	//neem_setVariable(c, "test", "thetestvalue");
 	//neem_interpretLine(c, "echo gg&& echo wow");
+	//neem_interpretBuffer(c, "echo line one\necho line 2\nset gg=geea \necho %gg%");
 	neem_interpretFile(c, argv[1]);
 	//printf(">test: %s\n", neem_getVariable(c, "test"));
-	//neem_interpretBuffer(c, "echo line one\necho line 2\nset gg=geea \necho %gg%");
+	
 	neem_del(c);
 	
 	return 0;

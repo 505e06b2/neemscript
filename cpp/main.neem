@@ -1,9 +1,1 @@
-set arr=%LS%
-for index arr
-	echo %index%
-rof
-
-set arr=one&&two&&three
-for index arr &&
-	echo %index%
-rof
+echo !POINTER;%pointer%!
