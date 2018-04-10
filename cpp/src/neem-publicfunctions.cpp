@@ -6,23 +6,23 @@ Neem::~Neem() {
 
 //Variable stuff
 Neem::Neem() { //Set up globals
-	globalvariables["TIME"] = [this](char *c = NULL) {
+	dynamicvariables["TIME"] = [this](char *c = NULL) {
 		return getstrftime(9, "%H:%M:%S");
 	};
 	
-	globalvariables["DATE"] = [this](char *c = NULL) {
+	dynamicvariables["DATE"] = [this](char *c = NULL) {
 		return getstrftime(9, "%d/%m/%y");
 	};
 	
-	globalvariables["CD"] = [this](char *c = NULL) {
+	dynamicvariables["CD"] = [this](char *c = NULL) {
 		return getcurrentdir();
 	};
 	
-	globalvariables["LS"] = [this](char *c = NULL) {
+	dynamicvariables["LS"] = [this](char *c = NULL) {
 		return listdir(c, FORCHARCHECK);
 	};
 	
-	globalvariables["OS"] = [this](char *c = NULL) {
+	dynamicvariables["OS"] = [this](char *c = NULL) {
 		#ifdef _WIN32
 			return "windows";
 		#elif __linux__
@@ -34,24 +34,23 @@ Neem::Neem() { //Set up globals
 		#endif
 	};
 	
-	globalvariables["PATH"] = [this](char *c = NULL) {
+	dynamicvariables["PATH"] = [this](char *c = NULL) {
 		return getenv("PATH");
 	};
 	
-	globalvariables["EPOCH"] = [this](char *c = NULL) {
+	dynamicvariables["EPOCH"] = [this](char *c = NULL) {
 		using namespace std::chrono;
-		auto now = system_clock::now();
-		auto casted = time_point_cast<microseconds>(now).time_since_epoch();
+		auto casted = time_point_cast<microseconds>(system_clock::now()).time_since_epoch();
 		return std::to_string(casted.count());
 	};
 	
-	globalvariables["STRFTIME"] = [this](char *c = NULL) {
+	dynamicvariables["STRFTIME"] = [this](char *c = NULL) {
 		char *temp = c;
 		for(; *temp; temp++) if(*temp == '$') *temp = '%';
 		return getstrftime(64, c);
 	};
 	
-	globalvariables["SYSTEM"] = [this](char *c = NULL) {
+	dynamicvariables["SYSTEM"] = [this](char *c = NULL) {
 		std::string temp = c;
 		const char *val = getenv(parsevarval(&temp).c_str());
 		if(val == NULL) {
@@ -63,7 +62,7 @@ Neem::Neem() { //Set up globals
 		}
 	};
 	
-	globalvariables["POINTER"] = [this](char *c = NULL) {
+	dynamicvariables["POINTER"] = [this](char *c = NULL) {
 		char *end;
 		const char *toint = (const char *)strtoull(c, &end, 0);
 		if(toint == 0) {

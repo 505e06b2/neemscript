@@ -1,0 +1,4 @@
+set starttime=%EPOCH%
+start neem.exe race.neem
+sum difference=%EPOCH%-%starttime% /1000000
+echo %difference%

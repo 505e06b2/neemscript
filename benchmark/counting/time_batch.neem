@@ -1,0 +1,4 @@
+set starttime=%EPOCH%
+start race.bat
+sum difference=%EPOCH%-%starttime% /1000000
+echo %difference%

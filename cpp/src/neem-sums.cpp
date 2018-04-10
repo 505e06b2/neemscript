@@ -3,9 +3,9 @@
 float Neem::dosum(const char *currentchar) {
 	char numberbuffer[25];
 	char lastop = '+';
-	float value = 0;
+	double value = 0;
 	int x = 0;
-	void (*doop)(char *, int *, char *, float *) = [](char *op, int *x, char *buff, float *val){
+	void (*doop)(char *, int *, char *, double *) = [](char *op, int *x, char *buff, double *val){
 		buff[*x] = '\0';
 		if(*op == '+') *val += atof(buff);
 		else if(*op == '-') *val -= atof(buff);

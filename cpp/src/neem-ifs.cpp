@@ -7,10 +7,10 @@ char *Neem::setifcheck(instruction *i, char *string) {
 			case '<':
 				*string = '\0';
 				if(*(string+1) == '=') {
-					i->check = [](std::string left, std::string right) { if(stof(left) <= stof(right)) return true; return false; };
+					i->check = [](std::string left, std::string right) { if(stold(left) <= stold(right)) return true; return false; };
 					return (string+2);
 				} else {
-					i->check = [](std::string left, std::string right) { if(stof(left) < stof(right)) return true; return false; };
+					i->check = [](std::string left, std::string right) { if(stold(left) < stold(right)) return true; return false; };
 					return (string+1);
 				}
 				

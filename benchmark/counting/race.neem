@@ -1,0 +1,9 @@
+set i=0
+:a
+	inc i
+	if %i%==1000000
+		goto :end
+	fi
+	goto :a
+
+:end

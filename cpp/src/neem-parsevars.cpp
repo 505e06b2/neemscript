@@ -4,10 +4,10 @@ std::string Neem::parsevariables(const char *value, const char searchfor, uint8_
 	std::function<std::string(std::map<const std::string, std::string> *,
 						 std::map<const std::string, std::function<std::string(char *)>> *, char *)> check = 
 		[this](std::map<const std::string, std::string> *variables,
-		   std::map<const std::string, std::function<std::string(char *)>> *globalvariables, char *findtarget) {
+		   std::map<const std::string, std::function<std::string(char *)>> *dynamicvariables, char *findtarget) {
 				std::map<const std::string, std::function<std::string(char *)>>::iterator gvar;
 				char *possibleparams = splitstring(findtarget, ';');
-				if((gvar = globalvariables->find(findtarget)) != globalvariables->end()) return gvar->second(possibleparams);
+				if((gvar = dynamicvariables->find(findtarget)) != dynamicvariables->end()) return gvar->second(possibleparams);
 				std::map<const std::string, std::string>::iterator var;
 				if((var = variables->find(findtarget)) != variables->end()) return var->second;
 				return (std::string)"";
@@ -37,7 +37,7 @@ std::string Neem::parsevariables(const char *value, const char searchfor, uint8_
 						break;
 					}
 				}
-				std::string varvalue = check(&variables, &globalvariables, varname);
+				std::string varvalue = check(&variables, &dynamicvariables, varname);
 				
 				if(varvalue != "") { //Variable exists if not blank
 					std::string tempvar = varvalue;
