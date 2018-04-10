@@ -35,7 +35,6 @@
 		char fnamebuffer[fnamelen+3];
 		memcpy(fnamebuffer, fname, fnamelen);
 		memcpy(fnamebuffer+fnamelen, ".so", 4);
-		printf(">> %s\n", fnamebuffer);
 		void *lib = dlopen(fnamebuffer, RTLD_LAZY);
 		if(lib == NULL) return false;
 		loadedlibs[fname] = lib;
