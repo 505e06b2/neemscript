@@ -24,9 +24,19 @@ window.onload = function() {
 		if(e.keyCode == 9) { //Tab
 			e.preventDefault();
 			this.value += "\t";
-		} else if(e.ctrlKey && e.keyCode == 81) { //Ctrl + Q
-			e.preventDefault();
-			runcode();
+		} else if(e.ctrlKey) {
+			if(e.keyCode == 81) { //Ctrl + Q
+				e.preventDefault();
+				runcode();
+			} else if(e.keyCode == 83) { //Ctrl + S
+				e.preventDefault();
+				localStorage.setItem("script", inbox.value);
+				Module.print("[*] Saved script to localStorage");
+			} else if(e.keyCode == 79) { //Ctrl + O
+				e.preventDefault();
+				inbox.value = localStorage.getItem("script");
+				Module.print("[*] Loaded script from localStorage");
+			}
 		}
 	}
 	
