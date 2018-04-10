@@ -84,33 +84,8 @@ const char *Neem::getVariable(const char *name) {
 }
 
 //Interpreting
-void Neem::interpretFile(char *fname) {
-	{ //scope all this since we don't need it after
-		FILE *file;
-		char linebuffer[MAX_LINE_LEN];
-		uint16_t length; //tied to MAX_LINE_LEN
-	
-		if((file = fopen(fname, "r")) == NULL) {
-			std::string f = fname;
-			alert('!', "Can't open '%s'", NULL, &f);
-			return;
-		}
-	
-		for(uint32_t index = 0; fgets(linebuffer, sizeof(linebuffer), file); index++) {
-			length = strlen(linebuffer);
-			for(int i = length, e = length-3; i > e && i >= 0; i--) {
-				switch(linebuffer[i]) { // 'remove' chars we really don't want
-					case '\r':
-					case '\n':
-						linebuffer[i] = '\0';
-				}
-			}
-			if(!parseline(linebuffer)) return;
-		}
-	
-		fclose(file);
-	}
-	
+void Neem::interpretFile(const char *fname) {
+	if(!readfilebyline(fname, [this](char *c){return parseline(c);})) return;
 	runInstructions(); //The meat of the program
 }
 

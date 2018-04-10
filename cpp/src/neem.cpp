@@ -4,6 +4,7 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "echo") == 0) return echo_;
 	if(strcasecmp(command, "print") == 0) return echo_;
 	if(strcasecmp(command, "setsystem") == 0) return setsystem_;
+	if(strcasecmp(command, "import") == 0) return import_;
 	if(strcasecmp(command, "set") == 0) return set_;
 	if(strcasecmp(command, "prompt") == 0) return prompt_;
 	if(strcasecmp(command, "if") == 0) return if_;
@@ -47,10 +48,18 @@ bool Neem::parseline(char *line) {
 			std::string l = line;
 			alert('!', "'%s' is not a command", NULL, &l);
 			return false;
+		} else if(currenttype != import_) { //Special command
+			instruction i;
+			i.type = currenttype;
+			instructions.push_back(i);
+		} else { //If import_
+			if(params == NULL) {
+				alert('!', "Can't import", NULL);
+				return false;
+			}
+			if(!readfilebyline(params, [this](char *c){return parseline(c);})) return false;
+			return true;
 		}
-		instruction i;
-		i.type = currenttype;
-		instructions.push_back(i);
 	}
 
 	instruction *last = &instructions.back();

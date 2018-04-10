@@ -67,6 +67,33 @@ Neem::parsedstrings *Neem::parseallstrings(parsedstrings *p, instruction *i) {
 	return p;
 }
 
+bool Neem::readfilebyline(const char *filename, std::function<bool(char *)> func) {
+	FILE *file;
+	char linebuffer[MAX_LINE_LEN];
+	uint16_t length; //tied to MAX_LINE_LEN
+	
+	if((file = fopen(filename, "r")) == NULL) {
+		std::string f = filename;
+		alert('!', "Can't open '%s'", NULL, &f);
+		return false;
+	}
+	
+	for(uint32_t index = 0; fgets(linebuffer, sizeof(linebuffer), file); index++) {
+		length = strlen(linebuffer);
+		for(int i = length, e = length-3; i > e && i >= 0; i--) {
+			switch(linebuffer[i]) { // 'remove' chars we really don't want
+				case '\r':
+				case '\n':
+					linebuffer[i] = '\0';
+			}
+		}
+		if(!func(linebuffer)) return false;
+	}
+	
+	fclose(file);
+	return true;
+}
+
 int Neem::alert(const char type, const char *format, uint32_t *index, std::string *value, std::string *extravalue) {
 	//This was going to be all fancy by only having 1 fprintf function but why not just use the buffers given to you?
 	//It's an error, it's meant to alert you, not be efficient

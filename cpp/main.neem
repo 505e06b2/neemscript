@@ -1,1 +1,2 @@
-echo %EPOCH%
+set a=test
+echo end

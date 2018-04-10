@@ -21,7 +21,7 @@
 
 class Neem {
 	public:
-		void interpretFile(char *);
+		void interpretFile(const char *);
 		void interpretBuffer(const char *);
 		void interpretLine(const char *);
 		void setVariable(const char *, const char *);
@@ -30,7 +30,7 @@ class Neem {
 		Neem();
 	private:
 		void runInstructions();
-		enum types {none_, comment_, echo_, set_, prompt_, setsystem_, goto_, call_, inc_, fi_, if_, else_, for_, rof_, sum_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_, output_, input_, readall_, readline_, loadlib_, runlibfunc_, unloadlib_};
+		enum types {none_, comment_, echo_, set_, prompt_, setsystem_, import_, goto_, call_, inc_, fi_, if_, else_, for_, rof_, sum_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_, output_, input_, readall_, readline_, loadlib_, runlibfunc_, unloadlib_};
 		typedef struct instruction {
 			types type = none_;
 			std::string value;
@@ -75,6 +75,7 @@ class Neem {
 		std::string listdir(const char *, const char);
 		int alert(const char, const char *, uint32_t * = NULL, std::string * = NULL, std::string * = NULL);
 		int searchfortag(uint32_t *, const types, const types);
+		bool readfilebyline(const char *, std::function<bool(char *)>);
 };
 
 #endif
