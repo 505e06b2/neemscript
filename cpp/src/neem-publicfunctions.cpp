@@ -73,6 +73,7 @@ const char *Neem::getVariable(const char *name) {
 
 //Interpreting
 void Neem::interpretFile(char *fname) {
+	std::vector<instruction>().swap(instructions);
 	{ //scope all this since we don't need it after
 		FILE *file;
 		char linebuffer[MAX_LINE_LEN];
@@ -103,6 +104,7 @@ void Neem::interpretFile(char *fname) {
 }
 
 void Neem::interpretBuffer(const char *buffer) {
+	std::vector<instruction>().swap(instructions);
 	{ //scope removes vector
 		std::vector<char> currentline;
 		for(; *buffer; buffer++) {
@@ -110,6 +112,28 @@ void Neem::interpretBuffer(const char *buffer) {
 				currentline.push_back('\0');
 				if(!parseline(currentline.data())) return;
 				std::vector<char>().swap(currentline); //Clean the vector
+			} else {
+				currentline.push_back(*buffer);
+			}
+		}
+		//One more at the end
+		currentline.push_back('\0');
+		if(!parseline(currentline.data())) return;
+	}
+	
+	runInstructions();
+}
+
+void Neem::interpretLine(const char *buffer) {
+	std::vector<instruction>().swap(instructions);
+	{ //scope removes vector
+		std::vector<char> currentline;
+		for(; *buffer; buffer++) {
+			if(*buffer == '&' && *(buffer+1) == '&') {
+				currentline.push_back('\0');
+				if(!parseline(currentline.data())) return;
+				std::vector<char>().swap(currentline); //Clean the vector
+				buffer++;
 			} else {
 				currentline.push_back(*buffer);
 			}

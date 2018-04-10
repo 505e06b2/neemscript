@@ -393,8 +393,6 @@ void Neem::runInstructions() {
 void Neem::cleanup() {
 	if(outputhandle != stdout) fclose(outputhandle);
 	variables.clear();
-	instructions.clear();
-	instructions.shrink_to_fit();
 	
 	for (auto it = loadedlibs.begin(); it != loadedlibs.end(); it++) {
 		freelibrary(it->second);

@@ -24,6 +24,7 @@ class Neem {
 	public:
 		void interpretFile(char *);
 		void interpretBuffer(const char *);
+		void interpretLine(const char *);
 		void setVariable(const char *, const char *);
 		const char *getVariable(const char *);
 		~Neem();
