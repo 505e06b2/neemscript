@@ -36,6 +36,10 @@ window.onload = function() {
 				e.preventDefault();
 				this.value = localStorage.getItem("script");
 				Module.print("[*] Loaded script from localStorage");
+			} else if(e.keyCode == 87) { //Ctrl + W
+				e.preventDefault();
+				outbox.value = "";
+				Module.print("[*] Cleared Output");
 			}
 		}
 	}
@@ -116,7 +120,8 @@ button {width:100%;}
 <div class="header">Shortcuts:</div>
 Run Code: CTRL+Q<br>
 Save Code: CTRL+S<br>
-Open Code: CTRL+O
+Open Code: CTRL+O<br>
+Clear Output: CTRL+W
 </div>
 </body>
 </html>
