@@ -22,6 +22,18 @@ Neem::Neem() { //Set up globals
 		return listdir(c, FORCHARCHECK);
 	};
 	
+	globalvariables["OS"] = [this](char *c = NULL) {
+		#ifdef _WIN32
+			return "windows";
+		#elif __linux__
+			return "linux";
+		#elif __unix__
+			return "unix";
+		#else
+			return "unknown";
+		#endif
+	};
+	
 	globalvariables["PATH"] = [this](char *c = NULL) {
 		return getenv("PATH");
 	};

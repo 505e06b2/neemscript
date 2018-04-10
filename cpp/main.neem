@@ -1,4 +1,1 @@
-set g=%LS%
-for index g
-	echo %index%
-rof
+echo %OS%
