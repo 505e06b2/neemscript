@@ -1,0 +1,38 @@
+echo == Benchmarking against other langs ==
+echo      Enter: py, bat or neem
+
+::This bit is for making this platform agnostic
+if %OS%==windows
+	set pathdelim=;
+else
+	set pathdelim=:
+fi
+
+setsystem PATH=%CD%/../../cpp%pathdelim%%PATH%
+
+:top
+	prompt input=Test: 
+	if %input:~0,2%==py
+		call :start
+		start python race.py
+		call :end
+	fi
+	if %input:~0,3%==bat
+		call :start
+		start race.bat
+		call :end
+	fi
+	if %input:~0,4%==neem
+		call :start
+		start neem.exe race.neem
+		call :end
+	fi
+	goto :top
+
+:start
+echo Starting...
+set stime=%EPOCH%
+goto :eof
+
+:end
+goto :eof

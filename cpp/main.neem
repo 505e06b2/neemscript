@@ -1,2 +1,6 @@
-set a=test
-echo end
+call :test
+echo okay
+goto :eof
+
+:test
+echo called

@@ -402,11 +402,27 @@ void Neem::runInstructions() {
 		if((ret = current->func(current, i)) < -1) return; //Error
 		else if(ret != -1) i = ret; // -1 is the good value here
 	}
+	
+	//Cleaning
+	if(eof != (uint16_t)-2) {
+		std::string index = std::to_string(eof+1);
+		alert('#', "Called without 'goto :eof'; check the label referenced by line: %s", NULL, &index);
+		eof = -2; //Make sure we fix it so nothing weird happens next run
+	}
+	
+	if(inputhandle != NULL) {
+		fclose(inputhandle);
+		inputhandle = NULL;
+	}
+	
+	if(outputhandle != stdout) {
+		fclose(outputhandle);
+		outputhandle = stdout;
+	}
 	std::vector<instruction>().swap(instructions); //Remove all instructions that we just ran
 }
 
 void Neem::cleanup() {
-	if(outputhandle != stdout) fclose(outputhandle);
 	variables.clear();
 	
 	for (auto it = loadedlibs.begin(); it != loadedlibs.end(); it++) {

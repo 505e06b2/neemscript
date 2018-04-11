@@ -50,7 +50,7 @@ class Neem {
 		std::vector<instruction> instructions;
 		std::map<const std::string, std::string> variables;
 		std::map<const std::string, std::function<std::string(char *)>> dynamicvariables;
-		uint16_t eof = -2; //to stop overflow
+		uint16_t eof = -2; //to stop overflow, I want it to be max, but it +1s
 		FILE *outputhandle = stdout;
 		FILE *inputhandle = NULL;
 		
@@ -75,7 +75,7 @@ class Neem {
 		std::string listdir(const char *, const char);
 		int alert(const char, const char *, uint32_t * = NULL, std::string * = NULL, std::string * = NULL);
 		int searchfortag(uint32_t *, const types, const types);
-		bool readfilebyline(const char *, std::function<bool(char *)>);
+		bool readfilebyline(const char *, std::function<bool(char *)>); //laod file and put contents in instructions vector
 };
 
 #endif
