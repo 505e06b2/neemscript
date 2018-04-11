@@ -10,6 +10,8 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "if") == 0) return if_;
 	if(strcasecmp(command, "else") == 0) return else_;
 	if(strcasecmp(command, "fi") == 0) return fi_;
+	if(strcasecmp(command, "switch") == 0) return switch_;
+	if(strcasecmp(command, "case") == 0) return case_;
 	if(strcasecmp(command, "for") == 0) return for_;
 	if(strcasecmp(command, "rof") == 0) return rof_;
 	if(strcasecmp(command, "sum") == 0) return sum_;
@@ -133,6 +135,25 @@ bool Neem::parseline(char *line) {
 				int ret = searchfortag(&index, fi_, if_);
 				if(ret >= 0) return ret;
 				return alert('!', "No matching 'fi' for else", &index);
+			};
+			break;
+		case switch_:
+			last->value = params;
+			last->func = [this](instruction *i, uint32_t index) {
+				switchcheckstring = parsevarval(&i->value);
+				return -1;
+			};
+			break;
+		case case_:
+			last->value = (params != NULL) ? params : "";
+			last->func = [this](instruction *i, uint32_t index) {
+				std::string parsed = parsevarval(&i->value);
+				if(parsed != "" && switchcheckstring != parsed) {
+					int ret = searchfortag(&index, case_, none_);
+					if(ret >= 0) return ret-1;
+					return alert('!', "No default case for switch", &index);
+				}
+				return -1;
 			};
 			break;
 		case for_:
@@ -420,6 +441,7 @@ void Neem::runInstructions() {
 		outputhandle = stdout;
 	}
 	std::vector<instruction>().swap(instructions); //Remove all instructions that we just ran
+	switchcheckstring = "";
 }
 
 void Neem::cleanup() {
