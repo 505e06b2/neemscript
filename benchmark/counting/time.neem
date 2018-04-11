@@ -2,7 +2,7 @@ echo == Counting to a million ==
 echo   Enter: py, bat or neem
 echo
 echo  Warning: batch is SLOW (like 5mins slow)
-
+echo
 ::This bit is for making this platform agnostic
 if %OS%==windows
 	set pathdelim=;
@@ -12,24 +12,22 @@ fi
 
 setsystem PATH=%CD%/../../cpp%pathdelim%%PATH%
 
+:: This isn't very precise, if I hand wrote every line, it would be, but I just want a rough estimate
 :top
 	prompt input=Test: 
-	if %input:~0,2%=py
+	switch !LOWER;%input%!
 		call :start
-		start python race.py
-		call :end
-	fi
-	if %input:~0,3%=bat
-		call :start
-		start race.bat
-		call :end
-	fi
-	if %input:~0,4%=neem
-		call :start
-		start neem.exe race.neem
-		call :end
-	fi
-	goto :top
+		case py
+			start python race.py
+			call :end
+		case bat
+			start race.bat
+			call :end
+		case neem
+			start neem.exe race.neem
+			call :end
+		case
+			goto :top
 
 :start
 echo Running benchmark...
@@ -39,4 +37,4 @@ goto :eof
 :end
 sum ftime=%EPOCH%-%stime%/1000000
 echo  => !UPPER;%input:~0,1%!!LOWER;%input:~1%! took %ftime%s
-goto :eof
+goto :top
