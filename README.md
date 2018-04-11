@@ -8,5 +8,6 @@ There's a makefile that should `just work` by default; it just uses your system 
 
 Make sure to check out [the wiki](https://github.com/505e06b2/neemscript/wiki) for the documentation!  
 
+Have a look at [the benchmarking script](benchmark/counting/time.neem) for an example! 
 
 ## [Test Neemscript in your browser](https://505e06b2.github.io/neemscript/) via the power of [Emscripten](http://emscripten.org)!
