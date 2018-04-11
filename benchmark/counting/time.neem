@@ -24,7 +24,7 @@ setsystem PATH=%CD%/../../cpp%pathdelim%%PATH%
 			start race.bat
 			call :end
 		case neem
-			start neem.exe race.neem
+			start neem race.neem
 			call :end
 		case
 			goto :top
