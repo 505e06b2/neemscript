@@ -1,6 +1,2 @@
-call :test
-echo okay
-goto :eof
-
-:test
-echo called
+set var=loNGsEntence
+echo !UPPER;%var:~0,1%!!LOWER;%var:~1%!
