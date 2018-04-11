@@ -76,6 +76,7 @@ class Neem {
 		int alert(const char, const char *, uint32_t * = NULL, std::string * = NULL, std::string * = NULL);
 		int searchfortag(uint32_t *, const types, const types);
 		bool readfilebyline(const char *, std::function<bool(char *)>); //laod file and put contents in instructions vector
+		const char *changecase(char *, const char, const char, int8_t);
 };
 
 #endif

@@ -67,6 +67,14 @@ Neem::parsedstrings *Neem::parseallstrings(parsedstrings *p, instruction *i) {
 	return p;
 }
 
+const char *Neem::changecase(char *c, const char a, const char z, int8_t alter) {
+	char *r = c;
+	for(; *c; c++) {
+		if(*c >= a && *c <= z) *c += alter;
+	}
+	return r;
+}
+
 bool Neem::readfilebyline(const char *filename, std::function<bool(char *)> func) {
 	FILE *file;
 	char linebuffer[MAX_LINE_LEN];

@@ -34,23 +34,11 @@ Neem::Neem() { //Set up dynamic vars
 	};
 	
 	dynamicvariables["UPPER"] = [this](char *c = NULL) {
-		std::vector<char> buffer; //Vector instead of string since += doesn't work on a std::string here
-		for(; *c; c++) {
-			if(*c >= 'a' && *c <= 'z') buffer.push_back(*c - 32);
-			else buffer.push_back(*c);
-		}
-		buffer.push_back('\0');
-		return std::string(buffer.data());
+		return changecase(c, 'a', 'z', -32);
 	};
 	
 	dynamicvariables["LOWER"] = [this](char *c = NULL) {
-		std::vector<char> buffer; //Vector instead of string since += doesn't work on a std::string here
-		for(; *c; c++) {
-			if(*c >= 'A' && *c <= 'Z') buffer.push_back(*c + 32);
-			else buffer.push_back(*c);
-		}
-		buffer.push_back('\0');
-		return std::string(buffer.data());
+		return changecase(c, 'A', 'Z', +32);
 	};
 	
 	dynamicvariables["PATH"] = [this](char *c = NULL) {
