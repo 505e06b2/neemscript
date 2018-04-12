@@ -1,3 +1,4 @@
+-*- mode: bat; -*-
 echo == Counting to a million ==
 echo   Enter: py, bat or neem
 echo
