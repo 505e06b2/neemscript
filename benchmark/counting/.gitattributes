@@ -1,1 +1,2 @@
-*.neem linguist-generated=false linguist-detectable=true linguist-language=Batch
+*.neem linguist-detectable=true
+*.neem linguist-language=Batch
