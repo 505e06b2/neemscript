@@ -15,7 +15,7 @@ RMCMD = rm $(BINDIR)/*.o && rm $(TARGET)
 ICONFILE =
 else
 TARGET = $(OUTNAME).exe
-RMCMD = cmd \/c "del $(BINDIR)\\*.o && del $(TARGET)"
+RMCMD = cmd \/c "del $(BINDIR)\\*.o && del $(TARGET) && del misc\\*.res"
 ICONFILE = misc/icon.res
 endif
 
@@ -39,7 +39,7 @@ $(JSBINDIR)/webmain.bc: $(SRCDIR)/webmain.c $(INCLUDEDIR)/neemWrapper.h
 $(JSBINDIR)/%.bc: $(SRCDIR)/%.cpp $(INCLUDEDIR)/neem.h
 	$(CXX) $(CXXFLAGS) $(OPTIMISATIONS) -c $< -I$(INCLUDEDIR) -o $@
 	
-misc/icon.res: ../icon.ico
+misc/icon.res: ../icon.ico misc/icon.rc
 	windres misc/icon.rc -O coff -o $@
 
 .PHONY: run runwrapper clean web
