@@ -24,6 +24,7 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "pwd") == 0) return pwd_;
 	if(strcasecmp(command, "cd") == 0) return cd_;
 	if(strcasecmp(command, "ls") == 0) return ls_;
+	if(strcasecmp(command, "exit") == 0) return exit_;
 	if(strcasecmp(command, "pause") == 0) return pause_;
 	if(strcasecmp(command, "output") == 0) return output_;
 	if(strcasecmp(command, "input") == 0) return input_;
@@ -74,6 +75,11 @@ bool Neem::parseline(char *line) {
 			last->func = [this](instruction *i, uint32_t index) {
 				fprintf(outputhandle, "%s\n", parsevarval(&i->value).c_str());
 				return -1; //-1 is the 0 of this function; anything positive becomes the new line index
+			};
+			break;
+		case exit_:
+			last->func = [this](instruction *i, uint32_t index) {
+				return -2;
 			};
 			break;
 		case setsystem_:

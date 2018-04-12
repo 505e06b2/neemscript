@@ -1,2 +1,3 @@
-cd misc
-echo done
+echo one
+exit
+echo two

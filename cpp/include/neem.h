@@ -30,7 +30,7 @@ class Neem {
 		Neem();
 	private:
 		void runInstructions();
-		enum types {none_, comment_, echo_, set_, prompt_, setsystem_, import_, goto_, call_, inc_, fi_, if_, else_, switch_, case_, for_, rof_, sum_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_, output_, input_, readall_, readline_, loadlib_, runlibfunc_, unloadlib_};
+		enum types {none_, comment_, echo_, set_, prompt_, setsystem_, import_, goto_, call_, inc_, fi_, if_, else_, switch_, case_, for_, rof_, sum_, exit_, label_, strftime_, sleep_, start_, pwd_, cd_, ls_, pause_, output_, input_, readall_, readline_, loadlib_, runlibfunc_, unloadlib_};
 		typedef struct instruction {
 			types type = none_;
 			std::string value;
