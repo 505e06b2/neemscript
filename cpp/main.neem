@@ -1,5 +1,6 @@
 set var=g
 call check
+pause
 goto :eof
 
 :check
