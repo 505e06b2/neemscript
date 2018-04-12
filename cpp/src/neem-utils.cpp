@@ -57,10 +57,12 @@ bool Neem::removedir(const char *fname) {
 	char p_buf[MAX_LINE_LEN];
 
     directory = opendir(fname);
+	if(directory == NULL) return false;
 
     while ((d = readdir(directory)) != NULL) {
+		if(strcmp(d->d_name, ".") == 0 || strcmp(d->d_name, "..") == 0) continue;
         sprintf(p_buf, "%s/%s", fname, d->d_name);
-		stat(p_buf, &s_buf);
+		if(stat(p_buf, &s_buf) != 0) return false;
         if(S_ISDIR(s_buf.st_mode)) {
 			removedir(p_buf);
         } else {

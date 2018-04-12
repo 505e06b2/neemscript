@@ -24,7 +24,7 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "pwd") == 0) return pwd_;
 	if(strcasecmp(command, "cd") == 0) return cd_;
 	if(strcasecmp(command, "rm") == 0) return rm_;
-	//if(strcasecmp(command, "rmdir") == 0) return rmdir_;
+	if(strcasecmp(command, "rmdir") == 0) return rmdir_;
 	if(strcasecmp(command, "ls") == 0) return ls_;
 	if(strcasecmp(command, "exit") == 0) return exit_;
 	if(strcasecmp(command, "pause") == 0) return pause_;
