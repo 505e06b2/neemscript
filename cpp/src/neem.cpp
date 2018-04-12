@@ -32,6 +32,7 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "loadlib") == 0) return loadlib_;
 	if(strcasecmp(command, "unloadlib") == 0) return unloadlib_;
 	if(strcasecmp(command, "runlibfunc") == 0) return runlibfunc_;
+	if(command[0] == '-') return comment_;
 	if(command[0] == '#') return comment_;
 	if(command[0] == ':' && command[1] != ':') return label_;
 	if(command[0] == ':' && command[1] == ':') return comment_;
