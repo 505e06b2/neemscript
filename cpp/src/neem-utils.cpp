@@ -18,7 +18,7 @@ std::string Neem::parsevarval(std::string *value) {
 
 std::string Neem::getcurrentdir() {
 	char currentdir[1024];
-	getcwd(currentdir, sizeof(currentdir));
+	if(getcwd(currentdir, sizeof(currentdir)) == NULL) return "";
 	return currentdir;
 }
 
