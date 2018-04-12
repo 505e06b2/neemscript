@@ -1,16 +1,2 @@
-set var=g
-call check
-pause
-goto :eof
-
-:check
-switch %var%
-	case windows
-		echo windows
-		goto :eof
-	case linux
-		echo linux
-		goto :eof
-	case
-		echo nope
-		goto eof
+cd misc
+echo done
