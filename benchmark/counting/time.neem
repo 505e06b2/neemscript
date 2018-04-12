@@ -1,4 +1,6 @@
 -*- mode: bat; -*-
+::^ this line is to get highlighting to work on github
+
 echo == Counting to a million ==
 echo   Enter: py, bat or neem
 echo
