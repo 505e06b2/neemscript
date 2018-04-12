@@ -9,14 +9,14 @@ OPTIMISATIONS ?= -O2
 CXX ?= g++
 CXXFLAGS ?= -std=gnu++11
 
-ifeq ($(UNAME),Linux)
-TARGET = $(OUTNAME)
-RMCMD = rm $(BINDIR)/*.o && rm $(TARGET)
-ICONFILE =
-else
+ifeq ($(OS),Windows_NT)
 TARGET = $(OUTNAME).exe
 RMCMD = cmd \/c "del $(BINDIR)\\*.o && del $(TARGET) && del misc\\*.res"
 ICONFILE = misc/icon.res
+else
+TARGET = $(OUTNAME)
+RMCMD = rm $(BINDIR)/*.o && rm $(TARGET)
+ICONFILE =
 endif
 
 $(TARGET): $(patsubst $(SRCDIR)%,$(BINDIR)%,$(patsubst %.cpp,%.o,$(wildcard $(SRCDIR)/*.cpp))) $(BINDIR)/main.o $(ICONFILE)
