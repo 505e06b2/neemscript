@@ -17,10 +17,11 @@ else
 TARGET = $(OUTNAME)
 RMCMD = rm $(BINDIR)/*.o && rm $(TARGET)
 ICONFILE =
+LDFLAGS += -ldl
 endif
 
 $(TARGET): $(patsubst $(SRCDIR)%,$(BINDIR)%,$(patsubst %.cpp,%.o,$(wildcard $(SRCDIR)/*.cpp))) $(BINDIR)/main.o $(ICONFILE)
-	$(CXX) $(CXXFLAGS) $(OPTIMISATIONS) $^ -o $@
+	$(CXX) $(CXXFLAGS) $(OPTIMISATIONS) $^ -o $@ $(LDFLAGS)
 	strip $@
 
 $(BINDIR)/main.o: $(SRCDIR)/main.c $(INCLUDEDIR)/neemWrapper.h
@@ -31,7 +32,7 @@ $(BINDIR)/%.o: $(SRCDIR)/%.cpp $(INCLUDEDIR)/neem.h
 
 #MISC COMMANDS
 ../docs/neemscript.js: $(patsubst $(SRCDIR)%,$(JSBINDIR)%,$(patsubst %.cpp,%.bc,$(wildcard $(SRCDIR)/*.cpp))) $(JSBINDIR)/webmain.bc
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(OPTIMISATIONS) $^ -I$(INCLUDEDIR) -o ../docs/neemscript.js -s ASSERTIONS=1 -s EXPORTED_FUNCTIONS='["_webmain"]' -s EXTRA_EXPORTED_RUNTIME_METHODS='["cwrap"]'
+	$(CXX) $(CXXFLAGS) $(OPTIMISATIONS) $^ -I$(INCLUDEDIR) -o ../docs/neemscript.js -s ASSERTIONS=1 -s EXPORTED_FUNCTIONS='["_webmain"]' -s EXTRA_EXPORTED_RUNTIME_METHODS='["cwrap"]'
 	
 $(JSBINDIR)/webmain.bc: $(SRCDIR)/webmain.c $(INCLUDEDIR)/neemWrapper.h
 	$(CC) $(OPTIMISATIONS) -c $< -I$(INCLUDEDIR) -o $@
