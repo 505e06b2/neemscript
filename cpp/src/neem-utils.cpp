@@ -50,6 +50,29 @@ std::string Neem::listdir(const char *c, const char split) {
 	return temp;
 }
 
+bool Neem::removedir(const char *fname) {
+	DIR* directory;
+	struct dirent* d;
+	struct stat s_buf;
+	char p_buf[MAX_LINE_LEN];
+
+    directory = opendir(fname);
+
+    while ((d = readdir(directory)) != NULL) {
+        sprintf(p_buf, "%s/%s", fname, d->d_name);
+		stat(p_buf, &s_buf);
+        if(S_ISDIR(s_buf.st_mode)) {
+			removedir(p_buf);
+        } else {
+			unlink(p_buf);
+		}
+    }
+
+    closedir(directory);
+    rmdir(fname);
+	return true;
+}
+
 char *Neem::splitstring(char *str, const char token) {
 	for(; *str; str++) {
 		if(*str == token) {

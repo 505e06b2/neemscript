@@ -23,6 +23,8 @@ Neem::types Neem::gettype(char *command) {
 	if(strcasecmp(command, "start") == 0) return start_;
 	if(strcasecmp(command, "pwd") == 0) return pwd_;
 	if(strcasecmp(command, "cd") == 0) return cd_;
+	if(strcasecmp(command, "rm") == 0) return rm_;
+	//if(strcasecmp(command, "rmdir") == 0) return rmdir_;
 	if(strcasecmp(command, "ls") == 0) return ls_;
 	if(strcasecmp(command, "exit") == 0) return exit_;
 	if(strcasecmp(command, "pause") == 0) return pause_;
@@ -317,6 +319,24 @@ bool Neem::parseline(char *line) {
 			last->value = (params != NULL) ? params : ".";
 			last->func = [this](instruction *i, uint32_t index) {
 				fprintf(outputhandle, "%s\n", listdir(parsevarval(&i->value).c_str(), '\n').c_str());
+				return -1;
+			};
+			break;
+		case rm_:
+			if(params == NULL) {alert('!', "Cannot have a blank rm statement"); return false;}
+			last->value = params;
+			last->func = [this](instruction *i, uint32_t index) {
+				std::string parsed = parsevarval(&i->value);
+				if(remove(parsed.c_str()) != 0) return alert('!', "Could not remove '%s'; if it's a directory, use rmdir", &index, &parsed);
+				return -1;
+			};
+			break;
+		case rmdir_:
+			if(params == NULL) {alert('!', "Cannot have a blank rmdir statement"); return false;}
+			last->value = params;
+			last->func = [this](instruction *i, uint32_t index) {
+				std::string parsed = parsevarval(&i->value);
+				if(!removedir(parsed.c_str())) return alert('!', "Error while removing directory '%s'", &index, &parsed);
 				return -1;
 			};
 			break;
