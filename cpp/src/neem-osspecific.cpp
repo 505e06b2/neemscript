@@ -27,6 +27,10 @@
 		return -1;
 	}
 	
+	void Neem::threadsleep(uint32_t delay) {
+		Sleep(delay);
+	}
+	
 #elif __unix__
 	
 	#include <dlfcn.h>
@@ -54,6 +58,10 @@
 	int Neem::setenvvar(std::string *name, std::string *value) {
 		if(setenv(name->c_str(), value->c_str(), 1) != 0) return -2;
 		return -1;
+	}
+	
+	void Neem::threadsleep(uint32_t delay) {
+		usleep(delay*1000);
 	}
 	
 #else

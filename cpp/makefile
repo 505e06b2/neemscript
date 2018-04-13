@@ -13,12 +13,12 @@ CXXFLAGS ?= -std=gnu++11
 UNAME := $(shell uname)
 ifneq ($(UNAME),)
 TARGET = $(OUTNAME)
-RMCMD = rm $(BINDIR)/*.o && rm $(TARGET)
+RMCMD = rm $(BINDIR)/*.o && rm $(TARGET) && rm $(BINDIR)/$(CMDSDIR)/*.o
 ICONFILE =
 LDFLAGS += -ldl
 else
 TARGET = $(OUTNAME).exe
-RMCMD = cmd \/c "del $(BINDIR)\\*.o && del $(TARGET) && del misc\\*.res"
+RMCMD = cmd \/c "del $(BINDIR)\\*.o && del $(TARGET) && del misc\\*.res && del $(BINDIR)\\$(CMDSDIR)\\*.o"
 ICONFILE = misc/icon.res
 endif
 

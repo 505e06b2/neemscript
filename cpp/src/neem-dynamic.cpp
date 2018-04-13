@@ -33,9 +33,10 @@ std::string Neem::dynamic_strftime(char *c) {
 }
 
 std::string Neem::dynamic_epoch(char *c) {
-	using namespace std::chrono;
-	auto casted = time_point_cast<microseconds>(system_clock::now()).time_since_epoch();
-	return std::to_string(casted.count()); 
+	struct timeval tp;
+	gettimeofday(&tp, NULL);
+	return std::to_string(((long long int)tp.tv_sec) * 1000000ll + 
+                        (long long int)tp.tv_usec); 
 }
 
 std::string Neem::dynamic_os(char *c) { 
