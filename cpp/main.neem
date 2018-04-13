@@ -1,1 +1,1 @@
-rmdir blank
+echo %TIME%

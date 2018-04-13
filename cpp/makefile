@@ -4,6 +4,7 @@ INCLUDEDIR=include
 BINDIR=binfiles
 JSBINDIR=jsbinfiles
 SRCDIR=src
+CMDSDIR=commands
 CC ?= gcc
 OPTIMISATIONS ?= -O2
 CXX ?= g++
@@ -21,7 +22,7 @@ RMCMD = cmd \/c "del $(BINDIR)\\*.o && del $(TARGET) && del misc\\*.res"
 ICONFILE = misc/icon.res
 endif
 
-$(TARGET): $(patsubst $(SRCDIR)%,$(BINDIR)%,$(patsubst %.cpp,%.o,$(wildcard $(SRCDIR)/*.cpp))) $(BINDIR)/main.o $(ICONFILE)
+$(TARGET): $(patsubst $(SRCDIR)%,$(BINDIR)%,$(patsubst %.cpp,%.o,$(wildcard $(SRCDIR)/*.cpp))) $(patsubst $(SRCDIR)%,$(BINDIR)%,$(patsubst %.cpp,%.o,$(wildcard $(SRCDIR)/$(CMDSDIR)/*.cpp))) $(BINDIR)/main.o $(ICONFILE)
 	$(CXX) $(CXXFLAGS) $(OPTIMISATIONS) $^ -o $@ $(LDFLAGS)
 	strip $@
 

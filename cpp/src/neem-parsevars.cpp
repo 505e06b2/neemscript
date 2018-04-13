@@ -1,17 +1,6 @@
 #include "neem.h"
 
 std::string Neem::parsevariables(const char *value, const char searchfor, uint8_t *amount) { //the index is a return index
-	std::function<std::string(std::map<const std::string, std::string> *,
-						 std::map<const std::string, std::function<std::string(char *)>> *, char *)> check = 
-		[this](std::map<const std::string, std::string> *variables,
-		   std::map<const std::string, std::function<std::string(char *)>> *dynamicvariables, char *findtarget) {
-				std::map<const std::string, std::function<std::string(char *)>>::iterator gvar;
-				char *possibleparams = splitstring(findtarget, ';');
-				if((gvar = dynamicvariables->find(findtarget)) != dynamicvariables->end()) return gvar->second(possibleparams);
-				std::map<const std::string, std::string>::iterator var;
-				if((var = variables->find(findtarget)) != variables->end()) return var->second;
-				return (std::string)"";
-		};
 	std::vector<char> buffer;
 	std::vector<char> varnamebuffer;
 	bool writevarname = false;
@@ -37,7 +26,20 @@ std::string Neem::parsevariables(const char *value, const char searchfor, uint8_
 						break;
 					}
 				}
-				std::string varvalue = check(&variables, &dynamicvariables, varname);
+				
+				std::string varvalue;
+				{ //Check
+					char *possibleparams = splitstring(varname, ';');
+					std::map<const std::string, std::string (Neem::*)(char *)>::iterator gvar;
+					std::map<const std::string, std::string>::iterator var;
+					if((gvar = dynamicvariables.find(varname)) != dynamicvariables.end()) {
+						varvalue = (this->*gvar->second)(possibleparams);
+					} else if((var = variables.find(varname)) != variables.end()) {
+						varvalue = var->second;
+					} else {
+						varvalue = "";
+					}
+				}
 				
 				if(varvalue != "") { //Variable exists if not blank
 					std::string tempvar = varvalue;

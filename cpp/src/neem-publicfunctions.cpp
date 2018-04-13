@@ -5,79 +5,18 @@ Neem::~Neem() {
 }
 
 Neem::Neem() { //Set up dynamic vars
-	dynamicvariables["TIME"] = [this](char *c = NULL) {
-		return getstrftime(9, "%H:%M:%S");
-	};
-	
-	dynamicvariables["DATE"] = [this](char *c = NULL) {
-		return getstrftime(9, "%d/%m/%y");
-	};
-	
-	dynamicvariables["CD"] = [this](char *c = NULL) {
-		return getcurrentdir();
-	};
-	
-	dynamicvariables["LS"] = [this](char *c = NULL) {
-		return listdir(c, FORCHARCHECK);
-	};
-	
-	dynamicvariables["OS"] = [this](char *c = NULL) {
-		#ifdef _WIN32
-			return "windows";
-		#elif __linux__
-			return "linux";
-		#elif __unix__
-			return "unix";
-		#else
-			return "unknown";
-		#endif
-	};
-	
-	dynamicvariables["UPPER"] = [this](char *c = NULL) {
-		return changecase(c, 'a', 'z', -32);
-	};
-	
-	dynamicvariables["LOWER"] = [this](char *c = NULL) {
-		return changecase(c, 'A', 'Z', +32);
-	};
-	
-	dynamicvariables["PATH"] = [this](char *c = NULL) {
-		return getenv("PATH");
-	};
-	
-	dynamicvariables["EPOCH"] = [this](char *c = NULL) {
-		using namespace std::chrono;
-		auto casted = time_point_cast<microseconds>(system_clock::now()).time_since_epoch();
-		return std::to_string(casted.count());
-	};
-	
-	dynamicvariables["STRFTIME"] = [this](char *c = NULL) {
-		char *temp = c;
-		for(; *temp; temp++) if(*temp == '$') *temp = '%';
-		return getstrftime(64, c);
-	};
-	
-	dynamicvariables["SYSTEM"] = [this](char *c = NULL) {
-		std::string temp = c;
-		const char *val = getenv(parsevarval(&temp).c_str());
-		if(val == NULL) {
-			return ""; //Blank is our NULL
-		} else if(val[0] == '\0') {
-			return " "; //To show it exists but is just blank
-		} else {
-			return val;
-		}
-	};
-	
-	dynamicvariables["POINTER"] = [this](char *c = NULL) {
-		char *end;
-		const char *toint = (const char *)strtoull(c, &end, 0);
-		if(toint == 0) {
-			alert('#', "Pointer not valid");
-			return "";
-		}
-		return toint;
-	};
+	dynamicvariables["TIME"] = dynamic_time;
+	dynamicvariables["DATE"] = dynamic_date;
+	dynamicvariables["CD"] = dynamic_cd;
+	dynamicvariables["LS"] = dynamic_ls;
+	dynamicvariables["OS"] = dynamic_os;
+	dynamicvariables["UPPER"] = dynamic_upper;
+	dynamicvariables["LOWER"] = dynamic_lower;
+	dynamicvariables["PATH"] = dynamic_path;
+	dynamicvariables["EPOCH"] = dynamic_epoch;
+	dynamicvariables["STRFTIME"] = dynamic_strftime;
+	dynamicvariables["SYSTEM"] = dynamic_system;
+	dynamicvariables["POINTER"] = dynamic_pointer;
 }
 
 void Neem::setVariable(const char *name, const char *value) {
@@ -92,7 +31,7 @@ const char *Neem::getVariable(const char *name) {
 
 //Interpreting
 void Neem::interpretFile(const char *fname) {
-	if(!readfilebyline(fname, [this](char *c){return parseline(c);})) return;
+	if(!readfilebyline(fname, parseline)) return;
 	runInstructions(); //The meat of the program
 }
 
