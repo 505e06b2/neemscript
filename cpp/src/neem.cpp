@@ -45,8 +45,9 @@ bool Neem::parseline(char *line, uint32_t index) {
 	if(*line == '\0') return 1; //if, after spaces, it's blank, just return
 	
 	char *params = splitstring(line, ' ');
-	typeandfunc current = gettype(line);
+	
 	{
+		typeandfunc current = gettype(line);
 		if(current.type == comment_) return true;
 		else if(current.type == none_) {
 			std::string l = line;
@@ -55,6 +56,7 @@ bool Neem::parseline(char *line, uint32_t index) {
 		} else if(current.type != import_) { //Special command
 			instruction i;
 			i.type = current.type;
+			i.func = current.func;
 			instructions.push_back(i);
 		} else { //If import_
 			if(params == NULL) {
@@ -67,7 +69,6 @@ bool Neem::parseline(char *line, uint32_t index) {
 	}
 
 	instruction *last = &instructions.back();
-	last->func = current.func;
 	
 	switch(last->type) { //This is how the syntax is dealt with
 		
