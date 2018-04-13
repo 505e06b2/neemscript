@@ -22,4 +22,4 @@ BEGIN
   END
 END
 
-id ICON "../../icon.ico"
+id ICON "../../docs/favicon.ico"

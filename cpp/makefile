@@ -42,7 +42,7 @@ $(JSBINDIR)/webmain.bc: $(SRCDIR)/webmain.c $(INCLUDEDIR)/neemWrapper.h
 $(JSBINDIR)/%.bc: $(SRCDIR)/%.cpp $(INCLUDEDIR)/neem.h
 	$(CXX) $(CXXFLAGS) $(OPTIMISATIONS) -c $< -I$(INCLUDEDIR) -o $@
 	
-misc/icon.res: ../icon.ico misc/icon.rc
+misc/icon.res: ../docs/favicon.ico misc/icon.rc
 	windres misc/icon.rc -O coff -o $@
 
 .PHONY: run runwrapper clean web
