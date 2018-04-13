@@ -57,7 +57,7 @@ window.onload = function() {
 		var temp = localStorage.getItem("script");
 		if(temp) {
 			this.value = temp;
-			Module.print("[*] Loaded script from localStorage");
+			Module.print("[*] Tried to load script from localStorage; if it didn't work, press CTRL+O");
 		}
 	}
 };
