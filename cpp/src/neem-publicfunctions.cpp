@@ -5,18 +5,18 @@ Neem::~Neem() {
 }
 
 Neem::Neem() { //Set up dynamic vars
-	dynamicvariables["TIME"] = dynamic_time;
-	dynamicvariables["DATE"] = dynamic_date;
-	dynamicvariables["CD"] = dynamic_cd;
-	dynamicvariables["LS"] = dynamic_ls;
-	dynamicvariables["OS"] = dynamic_os;
-	dynamicvariables["UPPER"] = dynamic_upper;
-	dynamicvariables["LOWER"] = dynamic_lower;
-	dynamicvariables["PATH"] = dynamic_path;
-	dynamicvariables["EPOCH"] = dynamic_epoch;
-	dynamicvariables["STRFTIME"] = dynamic_strftime;
-	dynamicvariables["SYSTEM"] = dynamic_system;
-	dynamicvariables["POINTER"] = dynamic_pointer;
+	dynamicvariables["TIME"] = &Neem::dynamic_time;
+	dynamicvariables["DATE"] = &Neem::dynamic_date;
+	dynamicvariables["CD"] = &Neem::dynamic_cd;
+	dynamicvariables["LS"] = &Neem::dynamic_ls;
+	dynamicvariables["OS"] = &Neem::dynamic_os;
+	dynamicvariables["UPPER"] = &Neem::dynamic_upper;
+	dynamicvariables["LOWER"] = &Neem::dynamic_lower;
+	dynamicvariables["PATH"] = &Neem::dynamic_path;
+	dynamicvariables["EPOCH"] = &Neem::dynamic_epoch;
+	dynamicvariables["STRFTIME"] = &Neem::dynamic_strftime;
+	dynamicvariables["SYSTEM"] = &Neem::dynamic_system;
+	dynamicvariables["POINTER"] = &Neem::dynamic_pointer;
 }
 
 void Neem::setVariable(const char *name, const char *value) {
@@ -31,7 +31,7 @@ const char *Neem::getVariable(const char *name) {
 
 //Interpreting
 void Neem::interpretFile(const char *fname) {
-	if(!readfilebyline(fname, parseline)) return;
+	if(!readfilebyline(fname, &Neem::parseline)) return;
 	runInstructions(); //The meat of the program
 }
 

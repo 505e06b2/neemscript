@@ -63,7 +63,7 @@ bool Neem::parseline(char *line) {
 				alert('!', "Can't import", NULL);
 				return false;
 			}
-			if(!readfilebyline(params, parseline)) return false;
+			if(!readfilebyline(params, &Neem::parseline)) return false;
 			return true;
 		}
 	}
@@ -74,46 +74,46 @@ bool Neem::parseline(char *line) {
 			break;
 		case echo_:
 			last->value = (params != NULL) ? params : ""; //value to print (optional)
-			last->func = command_echo;
+			last->func = &Neem::command_echo;
 			break;
 		case exit_:
-			last->func = command_exit;
+			last->func = &Neem::command_exit;
 			break;
 		case setsystem_:
 			last->extravalue = splitstring(params, '='); //value to set to
 			last->value = params; //varname
-			last->func = command_setsystem;
+			last->func = &Neem::command_setsystem;
 			break;
 		case set_:
 			last->extravalue = splitstring(params, '='); //value to set to
 			last->value = params; //varname
-			last->func = command_set;
+			last->func = &Neem::command_set;
 			break;
 		case prompt_: //type input
 			last->extravalue = splitstring(params, '='); //Prompt
 			last->value = params; //variable
-			last->func = command_prompt;
+			last->func = &Neem::command_prompt;
 			break;
 		case sum_:
 			last->extravalue = splitstring(params, '='); //Calculation
 			last->value = params; //variable
-			last->func = command_sum;
+			last->func = &Neem::command_sum;
 			break;
 		case if_:
 			last->extravalue = setifcheck(last, params); //sets the if function and returns after the op
 			last->value = params; //setif \0s the left part
-			last->func = command_if;
+			last->func = &Neem::command_if;
 			break;
 		case else_:
-			last->func = command_else;
+			last->func = &Neem::command_else;
 			break;
 		case switch_:
 			last->value = params;
-			last->func = command_switch;
+			last->func = &Neem::command_switch;
 			break;
 		case case_:
 			last->value = (params != NULL) ? params : "";
-			last->func = command_case;
+			last->func = &Neem::command_case;
 			break;
 		case for_:
 			{
@@ -123,18 +123,18 @@ bool Neem::parseline(char *line) {
 				last->extravalue = arrstring; //input/arr var
 				last->value = params; //index value var
 			}
-			last->func = command_for;
+			last->func = &Neem::command_for;
 			break;
 		case rof_:
-			last->func = command_rof;
+			last->func = &Neem::command_rof;
 			break;
 		case goto_:
 			last->value = (params[0] == ':') ? params+1 : params; //Remove : from label -> goto :label
-			last->func = command_goto;
+			last->func = &Neem::command_goto;
 			break;
 		case call_:
 			last->value = (params[0] == ':') ? params+1 : params; //Remove : from label -> goto :label
-			last->func = command_call;
+			last->func = &Neem::command_call;
 			break;
 		case inc_:
 			{
@@ -143,7 +143,7 @@ bool Neem::parseline(char *line) {
 				else last->extravalue = "";
 				last->value = params;
 			}
-			last->func = command_inc;
+			last->func = &Neem::command_inc;
 			break;
 		case label_:
 			last->value = line+1; //label name but with : removed
@@ -151,48 +151,48 @@ bool Neem::parseline(char *line) {
 		case strftime_:
 			last->extravalue = splitstring(params, '='); //strftime
 			last->value = params; //varname
-			last->func = command_strftime;
+			last->func = &Neem::command_strftime;
 			break;
 		case sleep_:
 			last->value = params; //Time to sleep
-			last->func = command_sleep;
+			last->func = &Neem::command_sleep;
 			break;
 		case start_:
 			last->value = params; //Program name
-			last->func = command_start;
+			last->func = &Neem::command_start;
 			break;
 		case pwd_:
-			last->func = command_pwd;
+			last->func = &Neem::command_pwd;
 			break;
 		case cd_:
 			if(params == NULL) last->extravalue = "";
 				else last->value = params; //Directory name
-			last->func = command_cd;
+			last->func = &Neem::command_cd;
 			break;
 		case ls_:
 			last->value = (params != NULL) ? params : ".";
-			last->func = command_ls;
+			last->func = &Neem::command_ls;
 			break;
 		case rm_:
 			if(params == NULL) {alert('!', "Cannot have a blank rm statement"); return false;}
 			last->value = params;
-			last->func = command_rm;
+			last->func = &Neem::command_rm;
 			break;
 		case rmdir_:
 			if(params == NULL) {alert('!', "Cannot have a blank rmdir statement"); return false;}
 			last->value = params;
-			last->func = command_rmdir;
+			last->func = &Neem::command_rmdir;
 			break;
 		case pause_:
-			last->func = command_pause;
+			last->func = &Neem::command_pause;
 			break;
 		case loadlib_:
 			last->value = params; //libname
-			last->func = command_loadlib;
+			last->func = &Neem::command_loadlib;
 			break;
 		case unloadlib_:
 			last->value = params; //lib
-			last->func = command_unloadlib;
+			last->func = &Neem::command_unloadlib;
 			break;
 		case runlibfunc_:
 			{ //scope this bit
@@ -201,7 +201,7 @@ bool Neem::parseline(char *line) {
 				last->extravalue = temp; //function
 				last->value = params; //library
 			}
-			last->func = command_runlibfunc;
+			last->func = &Neem::command_runlibfunc;
 			break;
 		case output_:
 			{
@@ -210,19 +210,19 @@ bool Neem::parseline(char *line) {
 				if(temp != NULL) last->extravalue = temp; //file attributes (optional)
 				else last->extravalue = "a"; //default to append
 			}
-			last->func = command_output;
+			last->func = &Neem::command_output;
 			break;
 		case input_:
 			last->value = params; //filename
-			last->func = command_input;
+			last->func = &Neem::command_input;
 			break;
 		case readall_:
 			last->value = params; //Variable name
-			last->func = command_readall;
+			last->func = &Neem::command_readall;
 			break;
 		case readline_:
 			last->value = (params) ? params : ""; //Variable name (optional)
-			last->func = command_readline;
+			last->func = &Neem::command_readline;
 			break;
 	};
 	return true;

@@ -36,7 +36,7 @@ class Neem {
 			std::string value;
 			std::string extravalue;
 			std::string xxxtravalue;
-			int (Neem::*func)(struct instruction *i, uint32_t) = command_none; //Needs to be this or it'll kill the program
+			int (Neem::*func)(struct instruction *i, uint32_t) = &Neem::command_none; //Needs to be this or it'll kill the program
 			bool (*check)(std::string, std::string) = NULL;
 		} instruction;
 		
