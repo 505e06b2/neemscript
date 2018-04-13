@@ -4,7 +4,7 @@ The goal was to make it really fast and `easy to read` or at least `only a singl
 I also want it to be easily embedded in other programs as a scripting language and possibly also able to be on used baremetal systems if possible
 
 There's a makefile that should `just work` by default; it just uses your system gcc... Well, it would be your "cc"  
-Neemscript is confirmed to compile on `Windows 7 x86_64` (MinGW & Cygwin), `Xubuntu 14.04 x86` (GCC) and `the Web` (Emscripten)
+Neemscript is confirmed to compile on `Windows 7 x86_64` (MinGW & Cygwin), `Xubuntu 14.04 x86` (GCC), `Android 6.0 armhf` (Termux Clang) and `the Web` (Emscripten)
 
 Make sure to check out [the wiki](https://github.com/505e06b2/neemscript/wiki) for the documentation!  
 

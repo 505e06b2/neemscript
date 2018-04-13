@@ -69,7 +69,7 @@ bool Neem::parseline(char *line, uint32_t index) {
 	instruction *last = &instructions.back();
 	last->func = current.func;
 	
-	switch(last->type) {
+	switch(last->type) { //This is how the syntax is dealt with
 		
 		case exit_: //just command on a line: "rof" / "exit"
 		case pwd_:
