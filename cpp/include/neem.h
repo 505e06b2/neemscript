@@ -63,7 +63,7 @@ class Neem {
 		FILE *inputhandle = NULL;
 		std::string switchcheckstring = "";
 		
-		bool parseline(char *);
+		bool parseline(char *, uint32_t);
 		typeandfunc gettype(char *);
 		void cleanup();
 		std::string parsevariables(const char *, const char, uint8_t *);
@@ -86,7 +86,7 @@ class Neem {
 		bool removedir(const char *);
 		int alert(const char, const char *, uint32_t * = NULL, std::string * = NULL, std::string * = NULL);
 		int searchfortag(uint32_t *, const types, const types);
-		bool readfilebyline(const char *, bool(Neem::*)(char *)); //laod file and put contents in instructions vector
+		bool readfilebyline(const char *, bool(Neem::*)(char *, uint32_t)); //laod file and put contents in instructions vector
 		const char *changecase(char *, const char, const char, int8_t);
 		
 		//dynamic vars

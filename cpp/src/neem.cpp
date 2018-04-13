@@ -40,7 +40,7 @@ Neem::typeandfunc Neem::gettype(char *command) {
 	return {none_, NULL};
 }
 
-bool Neem::parseline(char *line) {
+bool Neem::parseline(char *line, uint32_t index) {
 	while(isspace((uint8_t) *line)) line++; //Remove leading spaces
 	if(*line == '\0') return 1; //if, after spaces, it's blank, just return
 	
@@ -84,6 +84,7 @@ bool Neem::parseline(char *line) {
 		case readall_:
 		case rm_:
 		case rmdir_:
+			if(params == NULL) {alert('!', "Missing parameters", &index); return false;}
 			last->value = params;
 			last->func = current.func;
 			break;

@@ -100,7 +100,7 @@ const char *Neem::changecase(char *c, const char a, const char z, int8_t alter) 
 	return r;
 }
 
-bool Neem::readfilebyline(const char *filename, bool (Neem::*func)(char *)) {
+bool Neem::readfilebyline(const char *filename, bool (Neem::*func)(char *, uint32_t)) {
 	FILE *file;
 	char linebuffer[MAX_LINE_LEN];
 	uint16_t length; //tied to MAX_LINE_LEN
@@ -120,7 +120,7 @@ bool Neem::readfilebyline(const char *filename, bool (Neem::*func)(char *)) {
 					linebuffer[i] = '\0';
 			}
 		}
-		if(!(this->*func)(linebuffer)) return false;
+		if(!(this->*func)(linebuffer, index)) return false;
 	}
 	
 	fclose(file);

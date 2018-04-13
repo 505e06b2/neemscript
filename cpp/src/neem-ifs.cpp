@@ -46,5 +46,5 @@ char *Neem::setifcheck(instruction *i, char *string) {
 		}
 		string++;
 	}
-	printf("[!] If string not correct: %s\n", string);
+	alert('#', "If string not correct; whitespace is very important");
 }

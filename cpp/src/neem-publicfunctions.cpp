@@ -38,10 +38,11 @@ void Neem::interpretFile(const char *fname) {
 void Neem::interpretBuffer(const char *buffer) {
 	{ //scope removes vector
 		std::vector<char> currentline;
+		uint32_t index = 0;
 		for(; *buffer; buffer++) {
 			if(*buffer == '\n') {
 				currentline.push_back('\0');
-				if(!parseline(currentline.data())) return;
+				if(!parseline(currentline.data(), index++)) return;
 				std::vector<char>().swap(currentline); //Clean the vector
 			} else {
 				currentline.push_back(*buffer);
@@ -49,7 +50,7 @@ void Neem::interpretBuffer(const char *buffer) {
 		}
 		//One more at the end
 		currentline.push_back('\0');
-		if(!parseline(currentline.data())) return;
+		if(!parseline(currentline.data(), index)) return;
 	}
 	
 	runInstructions();
@@ -61,7 +62,7 @@ void Neem::interpretLine(const char *buffer) {
 		for(; *buffer; buffer++) {
 			if(*buffer == '&' && *(buffer+1) == '&') {
 				currentline.push_back('\0');
-				if(!parseline(currentline.data())) return;
+				if(!parseline(currentline.data(), 0)) return;
 				std::vector<char>().swap(currentline); //Clean the vector
 				buffer++;
 			} else {
@@ -70,7 +71,7 @@ void Neem::interpretLine(const char *buffer) {
 		}
 		//One more at the end
 		currentline.push_back('\0');
-		if(!parseline(currentline.data())) return;
+		if(!parseline(currentline.data(), 0)) return;
 	}
 	
 	runInstructions();
