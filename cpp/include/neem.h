@@ -50,6 +50,11 @@ class Neem {
 		} parsedstrings;
 		parsedstrings *parseallstrings(parsedstrings *, instruction *);
 		
+		typedef struct typeandfunc {
+			types type;
+			int (Neem::*func)(instruction *i, uint32_t);
+		} typeandfunc;
+		
 		std::vector<instruction> instructions;
 		std::map<const std::string, std::string> variables;
 		std::map<const std::string, std::string (Neem::*)(char *)> dynamicvariables;
@@ -59,7 +64,7 @@ class Neem {
 		std::string switchcheckstring = "";
 		
 		bool parseline(char *);
-		types gettype(char *);
+		typeandfunc gettype(char *);
 		void cleanup();
 		std::string parsevariables(const char *, const char, uint8_t *);
 		char *setifcheck(instruction *, char *);

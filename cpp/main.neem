@@ -1,3 +1,1 @@
 echo %EPOCH%
-sleep 2000
-echo done

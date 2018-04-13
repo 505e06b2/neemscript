@@ -1,45 +1,43 @@
 #include "neem.h"
 
-Neem::types Neem::gettype(char *command) {
-	if(strcasecmp(command, "echo") == 0) return echo_;
-	if(strcasecmp(command, "print") == 0) return echo_;
-	if(strcasecmp(command, "setsystem") == 0) return setsystem_;
-	if(strcasecmp(command, "import") == 0) return import_;
-	if(strcasecmp(command, "set") == 0) return set_;
-	if(strcasecmp(command, "prompt") == 0) return prompt_;
-	if(strcasecmp(command, "if") == 0) return if_;
-	if(strcasecmp(command, "else") == 0) return else_;
-	if(strcasecmp(command, "fi") == 0) return fi_;
-	if(strcasecmp(command, "switch") == 0) return switch_;
-	if(strcasecmp(command, "case") == 0) return case_;
-	if(strcasecmp(command, "for") == 0) return for_;
-	if(strcasecmp(command, "rof") == 0) return rof_;
-	if(strcasecmp(command, "sum") == 0) return sum_;
-	if(strcasecmp(command, "goto") == 0) return goto_;
-	if(strcasecmp(command, "call") == 0) return call_;
-	if(strcasecmp(command, "inc") == 0) return inc_;
-	if(strcasecmp(command, "sleep") == 0) return sleep_;
-	if(strcasecmp(command, "strftime") == 0) return strftime_;
-	if(strcasecmp(command, "start") == 0) return start_;
-	if(strcasecmp(command, "pwd") == 0) return pwd_;
-	if(strcasecmp(command, "cd") == 0) return cd_;
-	if(strcasecmp(command, "rm") == 0) return rm_;
-	if(strcasecmp(command, "rmdir") == 0) return rmdir_;
-	if(strcasecmp(command, "ls") == 0) return ls_;
-	if(strcasecmp(command, "exit") == 0) return exit_;
-	if(strcasecmp(command, "pause") == 0) return pause_;
-	if(strcasecmp(command, "output") == 0) return output_;
-	if(strcasecmp(command, "input") == 0) return input_;
-	if(strcasecmp(command, "readall") == 0) return readall_;
-	if(strcasecmp(command, "readline") == 0) return readline_;
-	if(strcasecmp(command, "loadlib") == 0) return loadlib_;
-	if(strcasecmp(command, "unloadlib") == 0) return unloadlib_;
-	if(strcasecmp(command, "runlibfunc") == 0) return runlibfunc_;
-	if(command[0] == '-') return comment_;
-	if(command[0] == '#') return comment_;
-	if(command[0] == ':' && command[1] != ':') return label_;
-	if(command[0] == ':' && command[1] == ':') return comment_;
-	return none_;
+Neem::typeandfunc Neem::gettype(char *command) {
+	if(strcasecmp(command, "echo") == 0 || strcasecmp(command, "print") == 0) return {echo_, &Neem::command_echo};
+	if(strcasecmp(command, "setsystem") == 0) return {setsystem_, &Neem::command_setsystem};
+	if(strcasecmp(command, "import") == 0) return {import_, NULL};
+	if(strcasecmp(command, "set") == 0) return {set_, &Neem::command_set};
+	if(strcasecmp(command, "prompt") == 0) return {prompt_, &Neem::command_prompt};
+	if(strcasecmp(command, "if") == 0) return {if_, &Neem::command_if};
+	if(strcasecmp(command, "else") == 0) return {else_, &Neem::command_else};
+	if(strcasecmp(command, "fi") == 0) return {fi_, &Neem::command_none};
+	if(strcasecmp(command, "switch") == 0) return {switch_, &Neem::command_switch};
+	if(strcasecmp(command, "case") == 0) return {case_, &Neem::command_case};
+	if(strcasecmp(command, "for") == 0) return {for_, &Neem::command_for};
+	if(strcasecmp(command, "rof") == 0) return {rof_, &Neem::command_rof};
+	if(strcasecmp(command, "sum") == 0) return {sum_, &Neem::command_sum};
+	if(strcasecmp(command, "goto") == 0) return {goto_, &Neem::command_goto};
+	if(strcasecmp(command, "call") == 0) return {call_, &Neem::command_call};
+	if(strcasecmp(command, "inc") == 0) return {inc_, &Neem::command_inc};
+	if(strcasecmp(command, "sleep") == 0) return {sleep_, &Neem::command_sleep};
+	if(strcasecmp(command, "strftime") == 0) return {strftime_, &Neem::command_strftime};
+	if(strcasecmp(command, "start") == 0) return {start_, &Neem::command_start};
+	if(strcasecmp(command, "pwd") == 0) return {pwd_, &Neem::command_pwd};
+	if(strcasecmp(command, "cd") == 0) return {cd_, &Neem::command_cd};
+	if(strcasecmp(command, "rm") == 0) return {rm_, &Neem::command_rm};
+	if(strcasecmp(command, "rmdir") == 0) return {rmdir_, &Neem::command_rmdir};
+	if(strcasecmp(command, "ls") == 0) return {ls_, &Neem::command_ls};
+	if(strcasecmp(command, "exit") == 0) return {exit_, &Neem::command_exit};
+	if(strcasecmp(command, "pause") == 0) return {pause_, &Neem::command_pause};
+	if(strcasecmp(command, "output") == 0) return {output_, &Neem::command_output};
+	if(strcasecmp(command, "input") == 0) return {input_, &Neem::command_input};
+	if(strcasecmp(command, "readall") == 0) return {readall_, &Neem::command_readall};
+	if(strcasecmp(command, "readline") == 0) return {readline_, &Neem::command_readline};
+	if(strcasecmp(command, "loadlib") == 0) return {loadlib_, &Neem::command_loadlib};
+	if(strcasecmp(command, "unloadlib") == 0) return {unloadlib_, &Neem::command_unloadlib};
+	if(strcasecmp(command, "runlibfunc") == 0) return {runlibfunc_, &Neem::command_runlibfunc};
+	if(command[0] == '#' || command[0] == '-') return {comment_, NULL}; //Lua comments or shebang
+	if(command[0] == ':' && command[1] != ':') return {label_, &Neem::command_none};
+	if(command[0] == ':' && command[1] == ':') return {comment_, NULL};
+	return {none_, NULL};
 }
 
 bool Neem::parseline(char *line) {
@@ -47,16 +45,16 @@ bool Neem::parseline(char *line) {
 	if(*line == '\0') return 1; //if, after spaces, it's blank, just return
 	
 	char *params = splitstring(line, ' ');
-	{ //Scope this since instruction will just be put into the vector
-		types currenttype = gettype(line);
-		if(currenttype == comment_) return true; //This is so we can /this/ properly
-		else if(currenttype == none_) {
+	typeandfunc current = gettype(line);
+	{
+		if(current.type == comment_) return true;
+		else if(current.type == none_) {
 			std::string l = line;
 			alert('!', "'%s' is not a command", NULL, &l);
 			return false;
-		} else if(currenttype != import_) { //Special command
+		} else if(current.type != import_) { //Special command
 			instruction i;
-			i.type = currenttype;
+			i.type = current.type;
 			instructions.push_back(i);
 		} else { //If import_
 			if(params == NULL) {
@@ -70,51 +68,60 @@ bool Neem::parseline(char *line) {
 
 	instruction *last = &instructions.back();
 	switch(last->type) {
+		case echo_: // echo SOMETHING / echo
+		case case_: // case SOMETHING / case
+		case readline_: // readline variable_name / readline
+			last->value = (params != NULL) ? params : ""; //value (optional)
+			last->func = current.func;
+			break;
+		
+		case sleep_: // sleep 2000
+		case start_: // start program_name
+		case loadlib_: // loadlib library_name
+		case unloadlib_: // unload library_name
+		case switch_: // switch valuetocheck
+		case input_:
+		case readall_:
+		case rm_:
+		case rmdir_:
+			last->value = params;
+			last->func = current.func;
+			break;
+		
+		case label_: // :label
+			last->value = line+1; //label name but with : removed
+		//CONTINUE DOWNWARDS AFTER
+		case exit_: //just command on a line: "rof" / "exit"
+		case pwd_:
+		case pause_:
+		case else_:
 		case fi_:
+		case rof_:
+			last->func = current.func;
 			break;
-		case echo_:
-			last->value = (params != NULL) ? params : ""; //value to print (optional)
-			last->func = &Neem::command_echo;
-			break;
-		case exit_:
-			last->func = &Neem::command_exit;
-			break;
+			
+		case sum_: //Input with equals: "set var=val"
+		case strftime_:
+		case prompt_:
 		case setsystem_:
-			last->extravalue = splitstring(params, '='); //value to set to
-			last->value = params; //varname
-			last->func = &Neem::command_setsystem;
-			break;
 		case set_:
 			last->extravalue = splitstring(params, '='); //value to set to
 			last->value = params; //varname
-			last->func = &Neem::command_set;
+			last->func = current.func;
 			break;
-		case prompt_: //type input
-			last->extravalue = splitstring(params, '='); //Prompt
-			last->value = params; //variable
-			last->func = &Neem::command_prompt;
+			
+		case goto_: //goto :label
+		case call_:
+			last->value = (params[0] == ':') ? params+1 : params; //Remove : from label -> goto :label
+			last->func = current.func;
 			break;
-		case sum_:
-			last->extravalue = splitstring(params, '='); //Calculation
-			last->value = params; //variable
-			last->func = &Neem::command_sum;
-			break;
+		
 		case if_:
 			last->extravalue = setifcheck(last, params); //sets the if function and returns after the op
 			last->value = params; //setif \0s the left part
 			last->func = &Neem::command_if;
 			break;
-		case else_:
-			last->func = &Neem::command_else;
-			break;
-		case switch_:
-			last->value = params;
-			last->func = &Neem::command_switch;
-			break;
-		case case_:
-			last->value = (params != NULL) ? params : "";
-			last->func = &Neem::command_case;
-			break;
+			
 		case for_:
 			{
 				char *arrstring = splitstring(params, ' ');
@@ -125,17 +132,7 @@ bool Neem::parseline(char *line) {
 			}
 			last->func = &Neem::command_for;
 			break;
-		case rof_:
-			last->func = &Neem::command_rof;
-			break;
-		case goto_:
-			last->value = (params[0] == ':') ? params+1 : params; //Remove : from label -> goto :label
-			last->func = &Neem::command_goto;
-			break;
-		case call_:
-			last->value = (params[0] == ':') ? params+1 : params; //Remove : from label -> goto :label
-			last->func = &Neem::command_call;
-			break;
+
 		case inc_:
 			{
 				char *temp = splitstring(params, '=');
@@ -145,55 +142,18 @@ bool Neem::parseline(char *line) {
 			}
 			last->func = &Neem::command_inc;
 			break;
-		case label_:
-			last->value = line+1; //label name but with : removed
-			break;
-		case strftime_:
-			last->extravalue = splitstring(params, '='); //strftime
-			last->value = params; //varname
-			last->func = &Neem::command_strftime;
-			break;
-		case sleep_:
-			last->value = params; //Time to sleep
-			last->func = &Neem::command_sleep;
-			break;
-		case start_:
-			last->value = params; //Program name
-			last->func = &Neem::command_start;
-			break;
-		case pwd_:
-			last->func = &Neem::command_pwd;
-			break;
+
 		case cd_:
 			if(params == NULL) last->extravalue = "";
 				else last->value = params; //Directory name
 			last->func = &Neem::command_cd;
 			break;
+			
 		case ls_:
 			last->value = (params != NULL) ? params : ".";
 			last->func = &Neem::command_ls;
 			break;
-		case rm_:
-			if(params == NULL) {alert('!', "Cannot have a blank rm statement"); return false;}
-			last->value = params;
-			last->func = &Neem::command_rm;
-			break;
-		case rmdir_:
-			if(params == NULL) {alert('!', "Cannot have a blank rmdir statement"); return false;}
-			last->value = params;
-			last->func = &Neem::command_rmdir;
-			break;
-		case pause_:
-			last->func = &Neem::command_pause;
-			break;
-		case loadlib_:
-			last->value = params; //libname
-			last->func = &Neem::command_loadlib;
-			break;
-		case unloadlib_:
-			last->value = params; //lib
-			last->func = &Neem::command_unloadlib;
-			break;
+
 		case runlibfunc_:
 			{ //scope this bit
 				char *temp = splitstring(params, ' ');
@@ -203,6 +163,7 @@ bool Neem::parseline(char *line) {
 			}
 			last->func = &Neem::command_runlibfunc;
 			break;
+			
 		case output_:
 			{
 				char *temp = splitstring(params, ' ');
@@ -211,18 +172,6 @@ bool Neem::parseline(char *line) {
 				else last->extravalue = "a"; //default to append
 			}
 			last->func = &Neem::command_output;
-			break;
-		case input_:
-			last->value = params; //filename
-			last->func = &Neem::command_input;
-			break;
-		case readall_:
-			last->value = params; //Variable name
-			last->func = &Neem::command_readall;
-			break;
-		case readline_:
-			last->value = (params) ? params : ""; //Variable name (optional)
-			last->func = &Neem::command_readline;
 			break;
 	};
 	return true;
