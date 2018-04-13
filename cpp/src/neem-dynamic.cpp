@@ -14,6 +14,8 @@ std::string Neem::dynamic_lower(char *c) { return changecase(c, 'A', 'Z', +32); 
 
 std::string Neem::dynamic_path(char *c) { return getenv("PATH"); }
 
+std::string Neem::dynamic_sum(char *c) { return std::to_string(dosum(c)); }
+
 std::string Neem::dynamic_system(char *c) {
 	std::string temp = c;
 	const char *val = getenv(parsevarval(&temp).c_str());

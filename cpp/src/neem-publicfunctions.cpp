@@ -17,6 +17,7 @@ Neem::Neem() { //Set up dynamic vars
 	dynamicvariables["STRFTIME"] = &Neem::dynamic_strftime;
 	dynamicvariables["SYSTEM"] = &Neem::dynamic_system;
 	dynamicvariables["POINTER"] = &Neem::dynamic_pointer;
+	dynamicvariables["SUM"] = &Neem::dynamic_sum;
 }
 
 void Neem::setVariable(const char *name, const char *value) {

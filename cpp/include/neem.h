@@ -102,6 +102,7 @@ class Neem {
 		std::string dynamic_strftime(char *);
 		std::string dynamic_system(char *);
 		std::string dynamic_pointer(char *);
+		std::string dynamic_sum(char *);
 		
 		//commands
 		int command_none(instruction *, uint32_t);
