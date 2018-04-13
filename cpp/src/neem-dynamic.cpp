@@ -14,7 +14,18 @@ std::string Neem::dynamic_lower(char *c) { return changecase(c, 'A', 'Z', +32); 
 
 std::string Neem::dynamic_path(char *c) { return getenv("PATH"); }
 
-std::string Neem::dynamic_sum(char *c) { return std::to_string(dosum(c)); }
+std::string Neem::dynamic_sum(char *c) {
+	char *format = splitstring(c, ';');
+	double sum = dosum(c);
+	if(format != NULL) {
+		char buffer[20];
+		char formatbuffer[8];
+		sprintf(formatbuffer, "%%%slf", format);
+		sprintf(buffer, formatbuffer, sum);
+		return std::string(buffer);
+	}
+	return std::to_string(sum);
+}
 
 std::string Neem::dynamic_system(char *c) {
 	std::string temp = c;

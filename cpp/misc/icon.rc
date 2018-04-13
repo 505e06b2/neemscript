@@ -6,7 +6,7 @@ BEGIN
   BEGIN
     BLOCK "080904E4"
     BEGIN
-      VALUE "CompanyName", "My Company Name"
+      VALUE "CompanyName", "505e06b2"
       VALUE "FileDescription", "Neemscript Interpreter"
       VALUE "FileVersion", "1.0"
       VALUE "InternalName", "neem"
