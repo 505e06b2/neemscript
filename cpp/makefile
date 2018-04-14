@@ -26,8 +26,6 @@ RMCMD = cmd \/c "del $(BINDIR)\\*.o && del $(TARGET) && del misc\\*.res && del $
 ICONFILE = misc/icon.res
 endif
 
-all: $(TARGET) $(DLIBNAME) $(SLIBNAME)
-
 $(TARGET): $(patsubst $(SRCDIR)%,$(BINDIR)%,$(patsubst %.cpp,%.o,$(wildcard $(SRCDIR)/*.cpp))) $(patsubst $(SRCDIR)%,$(BINDIR)%,$(patsubst %.cpp,%.o,$(wildcard $(SRCDIR)/$(CMDSDIR)/*.cpp))) $(BINDIR)/main.o $(ICONFILE)
 	$(CXX) $(CXXFLAGS) $(OPTIMISATIONS) $^ -o $@ $(LDFLAGS)
 	strip $@
@@ -55,6 +53,8 @@ $(DLIBNAME): $(patsubst $(SRCDIR)%,$(BINDIR)%,$(patsubst %.cpp,%.o,$(wildcard $(
 	
 $(SLIBNAME): $(patsubst $(SRCDIR)%,$(BINDIR)%,$(patsubst %.cpp,%.o,$(wildcard $(SRCDIR)/*.cpp))) $(patsubst $(SRCDIR)%,$(BINDIR)%,$(patsubst %.cpp,%.o,$(wildcard $(SRCDIR)/$(CMDSDIR)/*.cpp)))
 	ar rcs $@ $^
+	
+all: $(TARGET) $(DLIBNAME) $(SLIBNAME)
 	
 misc/icon.res: ../docs/favicon.ico misc/icon.rc
 	windres misc/icon.rc -O coff -o $@
