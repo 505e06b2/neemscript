@@ -4,13 +4,17 @@
 <link rel="icon" href="favicon.ico" type="image/x-icon">
 <title>Neemscript Interpreter</title>
 <script src="instascan.min.js"></script>
-<script src="neemscript.js"></script>
+<link rel="stylesheet" type="text/css" href="style.css">
 <script>
 var outbox;
 var inbox;
 var interpret;
 var scanner;
 var qrbox;
+
+window.onbeforeunload = function() {
+	return true;
+}
 
 function runcode(script) {
 	if(interpret === undefined) {
@@ -19,6 +23,18 @@ function runcode(script) {
 	}
 	interpret(script);
 	inbox.focus();
+}
+
+function loadcode() {
+	var temp = localStorage.getItem("script");
+	if(!temp) return false;
+	inbox.value = localStorage.getItem("script");
+	Module.print("[*] Loaded script from localStorage");
+}
+
+function savecode() {
+	localStorage.setItem("script", inbox.value);
+	Module.print("[*] Saved script to localStorage");
 }
 
 function resetqr() {
@@ -46,48 +62,36 @@ function toggleqr() {
 	}
 }
 
+function stopaction(e) {
+	if(e.preventDefault) e.preventDefault();
+    if(e.stopPropagation) e.stopPropagation();
+}
+
 window.onload = function() {
 	outbox = document.getElementById('output');
 	inbox = document.getElementById('input');
 	qrbox = document.getElementById('qrbox');
 	inbox.focus();
+	outbox.value = "[*] Loading Neemscript...\n";
 	resetqr();
 	inbox.onkeydown = function(e) {
 		if(e.keyCode == 9) { //Tab
-			e.preventDefault();
+			stopaction(e);
 			this.value += "\t";
 		} else if(e.ctrlKey) {
 			if(e.keyCode == 81) { //Ctrl + Q
-				e.preventDefault();
+				stopaction(e);
 				runcode(inbox.value);
 			} else if(e.keyCode == 83) { //Ctrl + S
-				e.preventDefault();
-				localStorage.setItem("script", this.value);
-				Module.print("[*] Saved script to localStorage");
+				stopaction(e);
+				savecode();
 			} else if(e.keyCode == 79) { //Ctrl + O
-				e.preventDefault();
-				this.value = localStorage.getItem("script");
-				Module.print("[*] Loaded script from localStorage");
+				stopaction(e);
+				loadcode();
 			} else if(e.keyCode == 87) { //Ctrl + W
-				e.preventDefault();
+				stopaction(e);
 				outbox.value = "[*] Cleared Output\n";
 			}
-		}
-	}
-	
-	Module.print = function(text) {
-		outbox.value += text + '\n';
-		outbox.scrollTop = outbox.scrollHeight;
-	};	
-	Module.printErr = Module.print;
-	
-	Module.onRuntimeInitialized = function() {
-		interpret = Module.cwrap('webmain', null, ['string']);
-		console.log("Loaded Neemscript");
-		var temp = localStorage.getItem("script");
-		if(temp) {
-			this.value = temp;
-			Module.print("[*] Tried to load script from localStorage; if it didn't work, press CTRL+O");
 		}
 	}
 	
@@ -97,83 +101,45 @@ window.onload = function() {
 		document.getElementById("replacescript").disabled = false;
 		document.getElementById("runscript").disabled = false;
     });
+	
+	var neemloader = document.createElement("script");
+	neemloader.onload = function() {
+		Module.print = function(text) {
+			outbox.value += text + '\n';
+			outbox.scrollTop = outbox.scrollHeight;
+		};	
+		Module.printErr = Module.print;
+	
+		Module.onRuntimeInitialized = function() {
+			interpret = Module.cwrap('webmain', null, ['string']);
+			console.log("Loaded Neemscript");
+			Module.print("[*] Neemscript runtime loaded");
+			loadcode();
+		}
+	}
+	neemloader.src = (typeof WebAssembly === "undefined") ? "neemscript.js" : "neemscript_wasm.js";
+	document.head.appendChild(neemloader);
 };
 
 </script>
-<style>
-body, textarea {
-	background: #1a1a1a;
-	color: #eee;
-	padding:0;
-	margin:0;
-	font-family: monospace;
-}
-
-table {
-	width:100%;
-	height:100%;
-}
-
-th, .header {
-	height: 30px;
-	font-size: 18px;
-	font-family: monospace;
-}
-
-textarea {
-	resize: none;
-	width: 100%;
-	height: 100%;
-	z-index:10;
-}
-
-.ontop {
-	background:#333;padding:5px;border:solid 2px #eee
-}
-
-a {
-	color: #eee;
-	text-decoration: none;
-	background: #333;
-	padding-top:5px;
-	padding-left:5px;
-	padding-right:5px;
-}
-
-#qrpreview {
-	height:100% !important;
-	width:auto !important;
-}
-
-#replacescript, #runscript {
-	width:auto;
-}
-
-#info {
-	display: none;
-}
-
-#infobutton:hover~#info {
-    display: block;
-}
-
-button {width:100%;}
-</style>
 </head>
 <body>
-<a class="header" id="infobutton" href="#" onclick="return false" style="position:absolute;left:5px;top:0px">[?]</a>
-<a class="header" href="#" onclick="resetqr();toggleqr();return false" style="position:absolute;left:55px;top:0px">[QR]</a>
+<a class="header" id="infobutton" href="#Show Hotkeys and info" onclick="return false" style="position:absolute;left:5px;top:0px">[?]</a>
+<a class="header" href="#Click to open QR Reader" onclick="resetqr();toggleqr();return false" title="Click to open QR Reader" style="position:absolute;left:55px;top:0px">[QR]</a>
 <table>
 	<tr><th>Input</th><th>Output</th></tr>
-	<tr><td><textarea id="input"></textarea></td><td rowspan="2"><textarea id="output" readonly style="right:0;"></textarea></td></tr>
-	<tr><td style="height:15px;"><button onclick="runcode(inbox.value)">Run</button></td></tr>
+	<tr><td><textarea id="input"></textarea></td><td rowspan="2"><textarea id="output" readonly style="right:0;">[*] Loading Neemscript...</textarea></td></tr>
+	<tr><td class="buttonpanel" style="height:30px;text-align:center"><button onclick="runcode(inbox.value)">Run</button><button onclick="loadcode()">Load Script</button><button onclick="savecode()">Save Script</button></td></tr>
 </table>
 <div id="info" class="ontop" style="position:absolute;left:10px;top:35px;">
 <div class="header">Shortcuts:</div>
 Run Code: CTRL+Q<br>
 Save Code: CTRL+S<br>
 Open Code: CTRL+O<br>
-Clear Output: CTRL+W
+Clear Output: CTRL+W<br>
+<hr>
+<div class="header">Errors with WASM?:</div>
+Try disabling adblock for this page
 </div>
 <div id="qrwindow" class="ontop" style="position:absolute;z-index:100;height:90%;width:50%;left:25%;top:5%;display:none;text-align:center;">
 <div style="background:#000; width:100%; height:50%;text-align:center"><video id="qrpreview"></video></div>
