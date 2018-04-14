@@ -6,7 +6,10 @@ I also want it to be easily embedded in other programs as a scripting language a
 There's a makefile that should `just work` by default; it just uses your system gcc... Well, it would be your "cc"  
 Neemscript is confirmed to compile on `Windows 7 x86_64` (MinGW & Cygwin), `Xubuntu 14.04 x86` (GCC), `Android 6.0 armhf` (Termux Clang) and `the Web` (Emscripten)
 
+To build the executable, run `make` without a target  
 If you want a dynamic library, use `make dlib` or if you want static, use `make slib`  
+You can build all 3 with `make all`  
+
 Linking against the dynamic library is easy, you can even use a C compiler:  
 ```Bash
 cd neemscript/cpp
