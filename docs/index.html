@@ -136,14 +136,8 @@ window.onload = function() {
 		}
 	}
 	
-	var t;
-	if(typeof WebAssembly === "undefined") {
-		neemloader.src = "neemscript.js";
-		t = "asm.js";
-	} else {
-		neemloader.src = "neemscript_wasm.js";
-		t = "wasm";
-	}
+	var t = (typeof WebAssembly === "undefined") ? "asm.js" : "wasm";
+	neemloader.src = "neemscript" + ((typeof WebAssembly === "undefined") ? ".js" : "_wasm.js");
 	outbox.value += "\n[*] Using " + t + " for Neemscript\n";
 	document.head.appendChild(neemloader);
 };

@@ -1,3 +1,6 @@
 *.exe
 *.stackdump
 *.res
+*.dll
+*.so
+*.a
