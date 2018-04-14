@@ -11,6 +11,7 @@ var inbox;
 var interpret;
 var scanner;
 var qrbox;
+var currentcam;
 
 window.onbeforeunload = function() {
 	return true;
@@ -43,19 +44,20 @@ function resetqr() {
 	qrbox.value = "";
 }
 
+function changeCamera(id) {
+	Instascan.Camera.getCameras().then(function (cameras) {
+		if (cameras.length > 0) {
+			currentcam = cameras[id];
+			scanner.start(currentcam);
+		}
+	});
+}
+
 function toggleqr() {
 	var qrwindow = document.getElementById("qrwindow");
 	if(qrwindow.style.display == "none") {
 		qrwindow.style.display = "block";
-		Instascan.Camera.getCameras().then(function (cameras) {
-			if (cameras.length > 0) {
-				scanner.start(cameras[0]);
-			} else {
-				console.error('No cameras found.');
-			}
-		}).catch(function (e) {
-			console.error(e);
-		});
+		scanner.start(currentcam);
 	} else {
 		qrwindow.style.display = "none";
 		scanner.stop();
@@ -100,6 +102,21 @@ window.onload = function() {
 		document.getElementById("replacescript").disabled = false;
 		document.getElementById("runscript").disabled = false;
     });
+	Instascan.Camera.getCameras().then(function (cameras) {
+		if (cameras.length > 0) {
+			var camselect = document.getElementById("cameraselect");
+			camselect.innerHTML = "";
+			for(var i = 0; i < cameras.length; i++) {
+				camselect.innerHTML += "<option value='" + i + "'>" + cameras[i].name + "</option>";
+			}
+			currentcam = cameras[0];
+			scanner.start(currentcam);
+		} else {
+			console.error('No cameras found.');
+		}
+	}).catch(function (e) {
+		console.error(e);
+	});
 	
 	var neemloader = document.createElement("script");
 	neemloader.onload = function() {
@@ -154,6 +171,7 @@ Try disabling adblock for this page
 <textarea id="qrbox" readonly style="height:39%;" placeholder="[Script will show up here]"></textarea><br><br>
 <button id="replacescript" onclick="input.value = qrbox.value">Replace Input with this script</button>
 <button id="runscript" onclick="toggleqr();Module.print('[*] Running QR Script');setTimeout(function() {runcode(qrbox.value);resetqr()}, 500);">Run</button>
+<select id="cameraselect" onchange="changeCamera(this.value)"><option value="" selected>Loading Camera List...</option></select>
 </div>
 </body>
 </html>
