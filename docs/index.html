@@ -110,7 +110,6 @@ window.onload = function() {
 				camselect.innerHTML += "<option value='" + i + "'>" + cameras[i].name + "</option>";
 			}
 			currentcam = cameras[0];
-			scanner.start(currentcam);
 		} else {
 			console.error('No cameras found.');
 		}
