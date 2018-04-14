@@ -48,6 +48,8 @@ function changeCamera(id) {
 	Instascan.Camera.getCameras().then(function (cameras) {
 		if (cameras.length > 0) {
 			currentcam = cameras[id];
+			localStorage.camamount = cameras.length;
+			localStorage.currentcam = id;
 			scanner.start(currentcam);
 		}
 	});
@@ -105,11 +107,12 @@ window.onload = function() {
 	Instascan.Camera.getCameras().then(function (cameras) {
 		if (cameras.length > 0) {
 			var camselect = document.getElementById("cameraselect");
+			var index = (localStorage.currentcam && localStorage.camamount == cameras.length) ? localStorage.currentcam : 0;
 			camselect.innerHTML = "";
 			for(var i = 0; i < cameras.length; i++) {
-				camselect.innerHTML += "<option value='" + i + "'>" + cameras[i].name + "</option>";
+				camselect.innerHTML += "<option value='" + i + "'" + ((i == index) ? " selected " : "") + ">" + cameras[i].name + "</option>";
 			}
-			currentcam = cameras[0];
+			currentcam = cameras[index];
 		} else {
 			console.error('No cameras found.');
 		}
