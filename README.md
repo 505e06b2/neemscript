@@ -7,7 +7,18 @@ There's a makefile that should `just work` by default; it just uses your system 
 Neemscript is confirmed to compile on `Windows 7 x86_64` (MinGW & Cygwin), `Xubuntu 14.04 x86` (GCC), `Android 6.0 armhf` (Termux Clang) and `the Web` (Emscripten)
 
 If you want a dynamic library, use `make dlib` or if you want static, use `make slib`  
-You can use `CC` to link against the dynamic lib, but you need to use `CXX` to link against the static one
+Linking against the dynamic library is easy, you can even use a C compiler:  
+```Bash
+cd neemscript/cpp
+gcc -Iinclude src/main.c -L. -lneem
+```
+
+Linking against the static lib is a little more work, a basic commandline would look like:  
+```Bash
+cd neemscript/cpp
+g++ -Iinclude src/main.c -L. -lneem -ldl
+```
+If compiling for Windows, `-ldl` isn't needed
 
 Make sure to check out [the wiki](https://github.com/505e06b2/neemscript/wiki) for the documentation!  
 
