@@ -72,7 +72,6 @@ window.onload = function() {
 	inbox = document.getElementById('input');
 	qrbox = document.getElementById('qrbox');
 	inbox.focus();
-	outbox.value = "[*] Loading Neemscript...\n";
 	resetqr();
 	inbox.onkeydown = function(e) {
 		if(e.keyCode == 9) { //Tab
@@ -117,7 +116,16 @@ window.onload = function() {
 			loadcode();
 		}
 	}
-	neemloader.src = (typeof WebAssembly === "undefined") ? "neemscript.js" : "neemscript_wasm.js";
+	
+	var t;
+	if(typeof WebAssembly === "undefined") {
+		neemloader.src = "neemscript.js";
+		t = "asm.js";
+	} else {
+		neemloader.src = "neemscript_wasm.js";
+		t = "wasm";
+	}
+	outbox.value += "\n[*] Using " + t + " for Neemscript\n";
 	document.head.appendChild(neemloader);
 };
 
