@@ -11,5 +11,5 @@ server = SocketServer.TCPServer(("", PORT), Handler)
 
 print("Serving Neemscript at port: %u" % PORT)
 server.socket = ssl.wrap_socket(server.socket, certfile="ssl.pem", server_side=True)
-os.chdir("docs")
+os.chdir("../docs")
 server.serve_forever()
