@@ -37,9 +37,9 @@ $(BINDIR)/%.o: $(SRCDIR)/%.cpp $(INCLUDEDIR)/neem.h
 	$(CXX) $(CXXFLAGS) $(OPTIMISATIONS) -c $< -I$(INCLUDEDIR) -o $@
 
 #MISC COMMANDS
-../docs/neemscript/neemscript_wasm.js ../docs/neemscript.js: $(patsubst $(SRCDIR)%,$(JSBINDIR)%,$(patsubst %.cpp,%.bc,$(wildcard $(SRCDIR)/*.cpp))) $(patsubst $(SRCDIR)%,$(JSBINDIR)%,$(patsubst %.cpp,%.bc,$(wildcard $(SRCDIR)/$(CMDSDIR)/*.cpp))) $(JSBINDIR)/webmain.bc
-	$(CXX) $(CXXFLAGS) $(OPTIMISATIONS) $^ -I$(INCLUDEDIR) -o ../docs/neemscript/neemscript_wasm.js -s WASM=1 $(LDFLAGS)
-	$(CXX) $(CXXFLAGS) $(OPTIMISATIONS) $^ -I$(INCLUDEDIR) -o ../docs/neemscript/neemscript.js $(LDFLAGS)
+../docs/neemscript_wasm.js ../docs/neemscript.js: $(patsubst $(SRCDIR)%,$(JSBINDIR)%,$(patsubst %.cpp,%.bc,$(wildcard $(SRCDIR)/*.cpp))) $(patsubst $(SRCDIR)%,$(JSBINDIR)%,$(patsubst %.cpp,%.bc,$(wildcard $(SRCDIR)/$(CMDSDIR)/*.cpp))) $(JSBINDIR)/webmain.bc
+	$(CXX) $(CXXFLAGS) $(OPTIMISATIONS) $^ -I$(INCLUDEDIR) -o ../docs/neemscript_wasm.js -s WASM=1 $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $(OPTIMISATIONS) $^ -I$(INCLUDEDIR) -o ../docs/neemscript.js $(LDFLAGS)
 	
 $(JSBINDIR)/webmain.bc: $(SRCDIR)/webmain.c $(INCLUDEDIR)/neemWrapper.h
 	$(CC) $(OPTIMISATIONS) -c $< -I$(INCLUDEDIR) -o $@
