@@ -12,7 +12,7 @@
 	}
 	
 	int Neem::runlibraryfunction(std::string *libname, const char *name, const char *args) {
-		int(*funcpointer)(const void *) = (int(*)(const void *))GetProcAddress((HMODULE)loadedlibs[*libname], name);
+		int(*funcpointer)(const char *) = (int(*)(const char *))GetProcAddress((HMODULE)loadedlibs[*libname], name);
 		if(funcpointer == NULL) return -27202; //it's just obscure
 		return funcpointer(args);
 	}
@@ -47,7 +47,7 @@
 	}
 	
 	int Neem::runlibraryfunction(std::string *libname, const char *name, const char *args) {
-		int(*funcpointer)(const void *) = (int(*)(const void *))dlsym(loadedlibs[*libname], name);
+		int(*funcpointer)(const char *) = (int(*)(const char *))dlsym(loadedlibs[*libname], name);
 		if(funcpointer == NULL) return -27202; //it's just obscure
 		return funcpointer(args);
 	}
