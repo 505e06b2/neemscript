@@ -1,0 +1,2 @@
+loadlib test
+runlibfunc test testfunc this is what will be printed

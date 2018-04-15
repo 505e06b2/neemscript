@@ -36,9 +36,10 @@
 	#include <dlfcn.h>
 	
 	bool Neem::loadlibrary(const char *fname, size_t fnamelen) {
-		char fnamebuffer[fnamelen+3];
-		memcpy(fnamebuffer, fname, fnamelen);
-		memcpy(fnamebuffer+fnamelen, ".so", 4);
+		char fnamebuffer[fnamelen+3+3];
+		memcpy(fnamebuffer, "lib", 3);
+		memcpy(fnamebuffer+3, fname, fnamelen);
+		memcpy(fnamebuffer+fnamelen+3, ".so", 4);
 		void *lib = dlopen(fnamebuffer, RTLD_LAZY);
 		if(lib == NULL) return false;
 		loadedlibs[fname] = lib;

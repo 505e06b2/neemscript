@@ -1,3 +1,1 @@
-set sum=10+10
-set format=.0
-echo !SUM;%sum%;%format%!
+echo test

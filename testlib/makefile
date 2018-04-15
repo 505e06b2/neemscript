@@ -1,11 +1,12 @@
-MINGWPREFIX=/cygdrive/c/PortableMinGW/MinGW/bin/
+UNAME := $(shell uname)
+ifneq ($(UNAME),)
+#Unix
+TARGET = libtest.so
+else
+#Probably windows
+TARGET = test.dll
+endif
 
-all: test.dll test.so
-
-test.dll: test.c
-	$(MINGWPREFIX)gcc -shared -O2 $^ -o $@
-	strip $@
-	
-test.so: test.c
+$(TARGET): test.c
 	gcc -shared -O2 $^ -o $@
 	strip $@
