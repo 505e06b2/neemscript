@@ -33,11 +33,11 @@ function runcode(script) {
 	}
 	outbox.focus();
 	Module.print("[*] Running script... This could take a while...");
-	Module.print("     ==================");
+	Module.print("     ======= START =======");
 	setTimeout(function() {
 		interpret(script);
-		Module.print("     ==================");
-	}, 500);
+		Module.print("     ======== END ========");
+	}, 100);
 }
 
 function loadcode() {
