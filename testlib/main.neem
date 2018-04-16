@@ -1,2 +1,2 @@
-loadlib test
-runlibfunc test testfunc this is what will be printed
+libload test
+librun test testfunc this is what will be printed

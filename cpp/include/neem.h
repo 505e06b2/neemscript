@@ -29,10 +29,11 @@ class Neem {
 		~Neem();
 		Neem();
 	private:
-		void runInstructions();
 		enum types {none_, comment_, echo_, set_, prompt_, setsystem_, import_, goto_, call_, inc_, fi_, if_, else_, switch_, case_, for_, rof_,
 					sum_, exit_, label_, strftime_, sleep_, start_, pwd_, cd_, rm_, rmdir_, ls_, pause_, output_, input_, readall_, readline_,
-					loadlib_, runlibfunc_, unloadlib_};
+					libload_, librun_, libunload_};
+					
+		typedef char *(*externalfunc)(const char *);
 					
 		typedef struct instruction {
 			types type = none_;
@@ -48,7 +49,6 @@ class Neem {
 			std::string extravalue;
 			std::string xxxtravalue;
 		} parsedstrings;
-		parsedstrings *parseallstrings(parsedstrings *, instruction *);
 		
 		typedef struct typeandfunc {
 			types type;
@@ -58,22 +58,26 @@ class Neem {
 		std::vector<instruction> instructions;
 		std::map<const std::string, std::string> variables;
 		std::map<const std::string, std::string (Neem::*)(char *)> dynamicvariables;
-		uint16_t eof = -2; //to stop overflow, I want it to be max, but it +1s
+		uint16_t eof = -2; //to stop overflow, I want it to be max, but it +1s and that makes things not work...
 		FILE *outputhandle = stdout;
 		FILE *inputhandle = NULL;
 		std::string switchcheckstring = "";
+		std::map<const std::string, void*> loadedlibs;
 		
+		//neem.cpp
 		bool parseline(char *, uint32_t);
 		typeandfunc gettype(char *);
 		void cleanup();
-		std::string parsevariables(const char *, const char, uint8_t *);
-		char *setifcheck(instruction *, char *);
-		char *splitstring(char *, const char); //strtok replacement
-		float dosum(const char *);
+		void runInstructions();
+		
+		//special funcs
+		std::string parsevariables(const char *, const char, uint8_t *); //parsevars.cpp
+		char *setifcheck(instruction *, char *); //ifs.cpp
+		float dosum(const char *); //sums.cpp
 
-		std::map<const std::string, void*> loadedlibs;
+		//OS-Specific
 		bool loadlibrary(const char *, size_t);
-		int runlibraryfunction(std::string *, const char *, const char *);
+		externalfunc getlibraryfunction(std::string *, const char *);
 		void freelibrary(void *);
 		int setenvvar(std::string *, std::string *);
 		void threadsleep(uint32_t);
@@ -81,6 +85,7 @@ class Neem {
 		//Utils
 		std::string getstrftime(size_t, const char*);
 		std::string parsevarval(std::string *); //wrapper for parsevariables
+		parsedstrings *parseallstrings(parsedstrings *, instruction *);
 		std::string getcurrentdir();
 		std::string listdir(const char *, const char);
 		bool removedir(const char *);
@@ -88,8 +93,10 @@ class Neem {
 		int searchfortag(uint32_t *, const types, const types);
 		bool readfilebyline(const char *, bool(Neem::*)(char *, uint32_t)); //laod file and put contents in instructions vector
 		const char *changecase(char *, const char, const char, int8_t);
+		const char *filenamefrompath(const char *, size_t);
+		char *splitstring(char *, const char); //strtok replacement
 		
-		//dynamic vars
+		//dynamic vars - dynamic.cpp
 		std::string dynamic_time(char *);
 		std::string dynamic_date(char *);
 		std::string dynamic_cd(char *);
@@ -103,8 +110,9 @@ class Neem {
 		std::string dynamic_system(char *);
 		std::string dynamic_pointer(char *);
 		std::string dynamic_sum(char *);
+		std::string dynamic_librun(char *);
 		
-		//commands
+		//commands - commands/[command].cpp
 		int command_none(instruction *, uint32_t);
 		int command_echo(instruction *, uint32_t);
 		int command_exit(instruction *, uint32_t);
@@ -130,9 +138,9 @@ class Neem {
 		int command_rm(instruction *, uint32_t);
 		int command_rmdir(instruction *, uint32_t);
 		int command_pause(instruction *, uint32_t);
-		int command_loadlib(instruction *, uint32_t);
-		int command_unloadlib(instruction *, uint32_t);
-		int command_runlibfunc(instruction *, uint32_t);
+		int command_libload(instruction *, uint32_t);
+		int command_libunload(instruction *, uint32_t);
+		int command_librun(instruction *, uint32_t);
 		int command_output(instruction *, uint32_t);
 		int command_input(instruction *, uint32_t);
 		int command_readall(instruction *, uint32_t);

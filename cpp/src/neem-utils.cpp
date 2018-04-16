@@ -34,6 +34,13 @@ int Neem::searchfortag(uint32_t *index, const types search, const types avoid) {
 	return -1;
 }
 
+const char *Neem::filenamefrompath(const char *path, size_t pathlen) {
+	for(; pathlen > 0; pathlen--) {
+		if(path[pathlen] == '/' || path[pathlen] == '\\') return path+pathlen+1;
+	}
+	return path;
+}
+
 std::string Neem::listdir(const char *c, const char split) {
 	std::string temp = "";
 	struct dirent *d;

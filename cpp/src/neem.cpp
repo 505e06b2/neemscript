@@ -31,9 +31,9 @@ Neem::typeandfunc Neem::gettype(char *command) {
 	if(strcasecmp(command, "input") == 0) return {input_, &Neem::command_input};
 	if(strcasecmp(command, "readall") == 0) return {readall_, &Neem::command_readall};
 	if(strcasecmp(command, "readline") == 0) return {readline_, &Neem::command_readline};
-	if(strcasecmp(command, "loadlib") == 0) return {loadlib_, &Neem::command_loadlib};
-	if(strcasecmp(command, "unloadlib") == 0) return {unloadlib_, &Neem::command_unloadlib};
-	if(strcasecmp(command, "runlibfunc") == 0) return {runlibfunc_, &Neem::command_runlibfunc};
+	if(strcasecmp(command, "libload") == 0) return {libload_, &Neem::command_libload};
+	if(strcasecmp(command, "libunload") == 0) return {libunload_, &Neem::command_libunload};
+	if(strcasecmp(command, "librun") == 0) return {librun_, &Neem::command_librun};
 	if(command[0] == '#' || command[0] == '-') return {comment_, NULL}; //Lua comments or shebang
 	if(command[0] == ':' && command[1] != ':') return {label_, &Neem::command_none};
 	if(command[0] == ':' && command[1] == ':') return {comment_, NULL};
@@ -92,8 +92,8 @@ bool Neem::parseline(char *line, uint32_t index) {
 
 		case sleep_: // sleep 2000
 		case start_: // start program_name
-		case loadlib_: // loadlib library_name
-		case unloadlib_: // unload library_name
+		case libload_: // loadlib library_name
+		case libunload_: // unload library_name
 		case switch_: // switch valuetocheck
 		case input_:
 		case readall_:
@@ -150,7 +150,7 @@ bool Neem::parseline(char *line, uint32_t index) {
 			last->value = (params != NULL) ? params : ".";
 			break;
 
-		case runlibfunc_:
+		case librun_:
 			{ //scope this bit
 				char *temp = splitstring(params, ' ');
 				last->xxxtravalue = splitstring(temp, ' '); //args

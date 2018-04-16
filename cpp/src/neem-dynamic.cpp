@@ -52,6 +52,25 @@ std::string Neem::dynamic_epoch(char *c) {
                         (long long int)tp.tv_usec); 
 }
 
+std::string Neem::dynamic_librun(char *c) {
+	if(c == NULL) return "[ERROR: FORMAT INCORRECT]";
+	char *funcname = splitstring(c, ';');
+	if(funcname == NULL) return "[ERROR: NO FUNCTION NAME SPECIFIED]";
+	char *args = splitstring(funcname, ';');
+	if(loadedlibs.find(c) == loadedlibs.end()) return "[ERROR: LIB NOT LOADED]";
+	
+	std::string libname = c;
+	char *(*functionpointer)(const char *) = getlibraryfunction(&libname, funcname);
+	if(functionpointer == NULL) return "[ERROR: CANNOT FIND FUNCTION IN LIB]";
+	char *ret = functionpointer(args);
+	if(ret != NULL) {
+		std::string retval = ret;
+		free(ret);
+		return retval;
+	}
+	return "";
+}
+
 std::string Neem::dynamic_os(char *c) { 
 		#ifdef _WIN32
 			return "windows";

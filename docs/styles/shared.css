@@ -57,11 +57,7 @@ a {
 	display:none;
 }
 
-#infobutton:hover~#info {
-	display: block;
-}
-
-#infobutton:active~#info {
+#infobutton:hover~#info, #infobutton:active~#info {
 	display: block;
 }
 

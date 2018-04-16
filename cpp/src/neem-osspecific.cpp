@@ -4,17 +4,15 @@
 
 	#include <windows.h>
 	
-	bool Neem::loadlibrary(const char *fname, size_t fnamelen) {
-		void *lib = LoadLibrary(fname);
+	bool Neem::loadlibrary(const char *path, size_t pathlen) {
+		void *lib = LoadLibrary(path);
 		if(lib == NULL) return false;
-		loadedlibs[fname] = lib;
+		loadedlibs[ filenamefrompath(path, pathlen) ] = lib;
 		return true;
 	}
 	
-	int Neem::runlibraryfunction(std::string *libname, const char *name, const char *args) {
-		int(*funcpointer)(const char *) = (int(*)(const char *))GetProcAddress((HMODULE)loadedlibs[*libname], name);
-		if(funcpointer == NULL) return -27202; //it's just obscure
-		return funcpointer(args);
+	Neem::externalfunc Neem::getlibraryfunction(std::string *libname, const char *name) {
+		return (externalfunc)GetProcAddress((HMODULE)loadedlibs[*libname], name);
 	}
 	
 	void Neem::freelibrary(void *lib) {
@@ -35,21 +33,25 @@
 	
 	#include <dlfcn.h>
 	
-	bool Neem::loadlibrary(const char *fname, size_t fnamelen) {
-		char fnamebuffer[fnamelen+3+3];
-		memcpy(fnamebuffer, "lib", 3);
-		memcpy(fnamebuffer+3, fname, fnamelen);
-		memcpy(fnamebuffer+fnamelen+3, ".so", 4);
-		void *lib = dlopen(fnamebuffer, RTLD_LAZY);
+	bool Neem::loadlibrary(const char *path, size_t pathlen) { // the line given would be: /usr/lib/test
+		const char *filename = filenamefrompath(path, pathlen);
+		char newpath[pathlen+3+3]; //+3 for "lib", +3 for ".so\0"
+		
+		uint16_t prefixlen = (uint16_t)(filename - path); //Take the pointers away to get the size
+		uint16_t filenamelen = (uint16_t)(pathlen - prefixlen); // pathlen is the full path passed, while prefixlen is the /usr/lib/ bit
+		
+		memcpy(newpath, path, prefixlen); // = /usr/lib/
+		memcpy(newpath+prefixlen, "lib", 3); // = /usr/lib/lib
+		memcpy(newpath+prefixlen+3, filename, filenamelen); // = /usr/lib/libtest
+		memcpy(newpath+prefixlen+3+filenamelen, ".so", 4); // = /usr/lib/libtest.so
+		void *lib = dlopen(newpath, RTLD_LAZY);
 		if(lib == NULL) return false;
-		loadedlibs[fname] = lib;
+		loadedlibs[filename] = lib;
 		return true;
 	}
 	
-	int Neem::runlibraryfunction(std::string *libname, const char *name, const char *args) {
-		int(*funcpointer)(const char *) = (int(*)(const char *))dlsym(loadedlibs[*libname], name);
-		if(funcpointer == NULL) return -27202; //it's just obscure
-		return funcpointer(args);
+	Neem::externalfunc Neem::getlibraryfunction(std::string *libname, const char *name) {
+		return (externalfunc)dlsym(loadedlibs[*libname], name);
 	}
 	
 	void Neem::freelibrary(void *lib) {
