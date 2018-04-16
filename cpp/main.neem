@@ -1,2 +1,3 @@
 libload ../testlib/test
-echo %LIBRUN;test;testfunc%
+set args=Print this line.
+echo !LIBRUN;test;testfunc;%args%!
