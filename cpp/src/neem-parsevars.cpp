@@ -30,20 +30,18 @@ std::string Neem::parsevariables(const char *value, const char searchfor, uint8_
 				std::string varvalue;
 				{ //Check
 					char *possibleparams = splitstring(varname, ';');
+					
 					std::map<const std::string, std::string (Neem::*)(char *)>::iterator gvar;
-					std::map<const std::string, std::string>::iterator var;
+					
 					if((gvar = dynamicvariables.find(varname)) != dynamicvariables.end()) {
 						varvalue = (this->*gvar->second)(possibleparams);
-					} else if((var = variables.find(varname)) != variables.end()) {
-						varvalue = var->second;
 					} else {
-						varvalue = "";
+						varvalue = getvariablefromscope(varname);
 					}
 				}
 				
 				if(varvalue != "") { //Variable exists if not blank
-					std::string tempvar = varvalue;
-					uint32_t variablelen = tempvar.length();
+					uint32_t variablelen = varvalue.length();
 					//Substring
 					int32_t start = 0;
 					uint32_t len = -1; //max

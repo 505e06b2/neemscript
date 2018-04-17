@@ -22,15 +22,21 @@ Neem::Neem() { //Set up dynamic vars
 	dynamicvariables["FILENAME"] = &Neem::dynamic_filename;
 	dynamicvariables["PATHNAME"] = &Neem::dynamic_pathname;
 	dynamicvariables["SCRIPTPATH"] = &Neem::dynamic_scriptpath;
+	
+	std::map<const std::string, std::string> firstscope;
+	variablesinscopes.push_back(firstscope);
 }
 
 void Neem::setVariable(const char *name, const char *value) {
-	variables[name] = value;
+	std::string n = name;
+	std::string v = value;
+	setvariabletoscope(name, value);
 }
 
 const char *Neem::getVariable(const char *name) {
-	std::map<const std::string, std::string>::iterator variableinter;
-	if((variableinter = variables.find(name)) != variables.end()) return variableinter->second.c_str();
+	std::string in = name;
+	std::string ret = getvariablefromscope(in);
+	if(ret != "") return ret.c_str();
 	return NULL;
 }
 

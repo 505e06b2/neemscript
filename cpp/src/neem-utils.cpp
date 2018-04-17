@@ -34,6 +34,19 @@ int Neem::searchfortag(uint32_t *index, const types search, const types avoid) {
 	return -1;
 }
 
+std::string Neem::getvariablefromscope(std::string name) {
+	std::map<const std::string, std::string>::iterator var;
+
+	for(auto it = variablesinscopes.rbegin(); it != variablesinscopes.rend(); it++) {
+		if((var = it->find(name)) != it->end()) return var->second;
+	}						
+	return "";
+}
+
+void Neem::setvariabletoscope(std::string name, std::string value) {
+	variablesinscopes.back()[name] = value;
+}
+
 const char *Neem::filenamefrompath(const char *path, size_t pathlen) {
 	for(; pathlen > 0; pathlen--) {
 		if(path[pathlen] == '/' || path[pathlen] == '\\') return path+pathlen+1;

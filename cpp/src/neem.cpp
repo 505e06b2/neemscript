@@ -173,6 +173,7 @@ bool Neem::parseline(char *line, uint32_t index) {
 
 void Neem::runInstructions() {
 	int ret = 0;
+	
 	for(uint16_t i = 0, e = instructions.size(); i < e; i++) {
 		instruction *current = &instructions.front() +i; //get the pointer to the element
 		if((ret = (this->*current->func)(current, i)) < -1) return; //Error
@@ -196,13 +197,14 @@ void Neem::runInstructions() {
 		outputhandle = stdout;
 	}
 	std::vector<instruction>().swap(instructions); //Remove all instructions that we just ran
+	for(uint32_t i = variablesinscopes.size(); i > 1; i--) {
+		variablesinscopes.pop_back();
+	}
 	switchcheckstring = "";
 	scriptpath = "";
 }
 
 void Neem::cleanup() {
-	variables.clear();
-	
 	for (auto it = loadedlibs.begin(); it != loadedlibs.end(); it++) {
 		freelibrary(it->second);
 	}

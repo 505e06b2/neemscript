@@ -56,7 +56,7 @@ class Neem {
 		} typeandfunc;
 		
 		std::vector<instruction> instructions;
-		std::map<const std::string, std::string> variables;
+		std::vector<std::map<const std::string, std::string>> variablesinscopes;
 		std::map<const std::string, std::string (Neem::*)(char *)> dynamicvariables;
 		uint16_t eof = -2; //to stop overflow, I want it to be max, but it +1s and that makes things not work...
 		FILE *outputhandle = stdout;
@@ -96,6 +96,8 @@ class Neem {
 		const char *changecase(char *, const char, const char, int8_t);
 		const char *filenamefrompath(const char *, size_t);
 		char *splitstring(char *, const char); //strtok replacement
+		std::string getvariablefromscope(std::string);
+		void setvariabletoscope(std::string, std::string);
 		
 		//dynamic vars - dynamic.cpp
 		std::string dynamic_time(char *);

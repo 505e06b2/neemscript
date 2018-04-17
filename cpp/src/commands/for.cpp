@@ -3,7 +3,7 @@
 int Neem::command_for(instruction *i, uint32_t index) {
 	parsedstrings parsed;
 	parseallstrings(&parsed, i);
-	const char *therest = variables[parsed.extravalue].c_str();
+	const char *therest = getvariablefromscope(parsed.extravalue).c_str();
 	std::string currentvalue = "";
 	
 	for(; *therest; therest++) {
@@ -21,7 +21,7 @@ int Neem::command_for(instruction *i, uint32_t index) {
 		return alert('!', "No matching 'rof' for For loop", &index);
 	}
 				
-	variables[parsed.extravalue] = therest;
-	variables[parsed.value] = currentvalue;
+	setvariabletoscope(parsed.extravalue, therest);
+	setvariabletoscope(parsed.value, currentvalue);
 	return -1;
 }
