@@ -83,7 +83,7 @@ bool Neem::parseline(char *line, uint32_t index) {
 		case endlocal_:
 		case none_: //need these 2 or the compiler complains
 		case comment_:
-		case import_;
+		case import_:
 			break;
 		
 		case echo_: // echo SOMETHING / echo
