@@ -111,6 +111,8 @@ class Neem {
 		std::string dynamic_pointer(char *);
 		std::string dynamic_sum(char *);
 		std::string dynamic_librun(char *);
+		std::string dynamic_filename(char *);
+		std::string dynamic_pathname(char *);
 		
 		//commands - commands/[command].cpp
 		int command_none(instruction *, uint32_t);

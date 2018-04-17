@@ -71,6 +71,26 @@ std::string Neem::dynamic_librun(char *c) {
 	return "";
 }
 
+std::string Neem::dynamic_filename(char *c) {
+	char *filename = c;
+	for(; *c; c++) {
+		if(*c == '/' || *c == '\\') filename = ++c;
+	}
+	std::string filenamestring = filename;
+	return filenamestring;
+}
+
+std::string Neem::dynamic_pathname(char *c) {
+	char *filename = c;
+	char *path = c;
+	for(; *c; c++) {
+		if(*c == '/' || *c == '\\') filename = ++c;
+	}
+	*filename = '\0';
+	std::string pathname = path;
+	return pathname;
+}
+
 std::string Neem::dynamic_os(char *c) { 
 		#ifdef _WIN32
 			return "windows";
