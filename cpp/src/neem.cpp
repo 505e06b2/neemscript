@@ -19,6 +19,8 @@ Neem::typeandfunc Neem::gettype(char *command) {
 	if(strcasecmp(command, "sleep") == 0) return {sleep_, &Neem::command_sleep};
 	if(strcasecmp(command, "start") == 0) return {start_, &Neem::command_start};
 	if(strcasecmp(command, "pwd") == 0) return {pwd_, &Neem::command_pwd};
+	if(strcasecmp(command, "startlocal") == 0) return {startlocal_, &Neem::command_startlocal};
+	if(strcasecmp(command, "endlocal") == 0) return {startlocal_, &Neem::command_endlocal};
 	if(strcasecmp(command, "cd") == 0) return {cd_, &Neem::command_cd};
 	if(strcasecmp(command, "rm") == 0) return {rm_, &Neem::command_rm};
 	if(strcasecmp(command, "rmdir") == 0) return {rmdir_, &Neem::command_rmdir};
@@ -32,6 +34,7 @@ Neem::typeandfunc Neem::gettype(char *command) {
 	if(strcasecmp(command, "libload") == 0) return {libload_, &Neem::command_libload};
 	if(strcasecmp(command, "libunload") == 0) return {libunload_, &Neem::command_libunload};
 	if(strcasecmp(command, "librun") == 0) return {librun_, &Neem::command_librun};
+	if(strcasecmp(command, "rem") == 0) return {comment_, NULL}; //batch comments
 	if(command[0] == '#' || command[0] == '-') return {comment_, NULL}; //Lua comments or shebang
 	if(command[0] == ':' && command[1] != ':') return {label_, &Neem::command_none};
 	if(command[0] == ':' && command[1] == ':') return {comment_, NULL};

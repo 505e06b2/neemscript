@@ -30,7 +30,7 @@ class Neem {
 		Neem();
 	private:
 		enum types {none_, comment_, echo_, set_, prompt_, setsystem_, import_, goto_, call_, inc_, fi_, if_, else_, switch_, case_, for_, rof_,
-					exit_, label_, sleep_, start_, pwd_, cd_, rm_, rmdir_, ls_, pause_, output_, input_, readall_, readline_,
+					exit_, label_, sleep_, start_, pwd_, cd_, rm_, rmdir_, ls_, pause_, output_, input_, readall_, readline_, startlocal_, endlocal_,
 					libload_, librun_, libunload_};
 					
 		typedef char *(*externalfunc)(const char *);
@@ -149,6 +149,8 @@ class Neem {
 		int command_input(instruction *, uint32_t);
 		int command_readall(instruction *, uint32_t);
 		int command_readline(instruction *, uint32_t);
+		int command_startlocal(instruction *, uint32_t);
+		int command_endlocal(instruction *, uint32_t);
 		
 };
 
