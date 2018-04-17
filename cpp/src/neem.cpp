@@ -13,12 +13,10 @@ Neem::typeandfunc Neem::gettype(char *command) {
 	if(strcasecmp(command, "case") == 0) return {case_, &Neem::command_case};
 	if(strcasecmp(command, "for") == 0) return {for_, &Neem::command_for};
 	if(strcasecmp(command, "rof") == 0) return {rof_, &Neem::command_rof};
-	if(strcasecmp(command, "sum") == 0) return {sum_, &Neem::command_sum};
 	if(strcasecmp(command, "goto") == 0) return {goto_, &Neem::command_goto};
 	if(strcasecmp(command, "call") == 0) return {call_, &Neem::command_call};
 	if(strcasecmp(command, "inc") == 0) return {inc_, &Neem::command_inc};
 	if(strcasecmp(command, "sleep") == 0) return {sleep_, &Neem::command_sleep};
-	if(strcasecmp(command, "strftime") == 0) return {strftime_, &Neem::command_strftime};
 	if(strcasecmp(command, "start") == 0) return {start_, &Neem::command_start};
 	if(strcasecmp(command, "pwd") == 0) return {pwd_, &Neem::command_pwd};
 	if(strcasecmp(command, "cd") == 0) return {cd_, &Neem::command_cd};
@@ -103,9 +101,7 @@ bool Neem::parseline(char *line, uint32_t index) {
 			last->value = params;
 			break;
 			
-		case sum_: //Input with equals: "set var=val"
-		case strftime_:
-		case prompt_:
+		case prompt_: //var=value
 		case setsystem_:
 		case set_:
 			last->extravalue = splitstring(params, '='); //value to set to
