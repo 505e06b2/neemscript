@@ -37,7 +37,7 @@ const char *Neem::getVariable(const char *name) {
 //Interpreting
 void Neem::interpretFile(const char *fname) {
 	//Set scriptpath
-	if(fname[0] == '/' || (fname[1] == ':') && (fname[2] == '/' || fname[2] == '\\')) { //if the file passed in is absolute: /file or C:\file or C:/file
+	if(fname[0] == '/' || ((fname[1] == ':') && (fname[2] == '/' || fname[2] == '\\'))) { //if the file passed in is absolute: /file or C:\file or C:/file
 		scriptpath = fname;
 	} else {
 		char cwdbuffer[MAX_LINE_LEN + 512]; //for both the cwd, then the path passed in
