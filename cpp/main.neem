@@ -1,8 +1,7 @@
-set index=old
-startlocal
-	set arr=1|2|3|4|5
-	for index arr
-		echo %index%
-	rof
+set index=0
+setlocal
+    echo 1:%index%
+    inc index
+    echo 2:%index%
 endlocal
-echo index=%index%
+echo 3:%index%

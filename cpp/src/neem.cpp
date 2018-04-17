@@ -19,8 +19,8 @@ Neem::typeandfunc Neem::gettype(char *command) {
 	if(strcasecmp(command, "sleep") == 0) return {sleep_, &Neem::command_sleep};
 	if(strcasecmp(command, "start") == 0) return {start_, &Neem::command_start};
 	if(strcasecmp(command, "pwd") == 0) return {pwd_, &Neem::command_pwd};
-	if(strcasecmp(command, "startlocal") == 0) return {startlocal_, &Neem::command_startlocal};
-	if(strcasecmp(command, "endlocal") == 0) return {startlocal_, &Neem::command_endlocal};
+	if(strcasecmp(command, "setlocal") == 0) return {setlocal_, &Neem::command_setlocal};
+	if(strcasecmp(command, "endlocal") == 0) return {endlocal_, &Neem::command_endlocal};
 	if(strcasecmp(command, "cd") == 0) return {cd_, &Neem::command_cd};
 	if(strcasecmp(command, "rm") == 0) return {rm_, &Neem::command_rm};
 	if(strcasecmp(command, "rmdir") == 0) return {rmdir_, &Neem::command_rmdir};
@@ -79,6 +79,11 @@ bool Neem::parseline(char *line, uint32_t index) {
 		case else_:
 		case fi_:
 		case rof_:
+		case setlocal_:
+		case endlocal_:
+		case none_: //need these 2 or the compiler complains
+		case comment_:
+		case import_;
 			break;
 		
 		case echo_: // echo SOMETHING / echo
