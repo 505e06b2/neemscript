@@ -5,6 +5,7 @@ Neem::typeandfunc Neem::gettype(char *command) {
 	if(strcasecmp(command, "setsystem") == 0) return {setsystem_, &Neem::command_setsystem};
 	if(strcasecmp(command, "import") == 0) return {import_, NULL};
 	if(strcasecmp(command, "set") == 0) return {set_, &Neem::command_set};
+	if(strcasecmp(command, "setglobal") == 0) return {setglobal_, &Neem::command_setglobal};
 	if(strcasecmp(command, "prompt") == 0) return {prompt_, &Neem::command_prompt};
 	if(strcasecmp(command, "if") == 0) return {if_, &Neem::command_if};
 	if(strcasecmp(command, "else") == 0) return {else_, &Neem::command_else};
@@ -112,6 +113,7 @@ bool Neem::parseline(char *line, uint32_t index) {
 		case prompt_: //var=value
 		case setsystem_:
 		case set_:
+		case setglobal_:
 			last->extravalue = splitstring(params, '='); //value to set to
 			last->value = params; //varname
 			break;

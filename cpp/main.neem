@@ -1,7 +1,8 @@
-set index=0
 setlocal
-    echo 1:%index%
-    inc index
-    echo 2:%index%
+    set var=local
+	setglobal var=global
+	echo === inside ===
+	echo %var%
 endlocal
-echo 3:%index%
+echo === outside ===
+echo %var%
