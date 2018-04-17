@@ -21,6 +21,7 @@ Neem::Neem() { //Set up dynamic vars
 	dynamicvariables["LIBRUN"] = &Neem::dynamic_librun;
 	dynamicvariables["FILENAME"] = &Neem::dynamic_filename;
 	dynamicvariables["PATHNAME"] = &Neem::dynamic_pathname;
+	dynamicvariables["SCRIPTPATH"] = &Neem::dynamic_scriptpath;
 }
 
 void Neem::setVariable(const char *name, const char *value) {
@@ -35,6 +36,22 @@ const char *Neem::getVariable(const char *name) {
 
 //Interpreting
 void Neem::interpretFile(const char *fname) {
+	//Set scriptpath
+	if(fname[0] == '/' || (fname[1] == ':') && (fname[2] == '/' || fname[2] == '\\')) { //if the file passed in is absolute: /file or C:\file or C:/file
+		scriptpath = fname;
+	} else {
+		char cwdbuffer[MAX_LINE_LEN + 512]; //for both the cwd, then the path passed in
+		if(getcwd(cwdbuffer, MAX_LINE_LEN)) {
+			#ifdef _WIN32
+				strcat(cwdbuffer, "\\");
+			#else
+				strcat(cwdbuffer, "/");
+			#endif
+			strcat(cwdbuffer, fname);
+			scriptpath = cwdbuffer;
+		} else scriptpath = "BUFFER TOO SMALL, please look at function 'interpretFile' in publicfunctions to increase; maybe create an issue, if it happens a lot";
+	}
+	
 	if(!readfilebyline(fname, &Neem::parseline)) return;
 	runInstructions(); //The meat of the program
 }

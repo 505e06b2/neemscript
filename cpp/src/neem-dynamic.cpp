@@ -14,6 +14,8 @@ std::string Neem::dynamic_lower(char *c) { return changecase(c, 'A', 'Z', +32); 
 
 std::string Neem::dynamic_path(char *c) { return getenv("PATH"); }
 
+std::string Neem::dynamic_scriptpath(char *c) { return scriptpath; }
+
 std::string Neem::dynamic_sum(char *c) {
 	char *format = splitstring(c, ';');
 	double sum = dosum(c);

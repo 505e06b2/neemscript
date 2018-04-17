@@ -63,6 +63,7 @@ class Neem {
 		FILE *inputhandle = NULL;
 		std::string switchcheckstring = "";
 		std::map<const std::string, void*> loadedlibs;
+		std::string scriptpath = "";
 		
 		//neem.cpp
 		bool parseline(char *, uint32_t);
@@ -113,6 +114,7 @@ class Neem {
 		std::string dynamic_librun(char *);
 		std::string dynamic_filename(char *);
 		std::string dynamic_pathname(char *);
+		std::string dynamic_scriptpath(char *);
 		
 		//commands - commands/[command].cpp
 		int command_none(instruction *, uint32_t);

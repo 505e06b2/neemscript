@@ -197,6 +197,7 @@ void Neem::runInstructions() {
 	}
 	std::vector<instruction>().swap(instructions); //Remove all instructions that we just ran
 	switchcheckstring = "";
+	scriptpath = "";
 }
 
 void Neem::cleanup() {

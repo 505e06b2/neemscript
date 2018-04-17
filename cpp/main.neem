@@ -1,1 +1,1 @@
-echo %FILENAME;file%
+echo PATH:%SCRIPTPATH%
