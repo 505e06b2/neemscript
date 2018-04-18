@@ -3,7 +3,8 @@
 int Neem::command_for(instruction *i, uint32_t index) {
 	parsedstrings parsed;
 	parseallstrings(&parsed, i);
-	const char *therest = getvariablefromscope(parsed.extravalue).c_str();
+	std::string array = getvariablefromscope(parsed.extravalue);
+	const char *therest = array.c_str();
 	std::string currentvalue = "";
 	
 	for(; *therest; therest++) {

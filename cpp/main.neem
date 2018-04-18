@@ -1,8 +1,4 @@
-setlocal
-    set var=local
-	setglobal var=global
-	echo === inside ===
-	echo %var%
-endlocal
-echo === outside ===
-echo %var%
+set arr=%LS%
+for index arr
+	echo %index%
+rof

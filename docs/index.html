@@ -3,188 +3,86 @@
 <meta charset="utf8">
 <link rel="icon" href="favicon.ico" type="image/x-icon">
 <title>Neemscript Interpreter</title>
-<script src="instascan.min.js"></script>
+
+<script src="scripts/instascan.min.js"></script>
+<script src="scripts/funcs.js"></script>
+<script src="scripts/inits.js"></script>
+<script src="scripts/hotkeys.js"></script>
+<script src="scripts/filesystem.js"></script>
+
 <link rel="stylesheet" type="text/css" href="styles/shared.css">
 <link id="stylesheet" rel="stylesheet" type="text/css" href="styles/desktop.css">
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>
+const filesystemroot = "/home/web_user";
+
 var outbox;
 var inbox;
+var editfilename;
 var interpret;
 var scanner;
 var qrbox;
 var currentcam;
+var fstable;
 var mobile = false;
 
-window.onbeforeunload = function() {
-	return true;
-}
-
-function resizedwindow() {
-	document.getElementById("stylesheet").href = "styles/" + ((window.innerWidth < window.innerHeight) ? "mobile.css" : "desktop.css");
-	mobile = (window.innerWidth < window.innerHeight) ? true : false;
-}
-//window.onresize = resizedwindow;
-
-function runcode(script) {
-	if(interpret === undefined) {
-		alert('Can\'t load Neemscript... Try refreshing');
-		return;
-	}
-	outbox.focus();
-	Module.print("[*] Running script... This could take a while...");
-	Module.print("     ======= START =======");
-	setTimeout(function() {
-		interpret(script);
-		Module.print("     ======== END ========");
-	}, 100);
-}
-
-function loadcode() {
-	var temp = localStorage.getItem("script");
-	if(!temp) return false;
-	inbox.value = localStorage.getItem("script");
-	Module.print("[*] Loaded script from localStorage");
-}
-
-function savecode() {
-	localStorage.setItem("script", inbox.value);
-	Module.print("[*] Saved script to localStorage");
-}
-
-function resetqr() {
-	document.getElementById("replacescript").disabled = true;
-	document.getElementById("runscript").disabled = true;
-	qrbox.value = "";
-}
-
-function changeCamera(id) {
-	Instascan.Camera.getCameras().then(function (cameras) {
-		if (cameras.length > 0) {
-			currentcam = cameras[id];
-			localStorage.camamount = cameras.length;
-			localStorage.currentcam = id;
-			scanner.start(currentcam);
-		}
-	});
-}
-
-function toggleqr() {
-	var qrwindow = document.getElementById("qrwindow");
-	if(qrwindow.style.display == "none") {
-		qrwindow.style.display = "block";
-		scanner.start(currentcam);
-	} else {
-		qrwindow.style.display = "none";
-		scanner.stop();
-	}
-}
-
-function stopaction(e) {
-	if(e.preventDefault) e.preventDefault();
-    if(e.stopPropagation) e.stopPropagation();
-}
+window.onbeforeunload = function() {savefiles()};
 
 window.onload = function() {
-	resizedwindow();
+	setTimeout(resizedwindow, 0);
 	outbox = document.getElementById('output');
 	inbox = document.getElementById('input');
 	qrbox = document.getElementById('qrbox');
+	fstable = document.getElementById('fstable');
+	editfilename = document.getElementById('editfilename');
+	
+	setTimeout(resetqr, 0);
 	inbox.focus();
-	resetqr();
-	inbox.onkeydown = function(e) {
-		if(e.keyCode == 9) { //Tab
-			stopaction(e);
-			this.value += "\t";
-		} else if(e.ctrlKey) {
-			if(e.keyCode == 81) { //Ctrl + Q
-				stopaction(e);
-				runcode(inbox.value);
-			} else if(e.keyCode == 83) { //Ctrl + S
-				stopaction(e);
-				savecode();
-			} else if(e.keyCode == 79) { //Ctrl + O
-				stopaction(e);
-				loadcode();
-			} else if(e.keyCode == 87) { //Ctrl + W
-				stopaction(e);
-				outbox.value = "[*] Cleared Output\n";
-			}
-		}
-	}
+	inbox.onkeydown = hotkey_check;
 	
-	scanner = new Instascan.Scanner({ video: document.getElementById("qrpreview"), mirror: !mobile });
-	scanner.addListener('scan', function (content) {
-        qrbox.value = content;
-		document.getElementById("replacescript").disabled = false;
-		document.getElementById("runscript").disabled = false;
-    });
-	Instascan.Camera.getCameras().then(function (cameras) {
-		if (cameras.length > 0) {
-			var camselect = document.getElementById("cameraselect");
-			var index = (localStorage.currentcam && localStorage.camamount == cameras.length) ? localStorage.currentcam : 0;
-			camselect.innerHTML = "";
-			for(var i = 0; i < cameras.length; i++) {
-				camselect.innerHTML += "<option value='" + i + "'" + ((i == index) ? " selected " : "") + ">" + cameras[i].name + "</option>";
-			}
-			currentcam = cameras[index];
-		} else {
-			console.error('No cameras found.');
-		}
-	}).catch(function (e) {
-		console.error(e);
-	});
-	
-	var neemloader = document.createElement("script");
-	neemloader.onload = function() {
-		Module.print = function(text) {
-			outbox.value += text + '\n';
-			outbox.scrollTop = outbox.scrollHeight;
-		};	
-		Module.printErr = Module.print;
-	
-		Module.onRuntimeInitialized = function() {
-			interpret = Module.cwrap('webmain', null, ['string']);
-			console.log("Loaded Neemscript");
-			Module.print("[*] Neemscript runtime loaded");
-			loadcode();
-		}
-	}
-	
-	var t = (typeof WebAssembly === "undefined") ? "asm.js" : "wasm";
-	neemloader.src = "neemscript" + ((typeof WebAssembly === "undefined") ? ".js" : "_wasm.js");
-	outbox.value += "\n[*] Using " + t + " for Neemscript\n";
-	document.head.appendChild(neemloader);
+	setTimeout(init_qrscanner, 0);
+	setTimeout(init_neemscript, 0);
 };
 
 </script>
 </head>
 <body>
 <table class="script">
-	<tr><th>Script</th></tr>
+	<tr><td class="headerbutton">
+		<a class="header" id="infobutton" href="#Show Hotkeys and info" onclick="return false">[?]</a>
+		<div id="info" class="ontop">
+			<div class="header">Shortcuts:</div>
+			Run Code: CTRL+Q<br>
+			Save Code: CTRL+S<br>
+			Open Code: CTRL+O<br>
+			Clear Output: CTRL+W<br>
+			<hr>
+			<div class="header">Errors with WASM?:</div>
+			Try disabling adblock for this page<br>
+		</div>
+		<a class="header" href="#Click to open QR Reader" onclick="resetqr();toggleqr();return false" title="Click to open QR Reader">[QR]</a>
+	</td></tr>
+	<tr><td class="header" style="background: #222" id="editfilename"></td></tr>
 	<tr><td><textarea wrap="off" id="input"></textarea></td></tr>
-	<tr><td class="buttonpanel" style="height:30px;text-align:center"><button onclick="runcode(inbox.value)">Run</button><button onclick="loadcode()">Load</button><button onclick="savecode()">Save</button></td></tr>
+	<tr><td class="buttonpanel" style="height:30px;text-align:center"><button onclick="runcode(inbox.value)">Run</button><button onclick="editfile(editfilename.innerHTML)">Reload File</button><button onclick="savecurrentfile()">Save</button></td></tr>
 </table>
 <table class="log">
-	<tr><th>Log</th></tr>
+	<tr><td class="header headerbutton">Log</td></tr>
 	<tr><td><textarea id="output" readonly style="right:0;">[*] Loading Neemscript...</textarea></td></tr>
+	<tr><td class="header headerbutton">
+			Files
+			<div style="float:right;padding-right: 5px">
+				<a href="#Refresh List" title="Refresh List" onclick="return updatefilelist()">[R]</a>
+				<a href="#Add File" title="Add File" onclick="return addfile()">[+]</a>
+			</div>
+		</td></tr>
+	<tr><td style="vertical-align: top"><div id="fstable"></div></td></tr>
 </table>
-<a class="header" id="infobutton" href="#Show Hotkeys and info" onclick="return false" style="position:absolute;left:5px;top:0px">[?]</a>
-<a class="header" href="#Click to open QR Reader" onclick="resetqr();toggleqr();return false" title="Click to open QR Reader" style="position:absolute;left:55px;top:0px">[QR]</a>
-<div id="info" class="ontop">
-<div class="header">Shortcuts:</div>
-Run Code: CTRL+Q<br>
-Save Code: CTRL+S<br>
-Open Code: CTRL+O<br>
-Clear Output: CTRL+W<br>
-<hr>
-<div class="header">Errors with WASM?:</div>
-Try disabling adblock for this page<br>
-</div>
 <div id="qrwindow" class="ontop" style="display:none;">
 <div style="background:#000; width:100%; height:40%;text-align:center;margin-bottom:2%;"><video id="qrpreview"></video></div>
 <textarea id="qrbox" readonly style="height:39%;" placeholder="[Script will show up here]"></textarea><br><br>
-<button id="replacescript" onclick="toggleqr();input.value = qrbox.value;">Replace Input with this script</button><button id="runscript" onclick="toggleqr();Module.print('[*] Running QR Script');setTimeout(function() {runcode(qrbox.value);resetqr()}, 500);">Run</button>
+<button id="replacescript" onclick="toggleqr();input.value = qrbox.value;">Import this as the current file</button><button id="runscript" onclick="toggleqr();Module.print('[*] Running QR Script');setTimeout(function() {runcode(qrbox.value);resetqr()}, 500);">Run</button>
 <select id="cameraselect" onchange="changeCamera(this.value)"><option value="" selected>Loading Camera List...</option></select>
 </div>
 </body>

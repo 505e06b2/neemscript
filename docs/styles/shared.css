@@ -7,10 +7,28 @@ body, textarea {
 	white-space: pre;
 }
 
+div .righticon {
+	padding-right: 5px;
+	float: right;
+}
+
+div .righticon a {
+	padding-right: 5px;
+}
+
 table {
 	position:absolute;
 	width:100%;
 	height:100%;
+}
+
+#fstable {
+	height:100%;
+	overflow: auto;
+}
+
+#fstable div:nth-child(even) {
+    background: #222;
 }
 
 #qrpreview {
@@ -18,10 +36,16 @@ table {
 	width:auto !important;
 }
 
-th, .header {
+.header {
 	height: 30px;
 	font-size: 18px;
 	font-family: monospace;
+	text-align: center;
+}
+
+.headerbutton {
+	background: #333;
+	height:33px;
 }
 
 textarea {
@@ -42,10 +66,6 @@ textarea {
 a {
 	color: #eee;
 	text-decoration: none;
-	background: #333;
-	padding-top:5px;
-	padding-left:5px;
-	padding-right:5px;
 }
 
 #info {
