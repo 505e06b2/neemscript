@@ -115,26 +115,25 @@ function createdefaultfile() {
 	const filename = "main.neem";
 	try {
 		FS.writeFile(filename,
-`::Quick script anyone could make but shows quite a few features
-::Check the wiki to see how you can make your own scripts
-
-output tempdata w
-set i=0
-:label
-  if %i%==5
-    goto :end
-  fi
-  inc i
-  echo %i%
-  goto :label
-
-:end
-  output reset
-  echo Finished; going to read and print what was written:
-  input tempdata
-  readall temp
-  echo %temp%
-`
+"::Quick script anyone could make but shows quite a few features\n" +
+"::Check the wiki to see how you can make your own scripts\n" +
+"\n" +
+"output tempdata w\n" +
+"set i=0\n"+
+":label\n" +
+"	if %i%==5\n" +
+"    goto :end\n" +
+"  fi\n" +
+"  inc i\n" +
+"  echo %i%\n" +
+"  goto :label\n" +
+"\n" +
+":end\n" +
+"  output reset\n" +
+"  echo Finished; going to read and print what was written:\n" +
+"  input tempdata\n" +
+"  readall temp\n" +
+"  echo %temp%\n"
 		);
 	} catch (err) {
 		return fserror(err);
