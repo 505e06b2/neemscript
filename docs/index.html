@@ -63,8 +63,8 @@ window.onload = function() {
 		</div>
 		<a class="header" href="#Click to open QR Reader" onclick="resetqr();toggleqr();return false" title="Click to open QR Reader">[QR]</a>
 	</td></tr>
-	<tr><td class="header" style="background: #222" id="editfilename"></td></tr>
-	<tr><td><textarea wrap="off" id="input"></textarea></td></tr>
+	<tr><td class="header headerbutton" id="editfilename">[None]</td></tr>
+	<tr><td><textarea wrap="off" id="input">[Script will go here]</textarea></td></tr>
 	<tr><td class="buttonpanel" style="height:30px;text-align:center"><button onclick="runcode(inbox.value)">Run</button><button onclick="editfile(editfilename.innerHTML)">Reload File</button><button onclick="savecurrentfile()">Save</button></td></tr>
 </table>
 <table class="log">

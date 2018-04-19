@@ -1,6 +1,37 @@
+:root {
+	/* Colours */
+	--bg0_h: #1d2021;
+	--bg0: #282828;
+	--bg: var(--bg0);
+	--bg0_s: #32302f;
+	--bg1: #3c3836;
+	--bg2: #504945;
+	--bg3: #665c54;
+	--bg4: 7c6f64;
+	
+	--fg4: #a89984;
+	--fg3: #bdae93;
+	--fg2: #d5c4a1;
+	--fg: var(--fg2);
+	--fg1: #ebdbb2;
+	--fg0: #fbf1c7;
+	
+	--red: #cc241d;
+	--green: #98971a;
+	--yellow: #d79921;
+	--blue: #458588;
+	--purple: #b16286;
+	--aqua: #689d6a;
+	--grey: var(--fg4);
+	--orange: #d65d0e;
+	
+	/* Styles */
+	--border: solid 2px var(--grey);
+}
+
 body, textarea {
-	background: #1a1a1a;
-	color: #eee;
+	background: var(--bg0);
+	color: var(--fg1);
 	padding:0;
 	margin:0;
 	font-family: monospace;
@@ -25,10 +56,11 @@ table {
 #fstable {
 	height:100%;
 	overflow: auto;
+	border: var(--border);
 }
 
 #fstable div:nth-child(even) {
-    background: #222;
+    background: var(--bg0_s);
 }
 
 #qrpreview {
@@ -41,17 +73,21 @@ table {
 	font-size: 18px;
 	font-family: monospace;
 	text-align: center;
+	font-weight: bold;
 }
 
 .headerbutton {
-	background: #333;
 	height:33px;
+	border: var(border);
+	background: var(--bg0_s);
+	color: var(--fg3);
 }
 
 textarea {
 	resize: none;
 	width: 100%;
 	height: 100%;
+	border: var(--border);
 }
 
 .ontop {
@@ -59,12 +95,17 @@ textarea {
 	text-align:center;
 	background:#333;
 	padding:5px;
-	border:solid 2px #eee;
+	border: var(--border);
 	z-index:100;
+	color: var(--fg);
+}
+
+hr {
+	border-color: var(--fg);
 }
 
 a {
-	color: #eee;
+	color: inherit;
 	text-decoration: none;
 }
 
@@ -83,4 +124,14 @@ a {
 
 #replacescript, #runscript {width:auto}
 .buttonpanel button {height:100%}
-button {width:33%}
+
+button {
+	background: var(--bg0_s);
+	border: var(--border);
+	width:33%;
+	color: var(--fg);
+}
+
+button:hover {
+	cursor: pointer;
+}
