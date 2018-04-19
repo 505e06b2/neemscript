@@ -60,13 +60,11 @@ function deletefile(filename) {
 	}
 	
 	if(editfilename.innerHTML == filename) {
-		inbox.value = "";
-		editfilename.innerHTML = "";
+		var newfilename = FS.readdir(".");
+		if(newfilename.length > 2) editfile(newfilename[2]);
 	}
 	Module.print("[*] Deleted '" + filename + "'");
 	
-	var newfilename = FS.readdir(".");
-	if(newfilename.length > 2) editfile(newfilename[2]);
 	savefiles();
 	return false;
 }
