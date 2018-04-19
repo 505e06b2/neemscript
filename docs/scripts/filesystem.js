@@ -84,9 +84,9 @@ function updatefilelist(focusto) {
 		fstable.innerHTML += ((focusto == dirlist[i]) ? "<div id='filelist_focus' tabindex='-1'>" : "<div>") + 
 			dirlist[i] + 
 			"<div class='righticon'>" +
-				"<a href='#Edit File' title='Edit' onclick='return editfile(\"" + dirlist[i] + "\")'>[E]</a>" + 
-				"<a href='#Rename File' title='Rename' onclick='return renamefile(\"" + dirlist[i] + "\")'>[R]</a>" + 
-				"<a href='#Delete File' title='Delete' onclick='return deletefile(\"" + dirlist[i] + "\")'>[D]</a>" + 
+				"<a href='#Edit File' title='Edit' style='color: var(--blue)' onclick='return editfile(\"" + dirlist[i] + "\")'>[E]</a>" + 
+				"<a href='#Rename File' title='Rename' style='color: var(--green)' onclick='return renamefile(\"" + dirlist[i] + "\")'>[R]</a>" + 
+				"<a href='#Delete File' title='Delete' style='color: var(--red)' onclick='return deletefile(\"" + dirlist[i] + "\")'>[D]</a>" + 
 			"</div>" +
 		"</div>";
 	}
