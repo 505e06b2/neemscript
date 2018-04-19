@@ -31,29 +31,11 @@ color: red;\
 .ace-gruvbox .ace_variable {\
 color: var(--blue);\
 }\
-.ace-gruvbox .ace_variable.ace_language {\
-color: #D2879B;\
-}\
 .ace-gruvbox .ace_constant {\
 color: var(--yellow);\
 }\
 .ace-gruvbox .ace_string {\
 color: var(--aqua);\
-}\
-.ace-gruvbox .ace_support {\
-color: #F9BC41;\
-}\
-.ace-gruvbox .ace_support.ace_function {\
-color: #F84B3C;\
-}\
-.ace-gruvbox .ace_storage {\
-color: #8FBF7F;\
-}\
-.ace-gruvbox .ace_keyword.ace_operator {\
-color: #EBDAB4;\
-}\
-.ace-gruvbox .ace_punctuation.ace_operator {\
-color: yellow;\
 }\
 .ace-gruvbox .ace_marker-layer .ace_active-line {\
 background: #3C3836;\

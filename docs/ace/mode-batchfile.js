@@ -7,19 +7,19 @@ var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 var BatchFileHighlightRules = function() {
     this.$rules = { start: 
        [ { token: 'keyword',
-           regex: '\\b(echo|print|import|sleep|start|pwd|goto|exit|call|setlocal|endlocal|cd|rm|rmdir|ls|pause|output|input|readall|readline|libload|librun|libunload)\\b',
+           regex: '(^\\s*)(echo|print|import|sleep|start|pwd|goto|exit|call|setlocal|endlocal|cd|rm|rmdir|ls|pause|output|input|libload|librun|libunload)\\b',
            caseInsensitive: true },
          { token: 'string',
-           regex: '\\b(if|else|fi|switch|case|rof)\\b',
+           regex: '(^\\s*)(if|else|fi|switch|case|rof)\\b',
            caseInsensitive: true },
-         { token: ['string', 'constant', 'constant'],
-           regex: '\\b(for\\s+)(\\w+\\s)(\\w+)', //for var var
+         { token: ['markup', 'string', 'constant', 'constant'],
+           regex: '(^\\s*)(for\\s+)(\\w+\\s)(\\w+)', //for var var
            caseInsensitive: true },
-		 { token: ['keyword', 'constant', 'variable'],
-           regex: '\\b(set|setsystem|setglobal|prompt)(\\s\\w+)(=)', //set var=val
+		 { token: ['markup', 'keyword', 'constant', 'variable'],
+           regex: '(^\\s*)(set|setsystem|setglobal|prompt)(\\s\\w+)(=)', //set var=val
            caseInsensitive: true },
-		 { token: ['keyword', 'constant'],
-           regex: '\\b(inc)(\\s\\w+)', //inc var
+		 { token: ['markup', 'keyword', 'constant'],
+           regex: '(^\\s*)(inc|readline|readall)(\\s\\w+)', //inc var
            caseInsensitive: true },
          { token: ['doc.comment', 'comment'],
            regex: '(?:^|\\b)(rem)($|\\s.*$)',
@@ -29,7 +29,7 @@ var BatchFileHighlightRules = function() {
 		 { token: 'variable',
 			regex: '(==|=|!=|<=|<|>=|>|!)(?=\\w+$)'},
 		 { token: 'string',
-			regex: '(:\\w+)'},
+			regex: '(^\\s*)(:\\w+)'},
 		 { include: 'variable' }
 	   ],
         variable: [
