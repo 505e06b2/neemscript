@@ -55,3 +55,34 @@ function init_filesystem() {
 		if(localStorage.lastedited) editfile(localStorage.lastedited);
 	});
 }
+
+function init_hotkeys() {
+	editor.commands.addCommand({
+		name: 'Run',
+		bindKey: {win: 'Ctrl-Q',  mac: 'Command-Q'},
+		exec: function(box) {
+			runcode(box.getValue());
+		}
+	});
+	editor.commands.addCommand({
+		name: 'Save',
+		bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
+		exec: function(box) {
+			savecurrentfile();
+		}
+	});
+	editor.commands.addCommand({
+		name: 'Reopen',
+		bindKey: {win: 'Ctrl-O',  mac: 'Command-O'},
+		exec: function(box) {
+			editfile(editfilename.innerHTML);
+		}
+	});
+	editor.commands.addCommand({
+		name: 'Clear',
+		bindKey: {win: 'Ctrl-W',  mac: 'Command-W'},
+		exec: function(box) {
+			outbox.value = "[*] Cleared Output\n";
+		}
+	});
+}

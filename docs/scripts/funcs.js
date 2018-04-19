@@ -45,8 +45,3 @@ function toggleqr() {
 		scanner.stop();
 	}
 }
-
-function stopaction(e) {
-	if(e.preventDefault) e.preventDefault();
-    if(e.stopPropagation) e.stopPropagation();
-}

@@ -31,7 +31,7 @@ function renamefile(filename) {
 
 function editfile(filename) {
 	try {
-		inbox.value = FS.readFile(filename, {encoding: "utf8"});
+		editor.session.setValue(FS.readFile(filename, {encoding: "utf8"}));
 	} catch (err) {
 		return fserror(err);
 	}
@@ -43,7 +43,7 @@ function editfile(filename) {
 
 function savecurrentfile() {
 	try {
-		FS.writeFile(editfilename.innerHTML, inbox.value);
+		FS.writeFile(editfilename.innerHTML, editor.getValue());
 	} catch (err) {
 		return fserror(err);
 	}

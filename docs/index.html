@@ -5,9 +5,9 @@
 <title>Neemscript Interpreter</title>
 
 <script src="scripts/instascan.min.js"></script>
+<script src="ace/ace.js"></script>
 <script src="scripts/funcs.js"></script>
 <script src="scripts/inits.js"></script>
-<script src="scripts/hotkeys.js"></script>
 <script src="scripts/filesystem.js"></script>
 
 <link rel="stylesheet" type="text/css" href="styles/shared.css">
@@ -18,7 +18,6 @@
 const filesystemroot = "/home/web_user";
 
 var outbox;
-var inbox;
 var editfilename;
 var interpret;
 var scanner;
@@ -26,20 +25,23 @@ var qrbox;
 var currentcam;
 var fstable;
 var mobile = false;
+var editor;
 
 window.onbeforeunload = function() {savefiles()};
 
 window.onload = function() {
 	setTimeout(resizedwindow, 0);
+	editor = ace.edit("input");
+    editor.setTheme("ace/theme/gruvbox");
+    editor.session.setMode("ace/mode/batchfile");
+	
 	outbox = document.getElementById('output');
-	inbox = document.getElementById('input');
 	qrbox = document.getElementById('qrbox');
 	fstable = document.getElementById('fstable');
 	editfilename = document.getElementById('editfilename');
+	setTimeout(init_hotkeys, 0);
 	
 	setTimeout(resetqr, 0);
-	inbox.focus();
-	inbox.onkeydown = hotkey_check;
 	
 	setTimeout(init_qrscanner, 0);
 	setTimeout(init_neemscript, 0);
@@ -64,8 +66,8 @@ window.onload = function() {
 		<a class="header" href="#Click to open QR Reader" onclick="resetqr();toggleqr();return false" title="Click to open QR Reader">[QR]</a>
 	</td></tr>
 	<tr><td class="header headerbutton" style="border-top: var(--border)" id="editfilename">[None]</td></tr>
-	<tr><td><textarea wrap="off" id="input">[Script will go here]</textarea></td></tr>
-	<tr><td class="buttonpanel" style="height:30px;text-align:center"><button onclick="runcode(inbox.value)">Run</button><button onclick="editfile(editfilename.innerHTML)">Reload File</button><button onclick="savecurrentfile()">Save</button></td></tr>
+	<tr><td><div id="input">[Script will go here]</div></td></tr>
+	<tr><td class="buttonpanel" style="height:30px;text-align:center"><button onclick="runcode(editor.getValue())">Run</button><button onclick="editfile(editfilename.innerHTML)">Reload File</button><button onclick="savecurrentfile()">Save</button></td></tr>
 </table>
 <table class="log">
 	<tr><td class="header headerbutton">Log</td></tr>
