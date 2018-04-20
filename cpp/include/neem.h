@@ -117,6 +117,7 @@ class Neem {
 		std::string dynamic_filename(char *);
 		std::string dynamic_pathname(char *);
 		std::string dynamic_scriptpath(char *);
+		std::string dynamic_read(char *);
 		
 		//commands - commands/[command].cpp
 		int command_none(instruction *, uint32_t);
@@ -147,7 +148,6 @@ class Neem {
 		int command_librun(instruction *, uint32_t);
 		int command_output(instruction *, uint32_t);
 		int command_input(instruction *, uint32_t);
-		int command_readall(instruction *, uint32_t);
 		int command_readline(instruction *, uint32_t);
 		int command_setlocal(instruction *, uint32_t);
 		int command_endlocal(instruction *, uint32_t);

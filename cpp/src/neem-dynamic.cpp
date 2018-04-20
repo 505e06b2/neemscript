@@ -73,6 +73,22 @@ std::string Neem::dynamic_librun(char *c) {
 	return "";
 }
 
+std::string Neem::dynamic_read(char *c) {
+	if(c == NULL) return "[ERROR: NO FILE SPECIFIED]";
+	FILE *f = fopen(c, "r");
+	if(f == NULL) return "[ERROR: CAN'T OPEN FILE]";
+	//Get size of file
+	fseek (f, 0, SEEK_END);
+	size_t s = ftell(f) + 1;
+	rewind(f);
+	char *buffer = (char *)calloc(s, sizeof(char));
+	if(buffer == NULL) return "[ERROR: OUT OF MEMORY?]";
+	fread(buffer, sizeof(char), s, f);
+	std::string returnval = buffer;
+	free(buffer);
+	return returnval;
+}
+
 std::string Neem::dynamic_filename(char *c) {
 	char *filename = c;
 	for(; *c; c++) {

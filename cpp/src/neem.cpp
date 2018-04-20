@@ -30,7 +30,6 @@ Neem::typeandfunc Neem::gettype(char *command) {
 	if(strcasecmp(command, "pause") == 0) return {pause_, &Neem::command_pause};
 	if(strcasecmp(command, "output") == 0) return {output_, &Neem::command_output};
 	if(strcasecmp(command, "input") == 0) return {input_, &Neem::command_input};
-	if(strcasecmp(command, "readall") == 0) return {readall_, &Neem::command_readall};
 	if(strcasecmp(command, "readline") == 0) return {readline_, &Neem::command_readline};
 	if(strcasecmp(command, "libload") == 0) return {libload_, &Neem::command_libload};
 	if(strcasecmp(command, "libunload") == 0) return {libunload_, &Neem::command_libunload};

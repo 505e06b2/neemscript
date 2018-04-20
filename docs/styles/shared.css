@@ -27,6 +27,7 @@
 	
 	/* Styles */
 	--border: solid 2px var(--grey);
+	--fontsize: 14px;
 }
 
 body, textarea {
@@ -57,6 +58,7 @@ table {
 	overflow: auto;
 	border-top: var(--border);
 	border-bottom: var(--border);
+	font-size: var(--fontsize);
 }
 
 #fstable div:nth-child(even) {
@@ -64,8 +66,8 @@ table {
 }
 
 #qrpreview {
-	height:100% !important;
-	width:auto !important;
+	height: 100% !important;
+	width: auto !important;
 }
 
 .header {
@@ -89,6 +91,7 @@ textarea {
 	border: none;
 	border-top: var(--border);
 	border-bottom: var(--border);
+	font-size: var(--fontsize);
 }
 
 .ontop {
@@ -117,6 +120,7 @@ a {
 	border-bottom: var(--border);
 	background: var(--bg);
 	color: var(--fg);
+	font-size: var(--fontsize);
 }
 
 #info {
