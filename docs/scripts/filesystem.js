@@ -30,6 +30,7 @@ function renamefile(filename) {
 }
 
 function editfile(filename) {
+	if(edited && confirm("Save file?")) savecurrentfile();
 	try {
 		editor.session.setValue(FS.readFile(filename, {encoding: "utf8"}));
 	} catch (err) {
@@ -55,6 +56,7 @@ function exportfile() {
 	outputfile.href = (window.webkitURL || window.URL).createObjectURL(blob);
 	outputfile.dataset.downloadurl = ['text/plain', outputfile.download, outputfile.href].join(':');
 	outputfile.click();
+	return false;
 }
 
 function importfileselect(obj) {
