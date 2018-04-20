@@ -11,10 +11,10 @@ set line=0
 	goto :label
 
 :end
-	::write to file
+::write to file
 	output tempdata w
 	echo %line%
-	::reset output of echo
+::reset output of echo
 	output reset
 	echo Finished; going to read and print what was written:
 	echo %READ;tempdata%
