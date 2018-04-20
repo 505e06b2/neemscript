@@ -85,4 +85,5 @@ function init_hotkeys() {
 			outbox.value = "[*] Cleared Output\n";
 		}
 	});
+	editor.on("change", function(e) {beenedited(true)});
 }

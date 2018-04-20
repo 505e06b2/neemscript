@@ -24,10 +24,13 @@ var scanner;
 var qrbox;
 var currentcam;
 var fstable;
+var fileselect;
+var outputfile;
 var mobile = false;
+var edited = false;
 var editor;
 
-window.onbeforeunload = function() {savefiles()};
+window.onbeforeunload = function() {savecurrentfile()};
 
 window.onload = function() {
 	setTimeout(resizedwindow, 0);
@@ -39,6 +42,8 @@ window.onload = function() {
 	qrbox = document.getElementById('qrbox');
 	fstable = document.getElementById('fstable');
 	editfilename = document.getElementById('editfilename');
+	fileselect = document.getElementById('fileselect');
+	outputfile = document.getElementById('outputfile');
 	setTimeout(init_hotkeys, 0);
 	
 	setTimeout(resetqr, 0);
@@ -67,7 +72,7 @@ window.onload = function() {
 	</td></tr>
 	<tr><td class="header headerbutton" style="border-top: var(--border)" id="editfilename">[None]</td></tr>
 	<tr><td><div id="input">[Script will go here]</div></td></tr>
-	<tr><td class="buttonpanel" style="height:30px;text-align:center"><button onclick="runcode(editor.getValue())">Run</button><button onclick="editfile(editfilename.innerHTML)">Reload File</button><button onclick="savecurrentfile()">Save</button></td></tr>
+	<tr><td class="buttonpanel" style="height:30px;text-align:center"><button onclick="runcode(editor.getValue())">Run</button><button onclick="savecurrentfile()">Save</button></td></tr>
 </table>
 <table class="log">
 	<tr><td class="header headerbutton">Log</td></tr>
@@ -75,7 +80,8 @@ window.onload = function() {
 	<tr><td class="header headerbutton">
 			Files
 			<div style="float:right;padding-right: 5px">
-				<a href="#Add File" title="Add File" onclick="return addfile()">[+]</a>
+				<a href="#Import File" title="Import File" onclick="return openfileselect()">[Import]</a>
+				<a href="#Add File" title="Add File" onclick="return addfile()">[New]</a>
 			</div>
 		</td></tr>
 	<tr><td style="vertical-align: top"><div id="fstable"></div></td></tr>
@@ -86,5 +92,7 @@ window.onload = function() {
 <button id="replacescript" onclick="toggleqr();input.value = qrbox.value;">Import this as the current file</button><button id="runscript" onclick="toggleqr();Module.print('[*] Running QR Script');setTimeout(function() {runcode(qrbox.value);resetqr()}, 500);">Run</button>
 <br><select id="cameraselect" onchange="changeCamera(this.value)"><option value="" selected>Loading Camera List...</option></select>
 </div>
+<input type="file" style="display:none" id="fileselect" onchange="importfileselect(this)">
+<a id="outputfile" style="display:none"></a>
 </body>
 </html>

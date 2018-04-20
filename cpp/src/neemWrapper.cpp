@@ -9,7 +9,7 @@ Neem* neem_new() {
 	return new Neem();
 }
 
-void neem_interpretFile(Neem* v, char *text) {
+void neem_interpretFile(Neem* v, const char *text) {
 	v->interpretFile(text);
 }
 

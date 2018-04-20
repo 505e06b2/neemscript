@@ -11,7 +11,7 @@ typedef struct Neem Neem;
 
 Neem* neem_new();
 
-void neem_interpretFile(Neem *, char *); //All public functions need to be wrapped for C
+void neem_interpretFile(Neem *, const char *); //All public functions need to be wrapped for C
 void neem_interpretBuffer(Neem *, const char *);
 void neem_interpretLine(Neem *, const char *);
 void neem_setVariable(Neem *, const char *, const char *);

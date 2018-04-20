@@ -14,7 +14,7 @@ int main() {
 
 void webmain(const char *input) {
 	struct Neem* c = neem_new();
-	neem_interpretBuffer(c, input);
+	neem_interpretFile(c, input);
 	neem_del(c);
 }
 

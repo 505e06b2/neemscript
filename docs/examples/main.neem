@@ -1,0 +1,20 @@
+:: A quick script that will write some numbers to a file and then print that file
+
+set i=0
+set line=0
+:label
+	if %i%==5
+		goto :end
+	fi
+	inc i
+	set line=%line% -> %i%
+	goto :label
+
+:end
+	::write to file
+	output tempdata w
+	echo %line%
+	::reset output of echo
+	output reset
+	echo Finished; going to read and print what was written:
+	echo %READ;tempdata%

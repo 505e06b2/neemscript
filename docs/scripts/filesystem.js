@@ -38,21 +38,53 @@ function editfile(filename) {
 	editfilename.innerHTML = filename;
 	localStorage.lastedited = filename;
 	Module.print("[*] Loaded '" + filename + "' for editing");
+	setTimeout(function() {beenedited(false)}, 50);
 	return false;
 }
 
-function savecurrentfile() {
+function exportfile() {
+	var blob = "";
+	outputfile.download = editfilename.innerHTML;
+	try {
+		blob = new Blob([
+			FS.readFile(outputfile.download, {encoding: "utf8"})
+		], { type: 'text/plain' });
+	} catch (err) {
+		return fserror(err);
+	}
+	outputfile.href = (window.webkitURL || window.URL).createObjectURL(blob);
+	outputfile.dataset.downloadurl = ['text/plain', outputfile.download, outputfile.href].join(':');
+	outputfile.click();
+}
+
+function importfileselect(obj) {
+	if(obj.files.length === 0) return;
+	var reader = new FileReader();
+	reader.filename = obj.files[0].name;
+	reader.onload = function() {
+		FS.writeFile(reader.filename, reader.result);
+		savefiles(reader.filename, function() {
+			editfile(reader.filename);
+		});
+	};
+	reader.readAsText(obj.files[0], "utf8");
+	obj.value = "";
+}
+
+function savecurrentfile(func) {
 	try {
 		FS.writeFile(editfilename.innerHTML, editor.getValue());
 	} catch (err) {
 		return fserror(err);
 	}
+	beenedited(false);
 	Module.print("[*] Saved '" + editfilename.innerHTML + "'");
-	savefiles();
+	savefiles(null, func);
 	return false;
 }
 
 function deletefile(filename) {
+	if(!confirm("Are you sure you want to delete '" + filename + "'?")) return false;
 	try {
 		FS.unlink(filename);
 	} catch (err) {
@@ -80,9 +112,9 @@ function updatefilelist(focusto) {
 	fstable.innerHTML = "";
 	for(var i = 2; i < dirlist.length; i++) { //remove . and ..
 		fstable.innerHTML += ((focusto == dirlist[i]) ? "<div id='filelist_focus' tabindex='-1'>" : "<div>") + 
-			dirlist[i] + 
+			"<a href='#Edit File' title='Edit' onclick='return editfile(this.innerHTML)'>" + dirlist[i] + "</a>" +
 			"<div class='righticon'>" +
-				"<a href='#Edit File' title='Edit' style='color: var(--blue)' onclick='return editfile(\"" + dirlist[i] + "\")'>[Edit]</a>" + 
+				"<a href='#Export File' title='Export' style='color: var(--blue)' onclick='return exportfile(\"" + dirlist[i] + "\")'>[Ex]</a>" + 
 				"<a href='#Rename File' title='Rename' style='color: var(--green)' onclick='return renamefile(\"" + dirlist[i] + "\")'>[Ren]</a>" + 
 				"<a href='#Delete File' title='Delete' style='color: var(--red)' onclick='return deletefile(\"" + dirlist[i] + "\")'>[Del]</a>" + 
 			"</div>" +
@@ -114,27 +146,12 @@ function addfile() {
 function createdefaultfile() {
 	const filename = "main.neem";
 	try {
-		FS.writeFile(filename,
-"::Quick script anyone could make but shows quite a few features\n" +
-"::Check the wiki to see how you can make your own scripts\n" +
-"\n" +
-"output tempdata w\n" +
-"set i=0\n"+
-":label\n" +
-"	if %i%==5\n" +
-"    goto :end\n" +
-"  fi\n" +
-"  inc i\n" +
-"  echo %i%\n" +
-"  goto :label\n" +
-"\n" +
-":end\n" +
-"  output reset\n" +
-"  echo Finished; going to read and print what was written:\n" +
-"  input tempdata\n" +
-"  readall temp\n" +
-"  echo %temp%\n"
-		);
+		var rawFile = new XMLHttpRequest();
+		rawFile.onreadystatechange = function () {
+			if(rawFile.readyState === 4 && rawFile.status === 200) FS.writeFile(filename, rawFile.responseText);
+		}
+		rawFile.open("GET", "examples/" + filename);
+		rawFile.send();
 	} catch (err) {
 		return fserror(err);
 	}
