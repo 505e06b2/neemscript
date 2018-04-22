@@ -118,6 +118,8 @@ class Neem {
 		std::string dynamic_pathname(char *);
 		std::string dynamic_scriptpath(char *);
 		std::string dynamic_read(char *);
+		std::string dynamic_strlen(char *);
+		std::string dynamic_ext(char *);
 		
 		//commands - commands/[command].cpp
 		int command_none(instruction *, uint32_t);

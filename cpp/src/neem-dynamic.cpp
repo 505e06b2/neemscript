@@ -109,6 +109,19 @@ std::string Neem::dynamic_pathname(char *c) {
 	return pathname;
 }
 
+std::string Neem::dynamic_strlen(char *c) {
+	return std::to_string(strlen(c));
+}
+
+std::string Neem::dynamic_ext(char *c) {
+	char *ext = NULL;
+	for(; *c; c++) {
+		if(*c == '.') ext = ++c;
+	}
+	std::string extstring = (ext != NULL) ? ext : "";
+	return extstring;
+}
+
 std::string Neem::dynamic_os(char *c) { 
 		#ifdef _WIN32
 			return "windows";

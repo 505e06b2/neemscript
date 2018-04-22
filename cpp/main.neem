@@ -1,1 +1,1 @@
-echo %READ;makefile%
+echo "%EXT;wow%"
