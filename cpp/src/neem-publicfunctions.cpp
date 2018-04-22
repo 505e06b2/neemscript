@@ -24,6 +24,7 @@ Neem::Neem() { //Set up dynamic vars
 	dynamicvariables["SCRIPTPATH"] = &Neem::dynamic_scriptpath;
 	dynamicvariables["READ"] = &Neem::dynamic_read;
 	dynamicvariables["STRLEN"] = &Neem::dynamic_strlen;
+	dynamicvariables["ARRLEN"] = &Neem::dynamic_arrlen;
 	dynamicvariables["EXT"] = &Neem::dynamic_ext;
 	
 	std::map<const std::string, std::string> firstscope;

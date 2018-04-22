@@ -113,6 +113,16 @@ std::string Neem::dynamic_strlen(char *c) {
 	return std::to_string(strlen(c));
 }
 
+std::string Neem::dynamic_arrlen(char *c) {
+	if(*c == '\0') return "0";
+	char defaultdelim = FORCHARCHECK;
+	char *delim = splitstring(c, ';');
+	if(delim == NULL) delim = &defaultdelim;
+	uint32_t counts = 1;
+	for(; *c; c++) if(*c == *delim) counts++;
+	return std::to_string(counts);
+}
+
 std::string Neem::dynamic_ext(char *c) {
 	char *ext = NULL;
 	for(; *c; c++) {

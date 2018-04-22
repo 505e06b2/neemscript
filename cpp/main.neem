@@ -1,1 +1,2 @@
-echo "%EXT;wow%"
+echo !ARRLEN;%LS%!
+echo %LS%
