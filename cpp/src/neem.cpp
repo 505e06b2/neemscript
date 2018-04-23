@@ -2,6 +2,7 @@
 
 Neem::typeandfunc Neem::gettype(char *command) {
 	if(strcasecmp(command, "echo") == 0 || strcasecmp(command, "print") == 0) return {echo_, &Neem::command_echo};
+	if(strcasecmp(command, "echor") == 0) return {echor_, &Neem::command_echor};
 	if(strcasecmp(command, "setsystem") == 0) return {setsystem_, &Neem::command_setsystem};
 	if(strcasecmp(command, "import") == 0) return {import_, NULL};
 	if(strcasecmp(command, "set") == 0) return {set_, &Neem::command_set};
@@ -97,6 +98,7 @@ bool Neem::parseline(char *line, uint32_t index) {
 			break;
 
 		case sleep_: // sleep 2000
+		case echor_:
 		case start_: // start program_name
 		case libload_: // loadlib library_name
 		case libunload_: // unload library_name
