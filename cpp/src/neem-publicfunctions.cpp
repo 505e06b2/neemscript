@@ -26,6 +26,8 @@ Neem::Neem() { //Set up dynamic vars
 	dynamicvariables["STRLEN"] = &Neem::dynamic_strlen;
 	dynamicvariables["ARRLEN"] = &Neem::dynamic_arrlen;
 	dynamicvariables["EXT"] = &Neem::dynamic_ext;
+	dynamicvariables["REPLACE"] = &Neem::dynamic_replace;
+	dynamicvariables["REPLACEALL"] = &Neem::dynamic_replaceall;
 	
 	std::map<const std::string, std::string> firstscope;
 	variablesinscopes.push_back(firstscope);

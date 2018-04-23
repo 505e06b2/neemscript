@@ -21,6 +21,7 @@
 
 class Neem {
 	public:
+		//publicfunctions
 		void interpretFile(const char *);
 		void interpretBuffer(const char *);
 		void interpretLine(const char *);
@@ -98,6 +99,7 @@ class Neem {
 		char *splitstring(char *, const char); //strtok replacement
 		std::string getvariablefromscope(std::string);
 		void setvariabletoscope(std::string, std::string);
+		std::string replaceinstring(char *, const char *, const char *, bool);
 		
 		//dynamic vars - dynamic.cpp
 		std::string dynamic_time(char *);
@@ -121,6 +123,8 @@ class Neem {
 		std::string dynamic_strlen(char *);
 		std::string dynamic_arrlen(char *);
 		std::string dynamic_ext(char *);
+		std::string dynamic_replace(char *);
+		std::string dynamic_replaceall(char *);
 		
 		//commands - commands/[command].cpp
 		int command_none(instruction *, uint32_t);

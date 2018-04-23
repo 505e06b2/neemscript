@@ -1,2 +1,2 @@
-echo !ARRLEN;%LS%!
-echo %LS%
+echo %REPLACE;/bin/wow/;/;##%
+echo %REPLACEALL;/bin/wow/;/;@@%

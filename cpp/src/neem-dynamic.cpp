@@ -38,7 +38,7 @@ std::string Neem::dynamic_system(char *c) {
 		return " "; //To show it exists but is just blank
 	} else {
 		return val;
-	} 
+	}
 }
 
 std::string Neem::dynamic_strftime(char *c) {
@@ -71,6 +71,18 @@ std::string Neem::dynamic_librun(char *c) {
 		return retval;
 	}
 	return "";
+}
+
+std::string Neem::dynamic_replace(char *c) {
+	char *find = splitstring(c, ';');
+	char *replace = splitstring(find, ';');
+	return replaceinstring(c, find, replace, true);
+}
+
+std::string Neem::dynamic_replaceall(char *c) {
+	char *find = splitstring(c, ';');
+	char *replace = splitstring(find, ';');
+	return replaceinstring(c, find, replace, false);
 }
 
 std::string Neem::dynamic_read(char *c) {

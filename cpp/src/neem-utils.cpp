@@ -34,6 +34,28 @@ int Neem::searchfortag(uint32_t *index, const types search, const types avoid) {
 	return -1;
 }
 
+std::string Neem::replaceinstring(char *str, const char *find, const char *replace, bool once) {
+	uint32_t findlen = strlen(find); //Needs to be here so the '\0' is placed
+	std::string out;
+	char *last = str;
+	
+	for(; *str; str++) {
+		if(strncmp(str, find, findlen) == 0) {
+			*str = '\0';
+			out += last;
+			out += replace;
+			if(once) {
+				out += str+findlen;
+				return out;
+			}
+			str += findlen-1;
+			last = str+1;
+		}
+	}
+	out += last;
+	return out;
+}
+
 std::string Neem::getvariablefromscope(std::string name) {
 	std::map<const std::string, std::string>::iterator var;
 
