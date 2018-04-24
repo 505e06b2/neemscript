@@ -7,7 +7,7 @@ var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 var BatchFileHighlightRules = function() {
     this.$rules = { start: 
        [ { token: 'keyword',
-           regex: '(^\\s*)(echo|print|import|sleep|start|pwd|goto|exit|call|setlocal|endlocal|cd|rm|rmdir|ls|pause|output|input|libload|librun|libunload)\\b',
+           regex: '(^\\s*)(echo|echor|print|import|sleep|start|pwd|goto|exit|call|setlocal|endlocal|cd|rm|rmdir|ls|pause|output|input|libload|librun|libunload)\\b',
            caseInsensitive: true },
          { token: 'string',
            regex: '(^\\s*)(if|else|fi|switch|case|rof)\\b',
